@@ -167,7 +167,7 @@ body{
 .rows dd{margin:0;font-family:var(--display);text-align:right}
 .res.best{margin:12px 0 16px;font-size:16px}
 .share{display:flex;flex-direction:column;gap:0;margin-bottom:14px}
-.btn.xbtn{background:#0F1419;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px}
+.btn.xbtn{background:#0F1419;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;text-decoration:none;box-sizing:border-box}
 .btn.xbtn svg{width:20px;height:20px}
 .share .btn.ghost{margin-top:8px;font-size:16px;padding:9px}
 
@@ -206,13 +206,13 @@ body{
   32%{transform:translate(var(--bx),var(--by)) rotate(calc(var(--r)*.35))}
   100%{transform:translate(var(--ex),var(--ey)) rotate(var(--r));opacity:0}}
 /* fever */
-.fever{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 152px);transform:translateX(-50%);text-align:center;pointer-events:none;transition:opacity .15s}
+.fever{position:fixed;right:20px;top:calc(env(safe-area-inset-top,0px) + 90px);display:flex;flex-direction:column;align-items:flex-end;gap:4px;pointer-events:none;transition:opacity .15s}
 .fever.off{opacity:0}
 .fever:not(.on) b{font-family:var(--body);font-size:12px;color:var(--ink-soft);text-shadow:none;animation:none;letter-spacing:.02em}
 .fever:not(.on) .g i{background:linear-gradient(90deg,#F2C14E,#F2A51F)}
 .fever.full:not(.on) .g{box-shadow:0 0 0 3px rgba(242,165,31,.45)}
-.fever b{display:block;font-family:var(--display);font-weight:var(--dw);font-size:28px;color:#F2A51F;text-shadow:3px 3px 0 var(--line);animation:fvb .5s ease-in-out infinite alternate}
-.fever .g{width:120px;height:7px;border-radius:4px;border:1.5px solid var(--line);margin:4px auto 0;overflow:hidden}
+.fever b{display:block;font-family:var(--display);font-weight:var(--dw);font-size:18px;color:#F2A51F;text-shadow:2px 2px 0 var(--line);animation:fvb .5s ease-in-out infinite alternate}
+.fever .g{width:96px;height:8px;border-radius:4px;border:1.5px solid var(--line);margin:0;overflow:hidden}
 .fever .g i{display:block;height:100%;width:100%;background:#F2A51F;transform-origin:left center}
 @keyframes fvb{to{transform:scale(1.08)}}
 body.fever-on::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:3;box-shadow:inset 0 0 90px 24px rgba(242,165,31,.5);animation:fvg .55s ease-in-out infinite alternate}
@@ -303,7 +303,7 @@ body.fever-on::after{content:"";position:fixed;inset:0;pointer-events:none;z-ind
     </dl>
     <p class="res best" id="rBest"></p>
     <div class="share">
-      <button class="btn xbtn" id="shareX" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/></svg><span data-i18n="shareX"></span></button>
+      <a class="btn xbtn" id="shareX" href="https://x.com/intent/tweet" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/></svg><span data-i18n="shareX"></span></a>
       <button class="btn ghost" id="saveImg" type="button" data-i18n="saveImg"></button>
     </div>
     <button class="btn" id="again" data-i18n="again"></button>
@@ -673,28 +673,29 @@ function pullTabGeo(r){
   return new THREE.ExtrudeGeometry(sh,{depth:0.012,bevelEnabled:false,curveSegments:20});
 }
 // pick head: a rounded trapezoid, wider at the far end, in the (x, z) plane; x runs along the pick
-function pickHeadShape(x0,x1,hw0,hw1,r){   // rounded trapezoid: near edge x0 (shaft side), far edge x1
-  const P=[[x0,-hw0],[x1,-hw1],[x1,hw1],[x0,hw0]].map(q=>new THREE.Vector2(q[0],q[1]));
-  const R=[r*0.7,r*1.4,r*1.4,r*0.7], sh=new THREE.Shape();
-  for(let i=0;i<4;i++){
-    const c=P[i], pv=P[(i+3)%4], nx=P[(i+1)%4];
-    const a=c.clone().add(pv.clone().sub(c).normalize().multiplyScalar(R[i]));
-    const e=c.clone().add(nx.clone().sub(c).normalize().multiplyScalar(R[i]));
-    if(i===0) sh.moveTo(a.x,a.y); else sh.lineTo(a.x,a.y);
-    sh.quadraticCurveTo(c.x,c.y,e.x,e.y);
+// pick head, traced from the photo: a soft "TV screen" squircle, about as long as it is wide,
+// a touch wider on the shaft side, lying in the (x, z) plane centred at xc
+function pickHeadShape(xc,hl,hw0,hw1){
+  const n=3.4, N=72, pts=[];
+  for(let i=0;i<N;i++){
+    const t=i/N*Math.PI*2, c=Math.cos(t), s2=Math.sin(t);
+    const u=Math.sign(c)*Math.pow(Math.abs(c),2/n), v=Math.sign(s2)*Math.pow(Math.abs(s2),2/n);
+    const hw=hw0+(hw1-hw0)*(1-u)/2;            // u=+1 is the shaft side
+    pts.push(new THREE.Vector2(xc+u*hl,v*hw));
   }
-  sh.closePath(); return sh;
+  return new THREE.Shape(pts);
 }
 function flatGeo(shape,t){ const g=new THREE.ExtrudeGeometry(shape,{depth:t,bevelEnabled:false,curveSegments:8}); g.rotateX(-Math.PI/2); g.translate(0,-t/2,0); return g; }
 function pickTipGeo(){   // spindle: swells a touch, then comes to a point
-  const pts=[[0,0.02],[0.04,0.026],[0.09,0.027],[0.13,0.02],[0.16,0.01],[0.18,0]].map(p=>new THREE.Vector2(p[1],p[0]));
+  const pts=[[0,0.02],[0.03,0.03],[0.08,0.034],[0.12,0.028],[0.155,0.014],[0.18,0]].map(p=>new THREE.Vector2(p[1],p[0]));
   pts.unshift(new THREE.Vector2(0,0));
   return new THREE.LatheGeometry(pts,12).rotateZ(-Math.PI/2);
 }
-function pickRimGeo(){
-  const outer=pickHeadShape(-0.37,-0.69,0.11,0.15,0.035), inner=pickHeadShape(-0.395,-0.665,0.085,0.125,0.025);
-  outer.holes.push(new THREE.Path(inner.getPoints(8)));
-  return flatGeo(outer,0.042);
+const PICK_HEAD={xc:-0.53,hl:0.16,hw0:0.152,hw1:0.142};
+function pickRimGeo(){   // raised border around a recessed panel
+  const H0=PICK_HEAD, outer=pickHeadShape(H0.xc,H0.hl,H0.hw0,H0.hw1), inner=pickHeadShape(H0.xc,H0.hl-0.026,H0.hw0-0.026,H0.hw1-0.026);
+  outer.holes.push(new THREE.Path(inner.getPoints()));
+  return flatGeo(outer,0.05);
 }
 function roundPaddleGeo(w,d,r,t){
   const sh=new THREE.Shape(),x=-w/2,y=-d/2;
@@ -774,8 +775,8 @@ const G={
   bit:{pino:bittenGeo('pino'),heart:bittenGeo('heart'),star:bittenGeo('star')},
   shaft:new THREE.CylinderGeometry(0.02,0.02,0.76,10).rotateZ(Math.PI/2),
   tip:pickTipGeo(),
-  collar:new THREE.BoxGeometry(0.05,0.05,0.07),
-  plate:flatGeo(pickHeadShape(-0.37,-0.69,0.11,0.15,0.035),0.024),
+  collar:new THREE.BoxGeometry(0.045,0.046,0.075),
+  plate:flatGeo(pickHeadShape(PICK_HEAD.xc,PICK_HEAD.hl-0.02,PICK_HEAD.hw0-0.02,PICK_HEAD.hw1-0.02),0.026),
   rim:pickRimGeo(),
   shaftHit:new THREE.BoxGeometry(1.0,0.17,0.17),
   gripHit:new THREE.BoxGeometry(0.38,0.17,0.36),
@@ -792,6 +793,11 @@ let MA,M,FM,SRC,DEF_SRC;
 function rebuildFaceMats(){
   FM.top.map=SRC.top; FM.back.map=SRC.back; FM.front.map=SRC.front; FM.side.map=SRC.side; FM.bottom.map=SRC.bottom;
   for(const k in FM) FM[k].needsUpdate=true;
+}
+function glitterTex(rep){
+  const c=cv(128,128),g=c.getContext('2d'); g.fillStyle='#000'; g.fillRect(0,0,128,128);
+  for(let i=0;i<70;i++){ g.fillStyle='rgba(255,255,255,'+(0.25+rnd()*0.6).toFixed(2)+')'; g.fillRect(rnd()*128,rnd()*128,1+rnd()*1.4,1+rnd()*1.4); }
+  const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(rep,rep); return t;
 }
 function buildMaterials(){
   const tx=c=>{const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t;};
@@ -815,8 +821,10 @@ function buildMaterials(){
     cup:std('#5A3626',0.3,{side:THREE.DoubleSide}),
     choco:std('#3A2016',0.36,{metalness:0.05}),
     bitten:new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.5,metalness:0.03}),
-    pickR:std('#E8323A',0.32,{metalness:0.05}),
-    pickB:std('#2F86E0',0.32,{metalness:0.05}),
+    pickR:std('#E52A35',0.3,{metalness:0.05,emissive:0xffffff,emissiveMap:glitterTex(8),emissiveIntensity:0.5}),
+    pickRp:std('#F06A78',0.38,{metalness:0.05,emissive:0xffffff,emissiveMap:glitterTex(14),emissiveIntensity:0.8}),
+    pickB:std('#2A80DE',0.3,{metalness:0.05,emissive:0xffffff,emissiveMap:glitterTex(8),emissiveIntensity:0.5}),
+    pickBp:std('#69A9EE',0.38,{metalness:0.05,emissive:0xffffff,emissiveMap:glitterTex(14),emissiveIntensity:0.8}),
     gold:new THREE.MeshBasicMaterial({color:col('#FFC94A')}),
     hit:new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false})
   };
@@ -830,9 +838,9 @@ function buildMaterials(){
 function mesh(geo,mat,x,y,z,parent,shadow){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);if(shadow!==false){m.castShadow=true;m.receiveShadow=true;}parent.add(m);return m;}
 function makePick(){
   const p=new THREE.Group();
-  const mat=rnd()<0.5?M.pickR:M.pickB;   // red or blue, at random
-  mesh(G.shaft,mat,0.06,0,0,p); mesh(G.tip,mat,0.44,0,0,p); mesh(G.collar,mat,-0.345,0,0,p);
-  mesh(G.plate,mat,0,0,0,p); mesh(G.rim,mat,0,0,0,p);
+  const red=rnd()<0.5, mat=red?M.pickR:M.pickB, panel=red?M.pickRp:M.pickBp;   // red or blue, at random
+  mesh(G.shaft,mat,0.06,0,0,p); mesh(G.tip,mat,0.44,0,0,p); mesh(G.collar,mat,-0.355,0,0,p);
+  mesh(G.plate,panel,0,0,0,p); mesh(G.rim,mat,0,0,0,p);
   const sh=mesh(G.shaftHit,M.hit,0.12,0,0,p,false), gh=mesh(G.gripHit,M.hit,-0.53,0,0,p,false);
   p.userData={shaftHit:sh,gripHit:gh}; return p;
 }
@@ -1190,13 +1198,13 @@ function endGame(){
   $('rLucky').textContent=luckyCount+TX('unitCount');
   $('rBoxes').textContent=boxesDone+TX('unitCount');
   $('rBest').textContent=isNew?TX('newBest'):TX('best').replace('{n}',best.toLocaleString(LOCALE()));
-  shareFile=null; makeShareImage().then(f=>shareFile=f).catch(()=>{});
-  setTimeout(()=>{ $('result').hidden=false; fitScore(); $('again').focus({preventScroll:true}); },450);
+  shareFile=null; updateShareLink();
+  setTimeout(()=>{ $('result').hidden=false; fitScore(); $('again').focus({preventScroll:true}); makeShareImage().then(f=>shareFile=f).catch(()=>{}); },450);
 }
 $('go').addEventListener('click',startGame);
 document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>{
   setLang(b.dataset.lang);
-  eatenEl.textContent=TX('eaten')(totalEaten); renderCombo(); addScore(0); $('feverLab').textContent=isFever()?TX('fever'):TX('g_fever');
+  eatenEl.textContent=TX('eaten')(totalEaten); renderCombo(); addScore(0); updateShareLink(); $('feverLab').textContent=isFever()?TX('fever'):TX('g_fever');
   document.querySelectorAll('.slot input').forEach(inp=>markSlot(inp.dataset.slot,inp.parentElement.classList.contains('done')));
 }));
 document.querySelectorAll('.slot input').forEach(inp=>markSlot(inp.dataset.slot,false));
@@ -1217,49 +1225,63 @@ function fitScore(){
   while(box.scrollWidth>box.clientWidth+1&&fs>26){ fs-=2; el.style.fontSize=fs+'px'; }
 }
 addEventListener('resize',()=>{ if(!$('result').hidden) fitScore(); });
-// share card image (1200x675) built from the result
+// share image: the result screen itself (game behind, card on top, Kouga peeking in), 1080x1350
 let shareFile=null;
 function makeShareImage(){
   return new Promise((resolve,reject)=>{
-    const W2=1200,H2=675,c=document.createElement('canvas'); c.width=W2; c.height=H2;
-    const g=c.getContext('2d'), css=getComputedStyle(document.documentElement);
-    const disp=css.getPropertyValue('--display')||'sans-serif', body=css.getPropertyValue('--body')||'sans-serif';
-    const bg=g.createLinearGradient(0,0,0,H2); bg.addColorStop(0,'#EAF4F8'); bg.addColorStop(1,'#B7D1DD');
-    g.fillStyle=bg; g.fillRect(0,0,W2,H2);
+    const CW=1080,CH=1350,c=document.createElement('canvas'); c.width=CW; c.height=CH;
+    const g=c.getContext('2d'), css=getComputedStyle(document.documentElement), v=n=>css.getPropertyValue(n).trim();
+    const disp=v('--display')||'sans-serif', body=v('--body')||'sans-serif';
+    const cardBg=v('--card')||'#F7ECCF', ink=v('--card-ink')||'#2A1A12', line=v('--line')||'#2A1A12', red=v('--pick')||'#E2483D';
+    // page background + live 3D frame, cover-fitted
+    const bg=g.createRadialGradient(CW/2,CH*0.08,40,CW/2,CH*0.3,CH); bg.addColorStop(0,v('--frost-hi')||'#EAF4F8'); bg.addColorStop(1,v('--frost-lo')||'#B7D1DD');
+    g.fillStyle=bg; g.fillRect(0,0,CW,CH);
+    try{
+      renderer.render(scene,camera);
+      const src=renderer.domElement, sw=src.width, sh=src.height, k=Math.max(CW/sw,CH/sh);
+      g.drawImage(src,(CW-sw*k)/2,(CH-sh*k)/2,sw*k,sh*k);
+    }catch(e){}
+    g.fillStyle='rgba(10,24,32,0.28)'; g.fillRect(0,0,CW,CH);
     const rr=(x,y,w,h,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();};
-    g.fillStyle='#2A1A12'; rr(70,70,1060,540,40); g.fill();
-    g.fillStyle='#F7ECCF'; rr(56,56,1060,540,40); g.fill(); g.lineWidth=6; g.strokeStyle='#2A1A12'; g.stroke();
-    g.fillStyle='#2A1A12'; g.textBaseline='alphabetic';
-    g.font='800 56px '+disp; g.fillText(TX('title'),110,150);
-    let fs=150; const sc=score.toLocaleString(LOCALE());
-    g.font='800 '+fs+'px '+disp; while(g.measureText(sc).width>560&&fs>60){ fs-=6; g.font='800 '+fs+'px '+disp; }
-    g.fillStyle='#E2483D'; g.fillText(sc,110,330);
-    const sw=g.measureText(sc).width; g.fillStyle='#2A1A12'; g.font='700 44px '+disp; g.fillText(TX('pts'),110+sw+14,330);
-    g.font='500 34px '+body; g.fillStyle='#2A1A12';
-    const line=TX('shareText')(totalEaten,boxesDone);
-    // wrap the share line to the left column
-    const words=line.split(' '), lines=[]; let curL='';
-    words.forEach(w=>{ const t=curL?curL+' '+w:w; if(g.measureText(t).width>600&&curL){ lines.push(curL); curL=w; } else curL=t; });
-    if(curL) lines.push(curL);
-    lines.slice(0,3).forEach((l,i)=>g.fillText(l,110,420+i*48));
-    g.font='500 28px '+body; g.fillStyle='#5E4C41';
-    g.fillText(TX('rCombo')+' '+maxCombo+'   '+TX('rLucky')+' '+luckyCount+TX('unitCount'),110,560);
+    // card
+    const X=96, Y=150, Wc=CW-2*X, Hc=930, P=70;
+    g.fillStyle=line; rr(X+16,Y+16,Wc,Hc,52); g.fill();
+    g.fillStyle=cardBg; rr(X,Y,Wc,Hc,52); g.fill(); g.lineWidth=7; g.strokeStyle=line; g.stroke();
+    g.fillStyle=ink; g.textBaseline='alphabetic'; g.textAlign='left';
+    g.globalAlpha=0.7; g.font='700 34px '+disp; g.fillText(TX('title'),X+P,Y+92); g.globalAlpha=1;
+    g.font='800 64px '+disp; g.fillText(TX('resultTitle'),X+P,Y+178);
+    // big score, shrunk to fit
+    const sc=score.toLocaleString(LOCALE()); g.font='800 48px '+disp; const uw=g.measureText(TX('pts')).width;
+    let fs=190; g.font='800 '+fs+'px '+disp;
+    while(g.measureText(sc).width>Wc-2*P-uw-16&&fs>60){ fs-=6; g.font='800 '+fs+'px '+disp; }
+    const scW=g.measureText(sc).width; g.fillText(sc,X+P,Y+360);
+    g.font='800 48px '+disp; g.fillText(TX('pts'),X+P+scW+14,Y+360);
+    // rows
+    const rows=[[TX('rEaten'),totalEaten+TX('unitPiece')],[TX('rCombo'),String(maxCombo)],[TX('rLucky'),luckyCount+TX('unitCount')],[TX('rBoxes'),boxesDone+TX('unitCount')]];
+    rows.forEach((r,i)=>{ const y=Y+460+i*70;
+      g.textAlign='left'; g.globalAlpha=0.75; g.font='500 38px '+body; g.fillText(r[0],X+P,y);
+      g.globalAlpha=1; g.textAlign='right'; g.font='800 40px '+disp; g.fillText(r[1],X+Wc-P,y); });
+    g.textAlign='left';
+    // share line in a speech bubble
+    const msg=TX('shareText')(totalEaten,boxesDone); g.font='700 36px '+body;
+    const lines=[]; let cur='';
+    const toks=/\s/.test(msg)?msg.split(/(?<=\s)/):Array.from(msg);   // wrap on spaces (ko), per character (ja)
+    for(const tk of toks){ const t=cur+tk; if(g.measureText(t.trim()).width>Wc-2*P-60&&cur){ lines.push(cur.trim()); cur=tk; } else cur=t; }
+    if(cur.trim()) lines.push(cur.trim());
+    const bh=40+lines.length*50, by=Y+Hc-P-bh;
+    g.fillStyle=red; rr(X+P,by,Wc-2*P,bh,28); g.fill();
+    g.fillStyle='#FFF6E6'; lines.forEach((l,i)=>g.fillText(l,X+P+30,by+62+i*50));
+    // Kouga peeking over the bottom-right corner
     const img=document.querySelector('#cele img');
-    const finish=()=>c.toBlob(b=>b?resolve(new File([b],'kouga-challenge.png',{type:'image/png'})):reject(new Error('blob')),'image/png');
-    if(img&&img.complete&&img.naturalWidth){ const h=430,w=h*img.naturalWidth/img.naturalHeight; g.drawImage(img,1060-w,140,w,h); }
-    finish();
+    if(img&&img.complete&&img.naturalWidth){ const h=330,w=h*img.naturalWidth/img.naturalHeight; g.drawImage(img,CW-w-40,Y+Hc-90,w,h); }
+    c.toBlob(b=>b?resolve(new File([b],'kouga-challenge.png',{type:'image/png'})):reject(new Error('blob')),'image/png');
   });
 }
 function shareUrl(){ return /^https?:$/.test(location.protocol)?location.href.split('#')[0]:''; }
-$('shareX').addEventListener('click',async()=>{
+function updateShareLink(){
   const text=TX('shareText')(totalEaten,boxesDone), url=shareUrl();
-  if(shareFile&&navigator.canShare&&navigator.canShare({files:[shareFile]})){
-    try{ await navigator.share({files:[shareFile],text:url?text+' '+url:text}); return; }
-    catch(e){ if(e&&e.name==='AbortError') return; }
-  }
-  const intent='https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+(url?'&url='+encodeURIComponent(url):'');
-  window.open(intent,'_blank','noopener');
-});
+  $('shareX').href='https://x.com/intent/tweet?text='+encodeURIComponent(text)+(url?'&url='+encodeURIComponent(url):'');
+}
 $('saveImg').addEventListener('click',async()=>{
   const f=shareFile||await makeShareImage().catch(()=>null); if(!f) return;
   const a=document.createElement('a'); a.href=URL.createObjectURL(f); a.download=f.name; document.body.appendChild(a); a.click();
