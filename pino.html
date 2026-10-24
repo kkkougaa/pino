@@ -59,31 +59,34 @@ body{
 }
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
 
+#hudShade{position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top,0px) + 150px);pointer-events:none;
+  background:linear-gradient(rgba(28,18,12,.66),rgba(28,18,12,.42) 50%,rgba(28,18,12,0))}
 .hud{
-  position:fixed;top:0;left:0;right:0;
+  position:fixed;top:0;left:0;right:0;color:#FFF8EC;text-shadow:0 1px 2px rgba(0,0,0,.5);
   padding:calc(env(safe-area-inset-top,0px) + 14px) 20px 0;
   display:flex;justify-content:space-between;align-items:flex-start;
   pointer-events:none;
 }
-.stat .lab{display:block;font-size:calc(var(--k,1)*(13px));color:var(--ink-soft);margin-bottom:2px}
+.stat .lab{display:block;font-size:calc(var(--k,1)*(14px));color:rgba(255,248,236,.85);margin-bottom:2px}
 .stat .num{display:flex;align-items:baseline;gap:3px;font-family:var(--display)}
 .stat b{font-weight:var(--dw);font-size:calc(var(--k,1)*(clamp(36px,10vw,58px)));line-height:1;font-variant-numeric:tabular-nums}
-.stat small{font-size:calc(var(--k,1)*(17px));color:var(--ink-soft)}
-.stat .sub{display:block;font-size:calc(var(--k,1)*(14px));color:var(--ink-soft);margin-top:4px}
+.stat small{font-size:calc(var(--k,1)*(17px));color:rgba(255,248,236,.85)}
+.stat .sub{display:block;font-size:calc(var(--k,1)*(15px));color:rgba(255,248,236,.85);margin-top:4px}
 .stat.right{text-align:right}
 .stat.right .num{justify-content:flex-end}
 .stat.low b{color:var(--pick)}
 
 .combo{
-  position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 120px);transform:translateX(-50%);
+  position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);
   text-align:center;pointer-events:none;transition:opacity .15s;
 }
 .combo.off{opacity:0}
+body.guide-on .combo{bottom:calc(env(safe-area-inset-bottom,0px) + 112px)}
 .combo .crow{display:flex;align-items:center;justify-content:center;gap:4px}
 .combo .ccol{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin-left:-8px}
 .combo img{display:block}
 .combo #comboMult[hidden]{display:none}
-.combo .g{width:88px;height:6px;border-radius:3px;border:1.5px solid var(--line);margin:5px auto 0;overflow:hidden}
+.combo .g{width:140px;height:11px;border-radius:6px;border:2px solid #3A2416;background:rgba(255,255,255,.55);margin:6px auto 0;overflow:hidden}
 .combo .g i{display:block;height:100%;width:100%;background:var(--pick);transform-origin:left center}
 .combo.bump .crow{animation:bump .25s ease-out}
 @keyframes bump{40%{transform:scale(1.3)}}
@@ -142,8 +145,15 @@ body{
 .card .memo-title{display:inline-block;font-family:var(--display);font-size:calc(var(--k,1)*(30px));line-height:1.15;margin:0 0 6px;padding:0 4px;
   background:linear-gradient(transparent 58%,rgba(255,214,0,.75) 58% 92%,transparent 92%)}
 .memo-big{font-family:var(--display);font-size:calc(var(--k,1)*(36px));line-height:1.15;margin:6px 0 2px;transform:rotate(-2deg);transform-origin:left center}
-.memo-warn{white-space:pre-line;font-family:var(--display);font-size:calc(var(--k,1)*(31px));line-height:1.1;margin:4px 0 14px;color:var(--red);display:inline-block;padding-bottom:6px;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 7 C 30 2, 50 11, 80 6 S 140 3, 198 7' fill='none' stroke='%23E0412F' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") left bottom/100% 12px no-repeat}
+.memo-warn{white-space:pre-line;font-family:var(--display);font-size:calc(var(--k,1)*(31px));line-height:1.42;margin:4px 0 14px;color:var(--red);display:block;
+  text-decoration:underline wavy #E0412F;text-decoration-thickness:2px;text-underline-offset:7px;text-decoration-skip-ink:none}
+.warnrow{display:flex;align-items:center;gap:6px;margin:2px 0 12px}
+.warnrow .memo-warn{margin:0;flex:1;min-width:0}
+.doodle{flex:none;width:118px;height:auto;margin:-14px -8px -10px 0;transform:rotate(7deg);overflow:visible}
+.doodle .f{opacity:0;animation:boil .42s steps(1) infinite}
+.doodle .f:nth-child(2){animation-delay:-.14s}.doodle .f:nth-child(3){animation-delay:-.28s}
+@keyframes boil{0%{opacity:1}33.3%{opacity:0}}
+@media (prefers-reduced-motion: reduce){.doodle .f{animation:none}.doodle .f:first-child{opacity:1}}
 .memo-ps{margin:0;font-size:calc(var(--k,1)*(18px));line-height:1.55;color:#4C6A8A}
 .memo-ps+.memo-ps{margin-bottom:18px}
 html[lang="ja"] .memo-warn{font-size:calc(var(--k,1)*(27px))}
@@ -236,7 +246,7 @@ html[lang="ja"] .memo-big{font-size:calc(var(--k,1)*(30px))}
 .fever:not(.on) .g i{background:linear-gradient(90deg,#F2C14E,#F2A51F)}
 .fever.full:not(.on) .g{box-shadow:0 0 0 3px rgba(242,165,31,.45)}
 .fever b{display:block;font-family:var(--display);font-weight:var(--dw);font-size:calc(var(--k,1)*(18px));color:#F2A51F;text-shadow:2px 2px 0 var(--line);animation:fvb .5s ease-in-out infinite alternate}
-.fever .g{width:96px;height:8px;border-radius:4px;border:1.5px solid var(--line);margin:0;overflow:hidden}
+.fever .g{width:130px;height:12px;border-radius:6px;border:2px solid #FFF8EC;background:rgba(0,0,0,.25);margin:0;overflow:hidden}
 .fever .g i{display:block;height:100%;width:100%;background:#F2A51F;transform-origin:left center}
 @keyframes fvb{to{transform:scale(1.08)}}
 body.fever-on::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:3;box-shadow:inset 0 0 90px 24px rgba(242,165,31,.5);animation:fvg .55s ease-in-out infinite alternate}
@@ -300,21 +310,22 @@ html[lang="ko"] .card{word-break:keep-all}
 .say img{width:62px;height:auto;flex:none;margin-bottom:-4px}
 .say p{margin:0;flex:1;background:#fff;border:2px solid #3A2E28;border-radius:16px 16px 16px 4px;padding:8px 12px;font-size:calc(var(--k,1)*(18px));line-height:1.3}
 #bg{position:fixed;inset:0;z-index:-1;background:#C79A6A;pointer-events:none}
-#bg .fridge{position:absolute;left:0;right:0;top:0;height:calc(var(--horizon,22vh) + 2px);overflow:hidden;
-  background:linear-gradient(90deg,rgba(0,0,0,.07),rgba(255,255,255,0) 14%,rgba(255,255,255,.6) 33%,rgba(255,255,255,0) 50%,rgba(0,0,0,.06) 100%),linear-gradient(#F4F2ED,#E4E0D7)}
-#bg .kick{position:absolute;left:0;right:0;bottom:0;height:clamp(12px,2.4vh,24px);background:repeating-linear-gradient(90deg,#3E3B37 0 7px,#5A5650 7px 10px)}
-#bg .edge{position:absolute;left:0;right:0;bottom:clamp(12px,2.4vh,24px);height:6px;background:linear-gradient(#D8D3CA,#9C968C);box-shadow:0 -1px 0 rgba(255,255,255,.7)}
-#bg .seam{position:absolute;left:0;right:0;top:calc(var(--horizon,22vh) - 62vh);height:5px;background:linear-gradient(#9C968C,#D8D3CA)}
-#bg .handle{position:absolute;right:13%;width:15px;bottom:calc(clamp(12px,2.4vh,24px) + 34px);height:min(56vh,calc(var(--horizon,22vh) - 70px));border-radius:8px;
-  background:linear-gradient(90deg,#B9B3A9,#F9F7F3 45%,#C9C3BA);box-shadow:2px 3px 4px rgba(0,0,0,.18)}
-#bg .mag{position:absolute;border-radius:50%;box-shadow:0 2px 3px rgba(0,0,0,.25)}
-#bg .m1{left:22%;top:calc(var(--horizon,22vh) - 96px);width:22px;height:22px;background:radial-gradient(circle at 35% 30%,#FFE59A 0 15%,#F2B21F 45%,#A8740C)}
-#bg .m2{left:29%;top:calc(var(--horizon,22vh) - 78px);width:18px;height:18px;background:radial-gradient(circle at 35% 30%,#BFE6FF 0 15%,#2F86E0 45%,#1B4F8A)}
-#bg .slip{position:absolute;left:calc(22% - 14px);top:calc(var(--horizon,22vh) - 90px);width:76px;height:52px;background:#fff;transform:rotate(4deg);box-shadow:0 2px 4px rgba(0,0,0,.15);
-  background-image:repeating-linear-gradient(transparent 0 11px,rgba(80,140,200,.25) 11px 12px)}
+/* white fridge, bottom part: two drawer fronts with recessed pull handles, dark plinth */
+#bg .fridge{--kick:clamp(14px,2.4vh,22px);--dh:clamp(76px,12vh,112px);
+  position:absolute;left:0;right:0;top:0;height:calc(var(--horizon,22vh) + 1px);overflow:hidden;
+  background:linear-gradient(90deg,rgba(0,0,0,.05),rgba(255,255,255,0) 18%,rgba(255,255,255,.95) 36%,rgba(255,255,255,0) 54%,rgba(0,0,0,.04) 100%),linear-gradient(#FFFFFF,#F1F1EF)}
+#bg .drawer{position:absolute;left:0;right:0;height:var(--dh);
+  background:linear-gradient(90deg,rgba(0,0,0,.04),rgba(255,255,255,0) 18%,rgba(255,255,255,.9) 37%,rgba(255,255,255,0) 55%,rgba(0,0,0,.035) 100%),linear-gradient(#FFFFFF 0,#F7F7F5 70%,#ECEBE8 100%);
+  border-top:3px solid #C9C7C2;box-shadow:inset 0 2px 0 #FFFFFF,0 -1px 0 rgba(0,0,0,.18)}
+#bg .d1{bottom:var(--kick)}
+#bg .d2{bottom:calc(var(--kick) + var(--dh))}
+#bg .drawer b{position:absolute;left:12%;right:12%;top:9px;height:14px;border-radius:0 0 7px 7px;
+  background:linear-gradient(#8D8B87,#C9C7C3 55%,#E9E8E5);box-shadow:inset 0 3px 3px rgba(0,0,0,.35),0 1px 0 #FFFFFF}
+#bg .kick{position:absolute;left:0;right:0;bottom:0;height:var(--kick);background:linear-gradient(#3A3A3C,#232325);box-shadow:0 -2px 3px rgba(0,0,0,.25)}
+#bg .kick::after{content:"";position:absolute;left:30%;right:30%;top:35%;height:30%;background:repeating-linear-gradient(90deg,#141415 0 3px,transparent 3px 7px)}
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]) #bg{background:#6E5238}
-  :root:not([data-theme="light"]) #bg .fridge{background:linear-gradient(90deg,rgba(0,0,0,.2),rgba(255,255,255,0) 14%,rgba(255,255,255,.12) 33%,rgba(255,255,255,0) 50%,rgba(0,0,0,.2) 100%),linear-gradient(#4A4D51,#3A3D40)}
+  :root:not([data-theme="light"]) #bg .fridge,:root:not([data-theme="light"]) #bg .drawer{filter:brightness(.82)}
 }
 #nogl{position:fixed;inset:0;display:grid;place-items:center;padding:24px;text-align:center;font-size:calc(var(--k,1)*(17px))}
 #nogl[hidden]{display:none}
@@ -325,9 +336,10 @@ html[lang="ko"] .card{word-break:keep-all}
 </style>
 </head>
 <body>
-<div id="bg" aria-hidden="true"><div class="fridge"><i class="seam"></i><i class="slip"></i><i class="mag m1"></i><i class="mag m2"></i><i class="handle"></i><i class="edge"></i><i class="kick"></i></div></div>
+<div id="bg" aria-hidden="true"><div class="fridge"><i class="drawer d2"><b></b></i><i class="drawer d1"><b></b></i><i class="kick"></i></div></div>
 <canvas id="c"></canvas>
 
+<div id="hudShade" aria-hidden="true"></div>
 <header class="hud">
   <div class="stat"><span class="lab" data-i18n="score">점수</span><div class="num"><b id="score">0</b></div><span class="sub" id="eaten">0알 먹음</span></div>
   <div class="stat right" id="timeStat"><span class="lab" data-i18n="time">남은 시간</span><div class="num"><b id="time">60.0</b><small data-i18n="sec">초</small></div></div>
@@ -360,7 +372,46 @@ html[lang="ko"] .card{word-break:keep-all}
     <div class="lang"><div class="seg" role="group" aria-label="Language"><button type="button" data-lang="ko" aria-pressed="true">한국어</button><button type="button" data-lang="ja" aria-pressed="false">日本語</button></div></div>
     <h1 class="memo-title" data-i18n="title"></h1>
     <p class="memo-big" data-i18n="memo1"></p>
-    <p class="memo-warn" data-i18n="memo2"></p>
+    <div class="warnrow">
+      <p class="memo-warn" data-i18n="memo2"></p>
+      <svg class="doodle" viewBox="0 0 124 132" aria-hidden="true">
+        <defs>
+          <filter id="wob1" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="2"/><feDisplacementMap in="SourceGraphic" scale="3.4"/></filter>
+          <filter id="wob2" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="3.4"/></filter>
+          <filter id="wob3" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="13"/><feDisplacementMap in="SourceGraphic" scale="3.4"/></filter>
+          <g id="kd" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <!-- teal marker scribbled over the hair, not quite inside the lines -->
+            <path d="M30 46 L38 33 L43 45 L50 30 L56 44 L63 27 L68 43 L77 30 L80 45 L89 44 M36 47 L60 38 L84 46" stroke="#3FB8B0" stroke-width="6" opacity=".55"/>
+            <!-- red cheek marks + angry red mouth -->
+            <path d="M33 71 l7 2 M34 77 l7 0 M87 71 l-7 2 M86 77 l-7 0" stroke="#E0412F" stroke-width="2.6"/>
+            <path d="M50 81 Q59 95 69 81 Q59 85 50 81Z" fill="#E0412F" stroke="#E0412F" stroke-width="1.5" opacity=".85"/>
+            <!-- pen lines -->
+            <g stroke="#3A2E28" stroke-width="2.6">
+              <path d="M30 50 L25 13 L50 36 M70 34 L93 11 L90 50"/>
+              <path d="M31 22 L44 35 M87 20 L76 33" stroke-width="1.6"/>
+              <path d="M29 50 L37 33 L43 47 L50 29 L56 46 L63 26 L69 45 L78 30 L82 47 L91 46"/>
+              <path d="M50 29 Q57 13 66 27"/>
+              <path d="M29 50 C21 64 23 80 31 89 l-6 4 l9 2 C44 104 74 104 84 96 l9 -2 l-6 -4 C95 80 97 64 91 50"/>
+              <path d="M39 58 L53 64 M81 58 L67 64" stroke-width="3.2"/>
+              <path d="M41 67 Q47 72 53 67 M67 67 Q73 72 79 67"/>
+              <circle cx="47" cy="68.5" r="2.3" fill="#3A2E28" stroke="none"/><circle cx="73" cy="68.5" r="2.3" fill="#3A2E28" stroke="none"/>
+              <path d="M50 81 Q59 95 69 81 Q59 85 50 81Z"/>
+              <path d="M54 82 L56 87.5 L58.5 83" stroke-width="1.8" fill="#fff"/>
+              <path d="M45 103 Q41 117 37 127 M77 102 Q90 99 97 85"/>
+              <path d="M97 85 q-2 -9 6 -10 q8 0 7 8 q-1 7 -9 6 q-4 0 -4 -4z"/>
+              <path d="M111 72 q4 3 4 8 M114 66 q6 5 6 13" stroke-width="1.8"/>
+            </g>
+            <!-- the 💢 mark -->
+            <g stroke="#E0412F" stroke-width="3.4">
+              <path d="M97 21 Q102 21 102 15.5 M108 15.5 Q108 21 113 21 M113 27 Q108 27 108 32.5 M102 32.5 Q102 27 97 27"/>
+            </g>
+          </g>
+        </defs>
+        <g class="f"><use href="#kd" filter="url(#wob1)"/></g>
+        <g class="f"><use href="#kd" filter="url(#wob2)"/></g>
+        <g class="f"><use href="#kd" filter="url(#wob3)"/></g>
+      </svg>
+    </div>
     <p class="memo-ps" data-i18n="lead"></p>
     <p class="memo-ps" data-i18n="intro2"></p>
     <button class="btn" id="go" data-i18n="start">시작!</button>
@@ -423,12 +474,12 @@ html[lang="ko"] .card{word-break:keep-all}
 var I18N={
   ko:{
     docTitle:'코우가 챌린지', title:'코우가 챌린지',
-    memo1:'코우가님의 피노!', memo2:'절대 먹지 말 것!!!!',
-    say_S:'뭐, 뭐야?! 이 몸의 피노를 이만큼이나…! 인정한다. 너, 꽤 멋진데!',
-    say_A:'제법이잖아, 동료! 하지만 이 몸한텐 아직 못 미친다고!',
-    say_B:'흥, 나쁘진 않네. 그래도 이 몸의 피노를 노리기엔 멀었다!',
-    say_C:'겨우 그거냐? 몰래 먹으려면 더 빨라야 한다고!',
-    say_F:'푸하핫! 그래서야 이 몸 눈에도 안 띈다고!',
+    memo1:'코우가님의 피노!', memo2:'절대 먹지\n말 것!!!!',
+    say_S:'야!!! 이 몸의 피노를 이렇게나 먹어치우다니! 절대 용서 못 한다!!!',
+    say_A:'너 이 자식, 이 몸의 피노를 그만큼이나?! 각오는 돼 있겠지!',
+    say_B:'어이, 피노가 꽤 줄었는데? 다음엔 가만 안 둔다!',
+    say_C:'흥, 몇 개쯤이야. 이번만 봐준다.',
+    say_F:'뭐야, 그거밖에 안 먹었냐? 그 정도는 용서해 주지!',
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.',
     pause:'일시정지', resume:'이어하기', restart:'처음부터',
     fx_perfect:'퍼펙트! +200', fx_nice:'나이스!', fx_miss:'미스 −1초', fx_speed:'스피드 보너스 +300', fx_heart:'하트', fx_star:'별',
@@ -474,12 +525,12 @@ var I18N={
   },
   ja:{
     docTitle:'コウガチャレンジ', title:'コウガチャレンジ',
-    memo1:'コウガ様のピノ！', memo2:'絶対に\n食うんじゃねぇぜ！！！！',
-    say_S:'な、なんだと？！俺様のピノをこんなに…！認めてやるぜ。お前、なかなかかっこいいんだぜ！',
-    say_A:'やるじゃねぇか、仲間！だが俺様にはまだ届かねぇんだぜ！',
-    say_B:'フン、悪くはねぇな。だが俺様のピノを狙うにはまだまだだぜ！',
-    say_C:'たったそれだけかよ？こっそり食うならもっと速くなきゃいけねぇんだぜ！',
-    say_F:'ぷはははっ！そんなんじゃ俺様の目にも留まらねぇぜ！',
+    memo1:'コウガ様のピノ！', memo2:'絶対に\n食うんじゃ\nねぇぜ！！！！',
+    say_S:'おい！！！俺様のピノをこんなに食いやがって！絶対に許さねぇぜ！！！',
+    say_A:'お前、俺様のピノをそんなに食いやがったのか？！覚悟はできてるんだろうな！',
+    say_B:'おい、ピノがずいぶん減ってるじゃねぇか？次はただじゃおかねぇぜ！',
+    say_C:'フン、何個かぐらいどうってことねぇんだ。今回だけは見逃してやるぜ。',
+    say_F:'なんだ、それしか食ってねぇのか？それくらいなら許してやるぜ！',
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。',
     pause:'一時停止', resume:'つづける', restart:'さいしょから',
     fx_perfect:'パーフェクト！+200', fx_nice:'ナイス！', fx_miss:'ミス −1秒', fx_speed:'スピードボーナス +300', fx_heart:'ハート', fx_star:'ほし',
@@ -694,6 +745,8 @@ function fit(){
   const t=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
   const d=Math.max(2.05/t,1.95/(t*camera.aspect));
   camBase.copy(lookAt).addScaledVector(new V3(0,0.9,0.44).normalize(),d);
+  // on tall screens slide the picture down a little: room between the fridge and the open lid for the stack
+  if(camera.aspect<1) camera.setViewOffset(w,h,0,-Math.round(h*0.15),w,h); else camera.clearViewOffset();
   camera.updateProjectionMatrix();
   // the fridge stands where the floor meets a line near the top of the screen
   const c=camera.clone(); c.position.copy(camBase); c.lookAt(lookAt); c.updateMatrixWorld();
@@ -705,7 +758,9 @@ function fit(){
   document.documentElement.style.setProperty('--horizon',((1-hp.y)/2*h).toFixed(1)+'px');
   // eaten boxes get stacked into a tower against the fridge, off to the right
   const px=onFloor(0.74,camera.aspect<1?0.56:0.74).x;
-  pile.position.set(px,0,fz+0.72); pile.scale.setScalar(0.6); pile.updateMatrixWorld();
+  if(camera.aspect<1) pile.position.set(px,0,fz+0.55);           // tall screen: above the open lid, against the fridge
+  else { const pp=onFloor(0.8,0.05); pile.position.set(pp.x,0,Math.max(pp.z,fz+0.55)); }   // wide screen: beside the box
+  pile.scale.setScalar(0.45); pile.updateMatrixWorld();
   if(scene.fog){ scene.fog.near=d*1.15; scene.fog.far=d*3.2; }
 }
 
@@ -1143,7 +1198,8 @@ const ICONS={
   tap:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>'
 };
 function setGuide(kind){
-  if(!kind||boxNo>1){guide.classList.add('off');return;}   // how-to only for the first box
+  const on=!!kind&&boxNo<=1; document.body.classList.toggle('guide-on',on);
+  if(!on){guide.classList.add('off');return;}   // how-to only for the first box
   guide.classList.remove('off');
   const g={
     film:['vert',TX('g_film')[0],TX('g_film')[1]],
@@ -1215,7 +1271,7 @@ function startFever(){
   setFeverLab(); popCenter(TX('fx_fever'),'fever'); sfx.fever(); buzz(40);
 }
 function endFever(){ feverT=0; document.body.classList.remove('fever-on'); $('fever').classList.remove('on'); setFeverLab(); }
-function setFeverLab(){ isFever()?setSprite($('feverLab'),TX('fx_fever'),'fever',17):setSprite($('feverLab'),TX('fx_feverWord'),'feverWord',13); }
+function setFeverLab(){ isFever()?setSprite($('feverLab'),TX('fx_fever'),'fever',21):setSprite($('feverLab'),TX('fx_feverWord'),'feverWord',17); }
 // pino icon (sticker style), drawn once
 let PINO_ICON=null, PINO_ICON_C=null;
 function pinoIcon(){
@@ -1329,8 +1385,8 @@ function celebrate(){
 }
 function renderCombo(bump){
   comboEl.classList.toggle('off',combo<2);
-  if(combo>=2){ setSprite($('comboNum'),String(combo),'combo',46); setSprite($('comboWord'),TX('fx_combo'),'word',15);
-    const t=tier(); $('comboMult').hidden=t<=1; if(t>1) setSprite($('comboMult'),'×'+t,'mult',18); }
+  if(combo>=2){ setSprite($('comboNum'),String(combo),'combo',62); setSprite($('comboWord'),TX('fx_combo'),'word',21);
+    const t=tier(); $('comboMult').hidden=t<=1; if(t>1) setSprite($('comboMult'),'×'+t,'mult',25); }
   if(bump){ comboEl.classList.remove('bump'); void comboEl.offsetWidth; comboEl.classList.add('bump'); }
 }
 function addScore(n){ score+=n; scoreEl.textContent=score.toLocaleString(LOCALE()); }
@@ -1603,8 +1659,14 @@ function makeShareImage(){
     g.fillStyle='#C79A6A'; g.fillRect(0,0,CW,CH);
     { const sw0=renderer.domElement.width/(renderer.getPixelRatio()||1), sh0=renderer.domElement.height/(renderer.getPixelRatio()||1), k0=Math.max(CW/sw0,CH/sh0);
       const hz=(parseFloat(v('--horizon'))||sh0*0.22)*k0+(CH-sh0*k0)/2;
-      const fg=g.createLinearGradient(0,0,CW,0); fg.addColorStop(0,'#E2DED5'); fg.addColorStop(0.33,'#FBFAF7'); fg.addColorStop(0.55,'#EDEAE4'); fg.addColorStop(1,'#DEDAD1');
-      g.fillStyle=fg; g.fillRect(0,0,CW,hz); g.fillStyle='#A39D93'; g.fillRect(0,hz-34,CW,6); g.fillStyle='#46423D'; g.fillRect(0,hz-28,CW,28); }
+      const fg=g.createLinearGradient(0,0,CW,0); fg.addColorStop(0,'#ECECEA'); fg.addColorStop(0.36,'#FFFFFF'); fg.addColorStop(0.55,'#F6F6F4'); fg.addColorStop(1,'#E9E9E6');
+      g.fillStyle=fg; g.fillRect(0,0,CW,hz);
+      const kick=40, dh=300;
+      for(let i=0;i<3;i++){ const top=hz-kick-dh*(i+1); if(top+dh<0) break;
+        g.fillStyle='#C9C7C2'; g.fillRect(0,top,CW,6);
+        const hg=g.createLinearGradient(0,top+20,0,top+44); hg.addColorStop(0,'#8D8B87'); hg.addColorStop(0.6,'#C9C7C3'); hg.addColorStop(1,'#E9E8E5');
+        g.fillStyle=hg; g.fillRect(CW*0.12,top+20,CW*0.76,24); }
+      g.fillStyle='#2C2C2E'; g.fillRect(0,hz-kick,CW,kick); }
     try{
       renderer.render(scene,camera);
       const src=renderer.domElement, sw=src.width, sh=src.height, k=Math.max(CW/sw,CH/sh);
