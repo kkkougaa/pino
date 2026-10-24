@@ -179,6 +179,8 @@ body{
 .pop.good{color:var(--teal)}
 .pop.bad{color:var(--pick)}
 .pop.lucky{font-size:32px;color:var(--berry)}
+.pop.anger{font-size:42px;text-shadow:none;animation:anger .75s ease-out forwards}
+@keyframes anger{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-12deg)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.25) rotate(8deg)}40%{transform:translate(-50%,-50%) scale(.95) rotate(-6deg)}55%{transform:translate(-50%,-50%) scale(1.08) rotate(4deg)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-90%) scale(1)}}
 .pop.big{font-size:38px;color:var(--pick)}
 @keyframes rise{from{opacity:1;transform:translate(-50%,-40%) scale(.9)}to{opacity:0;transform:translate(-50%,-160%) scale(1.1)}}
 /* box-clear celebration */
@@ -641,6 +643,30 @@ function pullTabGeo(r){
   const sh=new THREE.Shape(); sh.moveTo(-r,0); sh.absarc(0,0,r,Math.PI,Math.PI*2,false); sh.lineTo(-r,0);
   return new THREE.ExtrudeGeometry(sh,{depth:0.012,bevelEnabled:false,curveSegments:20});
 }
+// pick head: a rounded trapezoid, wider at the far end, in the (x, z) plane; x runs along the pick
+function pickHeadShape(x0,x1,hw0,hw1,r){   // rounded trapezoid: near edge x0 (shaft side), far edge x1
+  const P=[[x0,-hw0],[x1,-hw1],[x1,hw1],[x0,hw0]].map(q=>new THREE.Vector2(q[0],q[1]));
+  const R=[r*0.7,r*1.4,r*1.4,r*0.7], sh=new THREE.Shape();
+  for(let i=0;i<4;i++){
+    const c=P[i], pv=P[(i+3)%4], nx=P[(i+1)%4];
+    const a=c.clone().add(pv.clone().sub(c).normalize().multiplyScalar(R[i]));
+    const e=c.clone().add(nx.clone().sub(c).normalize().multiplyScalar(R[i]));
+    if(i===0) sh.moveTo(a.x,a.y); else sh.lineTo(a.x,a.y);
+    sh.quadraticCurveTo(c.x,c.y,e.x,e.y);
+  }
+  sh.closePath(); return sh;
+}
+function flatGeo(shape,t){ const g=new THREE.ExtrudeGeometry(shape,{depth:t,bevelEnabled:false,curveSegments:8}); g.rotateX(-Math.PI/2); g.translate(0,-t/2,0); return g; }
+function pickTipGeo(){   // spindle: swells a touch, then comes to a point
+  const pts=[[0,0.02],[0.04,0.026],[0.09,0.027],[0.13,0.02],[0.16,0.01],[0.18,0]].map(p=>new THREE.Vector2(p[1],p[0]));
+  pts.unshift(new THREE.Vector2(0,0));
+  return new THREE.LatheGeometry(pts,12).rotateZ(-Math.PI/2);
+}
+function pickRimGeo(){
+  const outer=pickHeadShape(-0.37,-0.69,0.11,0.15,0.035), inner=pickHeadShape(-0.395,-0.665,0.085,0.125,0.025);
+  outer.holes.push(new THREE.Path(inner.getPoints(8)));
+  return flatGeo(outer,0.042);
+}
 function roundPaddleGeo(w,d,r,t){
   const sh=new THREE.Shape(),x=-w/2,y=-d/2;
   sh.moveTo(x+r,y);sh.lineTo(x+w-r,y);sh.quadraticCurveTo(x+w,y,x+w,y+r);sh.lineTo(x+w,y+d-r);sh.quadraticCurveTo(x+w,y+d,x+w-r,y+d);
@@ -716,11 +742,13 @@ const G={
   heart:rareGeo('heart'),
   star:rareGeo('star'),
   bit:{pino:bittenGeo('pino'),heart:bittenGeo('heart'),star:bittenGeo('star')},
-  shaft:new THREE.CylinderGeometry(0.02,0.02,0.94,10).rotateZ(Math.PI/2),
-  tip:new THREE.ConeGeometry(0.02,0.12,10).rotateZ(-Math.PI/2),
-  grip:roundPaddleGeo(0.24,0.22,0.06,0.03),
-  shaftHit:new THREE.BoxGeometry(1.08,0.17,0.17),
-  gripHit:new THREE.BoxGeometry(0.34,0.17,0.3),
+  shaft:new THREE.CylinderGeometry(0.02,0.02,0.76,10).rotateZ(Math.PI/2),
+  tip:pickTipGeo(),
+  collar:new THREE.BoxGeometry(0.05,0.05,0.07),
+  plate:flatGeo(pickHeadShape(-0.37,-0.69,0.11,0.15,0.035),0.024),
+  rim:pickRimGeo(),
+  shaftHit:new THREE.BoxGeometry(1.0,0.17,0.17),
+  gripHit:new THREE.BoxGeometry(0.38,0.17,0.36),
   puff:new THREE.SphereGeometry(0.13,10,8),
   spark:new THREE.OctahedronGeometry(0.07)
 };
@@ -754,7 +782,8 @@ function buildMaterials(){
     cup:std('#5A3626',0.3,{side:THREE.DoubleSide}),
     choco:std('#3A2016',0.36,{metalness:0.05}),
     bitten:new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.5,metalness:0.03}),
-    pick:std('#3B8FE0',0.35),
+    pickR:std('#E8323A',0.32,{metalness:0.05}),
+    pickB:std('#2F86E0',0.32,{metalness:0.05}),
     gold:new THREE.MeshBasicMaterial({color:col('#FFC94A')}),
     hit:new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false})
   };
@@ -768,8 +797,10 @@ function buildMaterials(){
 function mesh(geo,mat,x,y,z,parent,shadow){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);if(shadow!==false){m.castShadow=true;m.receiveShadow=true;}parent.add(m);return m;}
 function makePick(){
   const p=new THREE.Group();
-  mesh(G.shaft,M.pick,0.03,0,0,p); mesh(G.tip,M.pick,0.56,0,0,p); mesh(G.grip,M.pick,-0.55,0,0,p);
-  const sh=mesh(G.shaftHit,M.hit,0.08,0,0,p,false), gh=mesh(G.gripHit,M.hit,-0.55,0,0,p,false);
+  const mat=rnd()<0.5?M.pickR:M.pickB;   // red or blue, at random
+  mesh(G.shaft,mat,0.06,0,0,p); mesh(G.tip,mat,0.44,0,0,p); mesh(G.collar,mat,-0.345,0,0,p);
+  mesh(G.plate,mat,0,0,0,p); mesh(G.rim,mat,0,0,0,p);
+  const sh=mesh(G.shaftHit,M.hit,0.12,0,0,p,false), gh=mesh(G.gripHit,M.hit,-0.53,0,0,p,false);
   p.userData={shaftHit:sh,gripHit:gh}; return p;
 }
 function panel(parent,geo,mat,side){
@@ -837,7 +868,7 @@ function makeBox(){
 }
 
 /* ---------- state ---------- */
-let state='idle', cur=null, timeLeft=60, now=0;
+let state='idle', cur=null, timeLeft=60, now=0, boxNo=0;
 let score=0, totalEaten=0, boxesThrown=0, boxesDone=0, luckyCount=0;
 let combo=0, maxCombo=0, comboT=0, lastTier=1;
 const COMBO_WIN=2.6;
@@ -859,7 +890,7 @@ const ICONS={
   tap:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>'
 };
 function setGuide(kind){
-  if(!kind){guide.classList.add('off');return;}
+  if(!kind||boxNo>1){guide.classList.add('off');return;}   // how-to only for the first box
   guide.classList.remove('off');
   const g={
     film:['vert',TX('g_film')[0],TX('g_film')[1]],
@@ -923,7 +954,7 @@ function addScore(n){ score+=n; scoreEl.textContent=score.toLocaleString(LOCALE(
 /* ---------- flow ---------- */
 function nextBox(){
   if(state==='over') return;
-  const b=makeBox(); cur=b; scene.add(b.group);
+  const b=makeBox(); cur=b; scene.add(b.group); boxNo++;
   b.group.position.set(6,0,0); b.group.rotation.y=-0.4;
   state='arrive'; setGuide(null);
   tween(0.38,k=>{const e=easeOut(k);b.group.position.x=6*(1-e);b.group.rotation.y=-0.4*(1-e);},
@@ -998,7 +1029,7 @@ function tap(x,y){
     const ud=cur.pick.userData;
     if(isFever()||ray.intersectObject(ud.gripHit,false).length) grab(true,x,y);
     else if(ray.intersectObject(ud.shaftHit,false).length) grab(false,x,y);
-    else { timeLeft-=1; sfx.miss(); buzz(40); addShake(0.18); pop(TX('miss'),x,y,'bad'); breakCombo(); }
+    else { timeLeft-=1; sfx.miss(); buzz(40); addShake(0.18); pop(TX('miss'),x,y,'bad'); pop('💢',x+34,y-38,'anger'); breakCombo(); }
   } else if(state==='eat'){
     setRay(x,y);
     const left=cur.pinos.filter(p=>!p.userData.eaten);
@@ -1060,8 +1091,13 @@ function dropPick(){
   if(state==='over') return;
   const b=cur, pk=b.pick; pickHeld=false; b.group.attach(pk);
   const p0=pk.position.clone(), q0=pk.quaternion.clone();
-  const p1=new V3((rnd()-.5)*0.6,PICK_Y,0), q1=new THREE.Quaternion().setFromEuler(new THREE.Euler(0,rnd()*Math.PI,0));
-  tween(0.22,k=>{const e=easeOut(k);pk.position.lerpVectors(p0,p1,e);pk.quaternion.copy(q0).slerp(q1,e);});
+  // upright, tip in the middle bump of one cluster, head facing the player, leaning a hair
+  const side=rnd()<0.5?-1:1, lean=side*0.07;
+  const basis=new THREE.Matrix4().makeBasis(new V3(0,-1,0),new V3(0,0,1),new V3(-1,0,0));
+  const q1=new THREE.Quaternion().setFromRotationMatrix(basis).premultiply(new THREE.Quaternion().setFromAxisAngle(new V3(0,0,1),lean));
+  const tipOff=TIP_LOCAL.clone().applyQuaternion(q1);
+  const p1=new V3(0.51*side,0.075,0).sub(tipOff);
+  tween(0.26,k=>{const e=easeOut(k);pk.position.lerpVectors(p0,p1,e);pk.quaternion.copy(q0).slerp(q1,e);});
   state='toss'; setGuide('toss');
 }
 const PILE_MAX=28;
@@ -1103,7 +1139,7 @@ function startGame(){
   $('fever').classList.remove('off');
   eatenEl.textContent=TX('eaten')(0);
   $('start').hidden=true; $('result').hidden=true;
-  state='arrive'; nextBox();
+  boxNo=0; state='arrive'; nextBox();
 }
 function endGame(){
   state='over'; sfx.end(); setGuide(null); pickHeld=false; combo=0; endFever(); $('fever').classList.add('off'); renderCombo();
