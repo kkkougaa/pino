@@ -168,7 +168,6 @@ body{
 .rows dt{margin:0;opacity:.8}
 .rows dd{margin:0;font-family:var(--display);text-align:right}
 .res.best{margin:12px 0 16px;font-size:16px}
-.share{display:flex;flex-direction:column;gap:0;margin-bottom:14px}
 .btn.xbtn{background:#0F1419;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;text-decoration:none;box-sizing:border-box}
 .btn.xbtn svg{width:20px;height:20px}
 .share .btn.ghost{margin-top:8px;font-size:16px;padding:9px}
@@ -242,6 +241,41 @@ body.fever-on::after{content:"";position:fixed;inset:0;pointer-events:none;z-ind
 @keyframes hintUp{to{transform:translateY(-18px)}}
 @keyframes hintVert{from{transform:translateY(-10px)}to{transform:translateY(10px)}}
 @media (prefers-reduced-motion: reduce){ .openhint svg{animation:none!important} }
+.logo{margin:0 0 6px;line-height:0}
+html[lang="ko"] .card{word-break:keep-all}
+.card p{text-wrap:pretty}
+.logo img{display:block;max-width:100%;height:auto;margin-left:-6px}
+.logo img:not([src]){display:none}
+.logo img:not([src])+.vh{position:static;width:auto;height:auto;clip:auto;overflow:visible;font-family:var(--display);font-size:40px;line-height:1.1}
+.rhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.grade{display:flex;flex-direction:column;align-items:center;gap:0;margin:-6px -6px -10px 0}
+.grade img{display:block}
+.grade span{font-size:12px;opacity:.75;white-space:nowrap;margin-top:-16px}
+.grade.go img{animation:gradeIn .7s cubic-bezier(.2,.9,.3,1.35) both}
+@keyframes gradeIn{0%{opacity:0;transform:scale(2.2) rotate(-12deg)}60%{opacity:1;transform:scale(.92) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+.submit{display:flex;gap:8px;margin:2px 0 4px}
+.submit input{flex:1;min-width:0;border:2.5px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;font-size:16px;background:var(--panel);color:var(--card-ink)}
+.submit input:focus-visible{outline:3px solid var(--pick);outline-offset:1px}
+.btn.mini{width:auto;font-size:16px;padding:10px 14px;box-shadow:3px 3px 0 var(--line);white-space:nowrap}
+.btn[disabled]{opacity:.6;cursor:default}
+.res.small{font-size:13px;margin:0 0 10px;min-height:1.2em;opacity:.85}
+.two{display:flex;gap:10px;margin-bottom:10px}
+.two .btn{flex:1;margin:0;min-width:0}
+.two .btn.ghost{font-size:16px;padding:9px}
+.card .two .btn.xbtn{font-size:17px}
+.rankcard{max-width:420px}
+.ranklist{list-style:none;margin:8px 0 0;padding:0;max-height:min(58vh,480px);overflow:auto}
+.ranklist li{display:grid;grid-template-columns:34px 1fr auto auto;align-items:center;gap:10px;padding:9px 6px;border-bottom:1.5px dashed rgba(127,110,96,.35)}
+.ranklist li.msg{display:block;border:0;opacity:.8;font-size:14px}
+.ranklist .no{font-family:var(--display);font-weight:800;text-align:center;font-size:17px}
+.ranklist li:nth-child(1) .no{color:#E0A100}.ranklist li:nth-child(2) .no{color:#8E9AA6}.ranklist li:nth-child(3) .no{color:#C47A3A}
+.ranklist .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
+.ranklist .gd{font-family:var(--display);font-weight:800;font-size:12px;border:2px solid currentColor;border-radius:6px;padding:0 5px;line-height:1.4}
+.ranklist .sc{font-family:var(--display);font-weight:800;font-variant-numeric:tabular-nums}
+.ranklist li.me{background:rgba(255,63,108,.12);border-radius:10px}
+.myrank{font-family:var(--display);font-weight:800;margin:4px 0 0;font-size:16px;color:var(--pick)}
+.xclose{appearance:none;flex:none;border:2.5px solid var(--line);background:transparent;color:var(--card-ink);width:38px;height:38px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+.xclose:focus-visible{outline:3px solid var(--pick);outline-offset:2px}
 #nogl{position:fixed;inset:0;display:grid;place-items:center;padding:24px;text-align:center;font-size:17px}
 #nogl[hidden]{display:none}
 @media (prefers-reduced-motion: reduce){
@@ -283,10 +317,11 @@ body.fever-on::after{content:"";position:fixed;inset:0;pointer-events:none;z-ind
 <div class="overlay" id="start">
   <div class="card">
     <div class="lang"><div class="seg" role="group" aria-label="Language"><button type="button" data-lang="ko" aria-pressed="true">한국어</button><button type="button" data-lang="ja" aria-pressed="false">日本語</button></div></div>
-    <h1 data-i18n="title">코우가 챌린지</h1>
+    <h1 class="logo"><img id="logo" alt=""><span class="vh" data-i18n="title"></span></h1>
     <p class="lead" data-i18n="lead"></p>
     <p class="intro" data-i18n="intro2"></p>
     <button class="btn" id="go" data-i18n="start">시작!</button>
+    <button class="btn ghost" id="rankBtn" type="button" data-i18n="rank"></button>
   </div>
 </div>
 
@@ -306,7 +341,7 @@ body.fever-on::after{content:"";position:fixed;inset:0;pointer-events:none;z-ind
 
 <div class="overlay" id="result" hidden>
   <div class="card">
-    <h2 data-i18n="resultTitle"></h2>
+    <div class="rhead"><h2 data-i18n="resultTitle"></h2><div class="grade" id="rGrade"><img id="rGradeImg" alt=""><span id="rGradeNote"></span></div></div>
     <div class="big"><b id="rScore">0</b><span data-i18n="pts"></span></div>
     <dl class="rows">
       <dt data-i18n="rEaten"></dt><dd id="rEaten">0</dd>
@@ -315,11 +350,25 @@ body.fever-on::after{content:"";position:fixed;inset:0;pointer-events:none;z-ind
       <dt data-i18n="rBoxes"></dt><dd id="rBoxes">0</dd>
     </dl>
     <p class="res best" id="rBest"></p>
-    <div class="share">
+    <div class="submit"><input id="nick" maxlength="12" autocomplete="nickname" enterkeyhint="send" data-i18n-ph="nickPh"><button class="btn mini" id="submitBtn" type="button" data-i18n="rankSubmit"></button></div>
+    <p class="res small" id="submitMsg" role="status"></p>
+    <div class="two">
       <a class="btn xbtn" id="shareX" href="https://x.com/intent/tweet" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/></svg><span data-i18n="shareX"></span></a>
       <button class="btn ghost" id="saveImg" type="button" data-i18n="saveImg"></button>
     </div>
-    <button class="btn" id="again" data-i18n="again"></button>
+    <div class="two">
+      <button class="btn" id="again" data-i18n="again"></button>
+      <button class="btn ghost" id="rankBtn2" type="button" data-i18n="rank"></button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="rankOv" hidden>
+  <div class="card rankcard">
+    <div class="rhead"><h2 data-i18n="rankTitle"></h2><button class="xclose" id="rankClose" type="button"><span aria-hidden="true">×</span><span class="vh" data-i18n="close"></span></button></div>
+    <p class="res small" id="rankNote"></p>
+    <p class="myrank" id="myRank" hidden></p>
+    <ol class="ranklist" id="rankList"></ol>
   </div>
 </div>
 
@@ -330,11 +379,17 @@ body.fever-on::after{content:"";position:fixed;inset:0;pointer-events:none;z-ind
 var I18N={
   ko:{
     docTitle:'코우가 챌린지', title:'코우가 챌린지',
-    lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심(?)을 받을지도 몰라요.',
+    lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.',
     pause:'일시정지', resume:'이어하기', restart:'처음부터',
     fx_perfect:'퍼펙트! +200', fx_nice:'나이스!', fx_miss:'미스 −1초', fx_speed:'스피드 보너스 +300', fx_heart:'하트', fx_star:'별',
     fx_combo:'콤보', fx_comboUp:'×{t} 콤보!', fx_break:'콤보 끊김…', fx_fever:'피버 타임!', fx_feverWord:'피버',
     hint_film:'띠를 쭉 당겨요!', hint_tear:'위로 쭉 열어요!',
+    rank:'랭킹', rankTitle:'랭킹', rankSubmit:'랭킹 등록', rankSubmitted:'등록 완료!', rankSending:'등록 중…',
+    nickPh:'닉네임 (12자까지)', nickNeed:'닉네임을 입력해 주세요.', rankLoading:'불러오는 중…',
+    rankError:'랭킹 서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.', rankEmpty:'아직 기록이 없어요. 첫 번째 주인공이 되어 보세요!',
+    rankLocal:'온라인 랭킹이 아직 연결되지 않아 이 기기 기록만 보여요.',
+    myRank:function(r,t,p){return '내 순위 '+r+'위 / '+t+'명'+(p?' (상위 '+p+'%)':'');},
+    tier_top5:'상위 5%', tier_top10:'상위 10%', tier_top20:'상위 20%', tier_top50:'상위 50%', tier_bottom50:'하위 50%', close:'닫기',
     s1:'비닐 흰 띠를 쭉 당겨서 벗기기',
     s2:'앞쪽 손잡이를 위로 들어 올려 상자 열기',
     s3:'피크 집기 (손잡이를 집으면 보너스)',
@@ -352,7 +407,7 @@ var I18N={
     g_pick:['피크 집기','손잡이를 노려요'],
     g_eat:['냠냠냠!'],
     g_toss:['휙 던지기!','쓸어서 저 멀리 던져요'], g_fever:'피버',
-    shareX:'X에 공유', saveImg:'결과 이미지 저장',
+    shareX:'X에 공유', saveImg:'이미지 저장',
     shareText:function(n,b){return '코우가의 피노를 '+n+'개, 총 '+b+'박스 먹었습니다!';},
     miss:'빗나감 −1초', perfect:'퍼펙트 +200', grabbed:'집었다!',
     heart:'하트', star:'별', speed:'스피드 +300', comboBreak:'콤보 끊김',
@@ -369,11 +424,17 @@ var I18N={
   },
   ja:{
     docTitle:'コウガチャレンジ', title:'コウガチャレンジ',
-    lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえる（？）かも。',
+    lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。',
     pause:'一時停止', resume:'つづける', restart:'さいしょから',
     fx_perfect:'パーフェクト！+200', fx_nice:'ナイス！', fx_miss:'ミス −1秒', fx_speed:'スピードボーナス +300', fx_heart:'ハート', fx_star:'ほし',
     fx_combo:'コンボ', fx_comboUp:'×{t} コンボ！', fx_break:'コンボきれた…', fx_fever:'フィーバー！', fx_feverWord:'フィーバー',
     hint_film:'帯をひっぱって！', hint_tear:'上にグイッとあけて！',
+    rank:'ランキング', rankTitle:'ランキング', rankSubmit:'登録する', rankSubmitted:'登録しました！', rankSending:'登録中…',
+    nickPh:'ニックネーム（12文字まで）', nickNeed:'ニックネームを入力してね。', rankLoading:'読み込み中…',
+    rankError:'ランキングにつながりませんでした。少し待ってからもう一度ためしてね。', rankEmpty:'まだ記録がありません。一番乗りしよう！',
+    rankLocal:'オンラインランキング未接続のため、この端末の記録だけ表示しています。',
+    myRank:function(r,t,p){return t+'人中 '+r+'位'+(p?'（上位'+p+'%）':'');},
+    tier_top5:'上位5%', tier_top10:'上位10%', tier_top20:'上位20%', tier_top50:'上位50%', tier_bottom50:'下位50%', close:'閉じる',
     s1:'フィルムの白い帯をひっぱってはがす',
     s2:'前のつまみを持ち上げて箱をあける',
     s3:'ピックをつまむ（持ち手ならボーナス）',
@@ -391,7 +452,7 @@ var I18N={
     g_pick:['ピックをつまむ','持ち手をねらって'],
     g_eat:['パクパク！'],
     g_toss:['ポイッ！','スワイプして遠くへ投げる'], g_fever:'フィーバー',
-    shareX:'Xでシェア', saveImg:'結果画像を保存',
+    shareX:'Xでシェア', saveImg:'画像を保存',
     shareText:function(n,b){return 'コウガのピノを'+n+'個、合計'+b+'箱たべました！';},
     miss:'ミス −1秒', perfect:'パーフェクト +200', grabbed:'つかんだ！',
     heart:'ハート', star:'星', speed:'スピード +300', comboBreak:'コンボ終了',
@@ -1027,7 +1088,7 @@ function sprite(text,kind,size){
   g.lineWidth=fs*0.19; g.strokeStyle=sk.c; each(ch=>g.strokeText(ch,0,0));
   const gr=g.createLinearGradient(0,base-fs*0.82,0,base+fs*0.04); gr.addColorStop(0,sk.a); gr.addColorStop(0.55,sk.a); gr.addColorStop(1,sk.b);
   g.fillStyle=gr; each(ch=>g.fillText(ch,0,0));
-  return SPR[key]={url:c.toDataURL(),w:Wd/R,h:Hh/R};
+  return SPR[key]={url:c.toDataURL(),w:Wd/R,h:Hh/R,canvas:c};
 }
 function setSprite(img,text,kind,size){ const sp=sprite(text,kind,size); img.src=sp.url; img.style.width=sp.w+'px'; img.style.height=sp.h+'px'; }
 const POP_SKIN={good:['good',24],bad:['bad',22],lucky:['lucky',28],big:['combo',40],fever:['fever',44]};
@@ -1061,7 +1122,7 @@ function startFever(){
 function endFever(){ feverT=0; document.body.classList.remove('fever-on'); $('fever').classList.remove('on'); setFeverLab(); }
 function setFeverLab(){ isFever()?setSprite($('feverLab'),TX('fx_fever'),'fever',17):setSprite($('feverLab'),TX('fx_feverWord'),'feverWord',13); }
 // pino icon (sticker style), drawn once
-let PINO_ICON=null;
+let PINO_ICON=null, PINO_ICON_C=null;
 function pinoIcon(){
   if(PINO_ICON) return PINO_ICON;
   const c=cv(120,120),g=c.getContext('2d');
@@ -1072,8 +1133,88 @@ function pinoIcon(){
   body(); g.fillStyle=gr; g.fill();
   g.fillStyle='rgba(255,255,255,.35)'; g.beginPath(); g.ellipse(42,48,7,20,-0.18,0,7); g.fill();
   g.fillStyle='rgba(255,255,255,.55)'; g.beginPath(); g.ellipse(58,26,12,3.5,0,0,7); g.fill();
-  return PINO_ICON=c.toDataURL();
+  PINO_ICON_C=c; return PINO_ICON=c.toDataURL();
 }
+// ===== grades (rough guesses: S top 5%, A top 10%, B top 20%, C top 50%, F the rest) =====
+const GRADES=[['S',35000,'top5'],['A',25000,'top10'],['B',16000,'top20'],['C',8000,'top50'],['F',0,'bottom50']];
+function gradeOf(sc){ for(const g of GRADES) if(sc>=g[1]) return g; return GRADES[GRADES.length-1]; }
+Object.assign(SKIN,{gS:{c:'#FFB300',a:'#FFFFFF',b:'#FFE27A'},gA:{c:'#FF3F6C',a:'#FFFFFF',b:'#FFD6E1'},gB:{c:'#FF8A1E',a:'#FFFFFF',b:'#FFE6C4'},
+  gC:{c:'#13B5A4',a:'#FFFFFF',b:'#D6FFF7'},gF:{c:'#7A8899',a:'#FFFFFF',b:'#E7ECF1'}});
+
+// ===== logo: two lines of lettering + a pino sticker, redrawn per language =====
+function makeLogo(){
+  const ja=LANG==='ja', a=sprite(ja?'コウガ':'코우가','combo',62), b=sprite(ja?'チャレンジ':'챌린지','mult',38);
+  pinoIcon(); const R=2, off=a.w*0.16, w=Math.max(a.w+44,off+b.w)+6, h=a.h+b.h-20;
+  const c=cv(Math.ceil(w*R),Math.ceil(h*R)), g=c.getContext('2d');
+  g.drawImage(a.canvas,0,0);
+  g.save(); g.translate(off*R,(a.h-20)*R); g.rotate(-0.035); g.drawImage(b.canvas,0,0); g.restore();
+  g.save(); g.translate((a.w-8)*R,8*R); g.rotate(0.22); g.drawImage(PINO_ICON_C,0,0,46*R,46*R); g.restore();
+  const img=$('logo'); img.src=c.toDataURL(); img.style.width=w+'px'; img.alt=TX('title');
+}
+
+// ===== online ranking =====
+// Supabase 프로젝트를 만들고 url(https://xxxx.supabase.co)과 anon public key를 넣으면 온라인 랭킹이 켜져요.
+// 비워두면 이 기기 기록만 보여요. (테이블 만드는 SQL은 안내 문서 참고)
+const RANKING={ url:'', key:'', table:'kouga_scores' };
+const online=()=>!!(RANKING.url&&RANKING.key);
+const rHead=x=>Object.assign({apikey:RANKING.key,Authorization:'Bearer '+RANKING.key},x||{});
+const rUrl=q=>RANKING.url.replace(/\/$/,'')+'/rest/v1/'+RANKING.table+(q||'');
+function localRanks(){ try{ return JSON.parse(localStorage.getItem('kouga-ranks')||'[]'); }catch(e){ return []; } }
+function saveLocal(row){ const l=localRanks(); l.push(row); l.sort((x,y)=>y.score-x.score||x.created_at-y.created_at);
+  try{ localStorage.setItem('kouga-ranks',JSON.stringify(l.slice(0,30))); }catch(e){} return l; }
+async function fetchTop(){
+  if(!online()) return localRanks();
+  const r=await fetch(rUrl('?select=name,score,grade,created_at&order=score.desc,created_at.asc&limit=50'),{headers:rHead()});
+  if(!r.ok) throw new Error('rank '+r.status); return r.json();
+}
+async function countRows(q){
+  const r=await fetch(rUrl('?select=id'+(q||'')),{headers:rHead({Prefer:'count=exact',Range:'0-0'})});
+  if(!r.ok) throw new Error('count '+r.status); const cr=r.headers.get('content-range')||''; return +(cr.split('/')[1]||0);
+}
+let myEntry=null, submitted=false;
+async function submitScore(name){
+  const row={name,score,grade:gradeOf(score)[0],eaten:totalEaten,boxes:boxesDone,lang:LANG};
+  if(!online()){ row.created_at=Date.now(); const l=saveLocal(row); return {rank:l.indexOf(row)+1,total:l.length}; }
+  const r=await fetch(rUrl(),{method:'POST',headers:rHead({'Content-Type':'application/json',Prefer:'return=minimal'}),body:JSON.stringify(row)});
+  if(!r.ok) throw new Error('post '+r.status);
+  const [above,total]=await Promise.all([countRows('&score=gt.'+score),countRows()]);
+  return {rank:above+1,total:Math.max(total,above+1)};
+}
+const pctOf=(r,t)=>t>=10?Math.max(1,Math.ceil(r/t*100)):0;   // only meaningful with a few players
+function cleanName(v){ return String(v||'').replace(/\s+/g,' ').trim().slice(0,12); }
+async function onSubmit(){
+  if(submitted) return;
+  const name=cleanName($('nick').value); if(!name){ $('submitMsg').textContent=TX('nickNeed'); $('nick').focus(); return; }
+  try{ localStorage.setItem('kouga-name',name); }catch(e){}
+  const btn=$('submitBtn'); btn.disabled=true; $('submitMsg').textContent=TX('rankSending');
+  try{
+    const res=await submitScore(name); submitted=true; myEntry={name,score,res};
+    btn.textContent=TX('rankSubmitted'); $('submitMsg').textContent=TX('myRank')(res.rank,res.total,pctOf(res.rank,res.total));
+  }catch(e){ btn.disabled=false; $('submitMsg').textContent=TX('rankError'); }
+}
+async function openRank(){
+  $('rankOv').hidden=false; $('rankClose').focus({preventScroll:true});
+  $('rankNote').textContent=online()?'':TX('rankLocal');
+  const me=$('myRank'); me.hidden=!myEntry; if(myEntry) me.textContent=TX('myRank')(myEntry.res.rank,myEntry.res.total,pctOf(myEntry.res.rank,myEntry.res.total));
+  const ol=$('rankList'); ol.innerHTML=''; const msg=t=>{ const li=document.createElement('li'); li.className='msg'; li.textContent=t; ol.appendChild(li); };
+  msg(TX('rankLoading'));
+  try{
+    const rows=await fetchTop(); ol.innerHTML='';
+    if(!rows.length){ msg(TX('rankEmpty')); return; }
+    let marked=false;
+    rows.forEach((r,i)=>{
+      const li=document.createElement('li');
+      const isMe=!marked&&myEntry&&r.name===myEntry.name&&+r.score===myEntry.score; if(isMe){ li.className='me'; marked=true; }
+      const g=r.grade||gradeOf(+r.score)[0], col=(SKIN['g'+g]||SKIN.gF).c;
+      li.innerHTML='<span class="no"></span><span class="nm"></span><span class="gd"></span><span class="sc"></span>';
+      li.children[0].textContent=i+1; li.children[1].textContent=r.name; li.children[2].textContent=g; li.children[2].style.color=col;
+      li.children[3].textContent=(+r.score).toLocaleString(LOCALE());
+      ol.appendChild(li);
+    });
+  }catch(e){ ol.innerHTML=''; msg(TX('rankError')); }
+}
+function applyPh(){ document.querySelectorAll('[data-i18n-ph]').forEach(e=>e.placeholder=TX(e.dataset.i18nPh)); }
+
 function celebrate(){
   const c=$('cele'), slots=[16,28,72,84], x=slots[Math.floor(rnd()*slots.length)];
   c.style.left=x+'%'; c.classList.remove('go'); void c.offsetWidth; c.classList.add('go');
@@ -1320,12 +1461,22 @@ function endGame(){
   $('rLucky').textContent=luckyCount+TX('unitCount');
   $('rBoxes').textContent=boxesDone+TX('unitCount');
   $('rBest').textContent=isNew?TX('newBest'):TX('best').replace('{n}',best.toLocaleString(LOCALE()));
+  const gr=gradeOf(score), ge=$('rGrade'); setSprite($('rGradeImg'),gr[0],'g'+gr[0],58); $('rGradeNote').textContent=TX('tier_'+gr[2]);
+  ge.classList.remove('go'); void ge.offsetWidth; ge.classList.add('go');
+  submitted=false; myEntry=null; $('submitBtn').disabled=false; $('submitBtn').textContent=TX('rankSubmit'); $('submitMsg').textContent='';
+  try{ $('nick').value=localStorage.getItem('kouga-name')||''; }catch(e){}
   shareFile=null; updateShareLink();
   setTimeout(()=>{ $('result').hidden=false; fitScore(); $('again').focus({preventScroll:true}); makeShareImage().then(f=>shareFile=f).catch(()=>{}); },450);
 }
 $('go').addEventListener('click',startGame);
+$('rankBtn').addEventListener('click',openRank);
+$('rankBtn2').addEventListener('click',openRank);
+$('rankClose').addEventListener('click',()=>{ $('rankOv').hidden=true; });
+$('submitBtn').addEventListener('click',onSubmit);
+$('nick').addEventListener('keydown',e=>{ if(e.key==='Enter') onSubmit(); });
+applyPh();
 document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>{
-  setLang(b.dataset.lang); setFeverLab();
+  setLang(b.dataset.lang); setFeverLab(); makeLogo(); applyPh();
   eatenEl.textContent=TX('eaten')(totalEaten); renderCombo(); addScore(0); updateShareLink(); setFeverLab();
   document.querySelectorAll('.slot input').forEach(inp=>markSlot(inp.dataset.slot,inp.parentElement.classList.contains('done')));
 }));
@@ -1372,6 +1523,8 @@ function makeShareImage(){
     g.fillStyle=ink; g.textBaseline='alphabetic'; g.textAlign='left';
     g.globalAlpha=0.7; g.font='700 34px '+disp; g.fillText(TX('title'),X+P,Y+92); g.globalAlpha=1;
     g.font='800 64px '+disp; g.fillText(TX('resultTitle'),X+P,Y+178);
+    { const gr=gradeOf(score), gs=sprite(gr[0],'g'+gr[0],58), gh=230, gw=gh*gs.canvas.width/gs.canvas.height;
+      g.save(); g.translate(X+Wc-P-gw/2+24,Y+6+gh/2); g.rotate(0.08); g.drawImage(gs.canvas,-gw/2,-gh/2,gw,gh); g.restore(); }
     // big score, shrunk to fit
     const sc=score.toLocaleString(LOCALE()); g.font='800 48px '+disp; const uw=g.measureText(TX('pts')).width;
     let fs=190; g.font='800 '+fs+'px '+disp;
@@ -1548,7 +1701,7 @@ function loop(t){
 
 /* ---------- boot ---------- */
 function init(){
-  setFeverLab(); setSprite($('celeT'),'PINO!','combo',28);
+  makeLogo(); setFeverLab(); setSprite($('celeT'),'PINO!','combo',28);
   buildMaterials();
   loadDefaultFaces();
   restoreFaces();
