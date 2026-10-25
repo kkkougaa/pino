@@ -80,13 +80,13 @@ body{
 
 #meter{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:7px;pointer-events:none;z-index:2}
-.combo{text-align:center;pointer-events:none;transition:opacity .15s}
+.combo{display:flex;align-items:center;justify-content:center;gap:10px;pointer-events:none;transition:opacity .15s}
 .combo.off{opacity:0}
 .combo .crow{display:flex;align-items:center;justify-content:center;gap:4px}
 .combo .ccol{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin-left:-8px}
 .combo img{display:block}
 .combo #comboMult[hidden]{display:none}
-.combo .g{width:230px;height:15px;border-radius:9px;border:2.5px solid #3A2416;background:rgba(255,255,255,.6);margin:4px auto 0;overflow:hidden;box-shadow:0 2px 0 rgba(58,36,22,.25)}
+.combo .g{width:min(38vw,170px);height:15px;border-radius:9px;border:2.5px solid #3A2416;background:rgba(255,255,255,.6);margin:0;overflow:hidden;box-shadow:0 2px 0 rgba(58,36,22,.25)}
 .combo .g i{display:block;height:100%;width:100%;background:linear-gradient(#FF7A96,#E0415E);transform-origin:left center}
 .combo.bump .crow{animation:bump .25s ease-out}
 @keyframes bump{40%{transform:scale(1.3)}}
@@ -395,6 +395,21 @@ body.hard #hudShade{background:linear-gradient(rgba(6,8,14,.6),rgba(6,8,14,.2) 6
 .mood .g i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#9B7BE0,#E0415E);transform-origin:left center;transform:scaleX(0)}
 .rows .hardrow{display:none}
 body.hard .rows .hardrow{display:block}
+#melt[hidden]{display:none}
+#melt.rest{visibility:hidden}
+#melt{white-space:nowrap;display:flex;align-items:center;gap:8px;pointer-events:none;z-index:3;
+  background:rgba(255,251,234,.92);border:2.5px solid #3A2416;border-radius:999px;padding:4px 12px 4px 10px;box-shadow:0 3px 0 rgba(58,36,22,.3);color:#3A2416}
+#melt .ml{font-family:var(--display);font-size:calc(var(--k,1)*(13px));white-space:nowrap}
+#melt b{font-family:var(--display);font-weight:var(--dw);font-size:calc(var(--k,1)*(20px));min-width:2.4em;text-align:right;font-variant-numeric:tabular-nums}
+#melt .g{width:90px;height:10px;border-radius:6px;border:2px solid #3A2416;overflow:hidden;background:#fff}
+#melt .g i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#E0415E,#F2A51F 45%,#5BB8E8);transform-origin:left center}
+#melt.hot{animation:meltPulse .35s ease-in-out infinite alternate;border-color:#E0412F;color:#E0412F}
+#melt.held{opacity:.55}
+@keyframes meltPulse{to{transform:scale(1.08)}}
+.gauges{display:flex;align-items:center;justify-content:center;gap:14px}
+body.hard .gauges .fever .g,body.hard .gauges .mood .g{width:min(26vw,120px)}
+body.hard .gauges .mood .g{height:18px}
+@media (prefers-reduced-motion: reduce){#melt.hot{animation:none}}
 #nogl{position:fixed;inset:0;display:grid;place-items:center;padding:24px;text-align:center;font-size:calc(var(--k,1)*(17px))}
 #nogl[hidden]{display:none}
 @media (prefers-reduced-motion: reduce){
@@ -416,8 +431,9 @@ body.hard .rows .hardrow{display:block}
 
 <div class="meter" id="meter">
 <div class="combo off" id="combo"><div class="crow"><img id="comboNum" alt=""><div class="ccol"><img id="comboWord" alt=""><img id="comboMult" alt=""></div></div><div class="g"><i id="comboG"></i></div></div>
-<div class="fever off" id="fever"><img id="feverLab" alt=""><div class="g"><i id="feverG"></i></div></div>
-<div class="mood off" id="mood"><img id="moodLab" alt=""><div class="g"><i id="moodG"></i></div></div>
+<div id="melt" hidden><span class="ml" data-i18n="meltLab"></span><b id="meltT">5.0</b><div class="g"><i id="meltG"></i></div></div>
+<div class="gauges"><div class="fever off" id="fever"><img id="feverLab" alt=""><div class="g"><i id="feverG"></i></div></div>
+<div class="mood off" id="mood"><img id="moodLab" alt=""><div class="g"><i id="moodG"></i></div></div></div>
 </div>
 
 <div class="guide off" id="guide">
@@ -525,7 +541,8 @@ var I18N={
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.',
     pause:'일시정지', resume:'이어하기', restart:'처음부터',
     fx_perfect:'퍼펙트! +{n}', fx_nice:'나이스!', fx_miss:'미스 −1초', fx_missHard:'미스 −1000', fx_speed:'스피드 보너스 +{n}',
-    modeNormal:'보통', modeHard:'하드', hardNote:'하드: 시간제한 없음, 점수 ×1.7! 코우가에게 들키면 끝. 발소리가 들리면 상자를 덮어요.',
+    modeNormal:'보통', modeHard:'하드', hardNote:'하드: 시간제한 없음, 점수 ×1.7! 상자를 열면 5초 안에 다 먹기, 발소리가 들리면 상자 덮기. 들키거나 녹으면 끝!',
+    melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
     timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', streak:'{s}연속!', cover_calm:'침착! +{n}', cover_close:'간발의 차! +{n}', quit:'그만하기',
     patrol_warn:'코우가가 온다!', patrol_watch:'쉿… 숨죽이고 기다려', hint_cover:'↓ 쓸어서 상자 덮기!', patrol_caught:'들켰다!', patrol_safe:'휴~ 안 들켰다! +{n}', hardTag:'하드',
     fx_snap:'띠 끊김!', fx_regrab:'다시 잡았다!', hint_snap:'톡 눌러서 다시 잡기', yell:'네 녀석!!!!!💢💢💢', fx_heart:'하트', fx_star:'별',
@@ -580,7 +597,8 @@ var I18N={
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。',
     pause:'一時停止', resume:'つづける', restart:'さいしょから',
     fx_perfect:'パーフェクト！+{n}', fx_nice:'ナイス！', fx_miss:'ミス −1秒', fx_missHard:'ミス −1000', fx_speed:'スピードボーナス +{n}',
-    modeNormal:'ふつう', modeHard:'ハード', hardNote:'ハード：時間無制限、スコア×1.7！コウガにバレたら終わり。足音がしたら箱をとじて。',
+    modeNormal:'ふつう', modeHard:'ハード', hardNote:'ハード：時間無制限、スコア×1.7！箱をあけたら5秒以内に完食、足音がしたら箱をとじる。バレても溶けても終わり！',
+    melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
     timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', streak:'{s}連続！', cover_calm:'冷静！+{n}', cover_close:'ギリギリセーフ！+{n}', quit:'やめる',
     patrol_warn:'コウガが来る！', patrol_watch:'しーっ…息をひそめて', hint_cover:'↓ スワイプで箱をとじる！', patrol_caught:'バレた！', patrol_safe:'セーフ！+{n}', hardTag:'ハード',
     fx_snap:'帯が切れた！', fx_regrab:'つかみ直した！', hint_snap:'タップしてつかみ直す', yell:'てめぇ！！！！！💢💢💢', fx_heart:'ハート', fx_star:'ほし',
@@ -1489,8 +1507,8 @@ function celebrate(){
 }
 function renderCombo(bump){
   comboEl.classList.toggle('off',combo<2);
-  if(combo>=2){ setSprite($('comboNum'),String(combo),'combo',62); setSprite($('comboWord'),TX('fx_combo'),'word',21);
-    const t=tier(); $('comboMult').hidden=t<=1; if(t>1) setSprite($('comboMult'),'×'+t,'mult',25); }
+  if(combo>=2){ setSprite($('comboNum'),String(combo),'combo',46); setSprite($('comboWord'),TX('fx_combo'),'word',17);
+    const t=tier(); $('comboMult').hidden=t<=1; if(t>1) setSprite($('comboMult'),'×'+t,'mult',20); }
   if(bump){ comboEl.classList.remove('bump'); void comboEl.offsetWidth; comboEl.classList.add('bump'); }
 }
 // hard mode pays ×1.5 on every point (shown values already include it)
@@ -1504,7 +1522,7 @@ function addScore(n){ score+=Math.round(n*SM()); scoreEl.textContent=score.toLoc
 /* ---------- flow ---------- */
 function nextBox(){
   if(state==='over') return;
-  const b=makeBox(); cur=b; scene.add(b.group); boxNo++; b.covered=false;
+  const b=makeBox(); cur=b; scene.add(b.group); boxNo++; b.covered=false; b.meltT=MELT_TIME;
   b.group.position.set(6,0,0); b.group.rotation.y=-0.4;
   state='arrive'; setGuide(null);
   tween(0.38,k=>{const e=easeOut(k);b.group.position.x=6*(1-e);b.group.rotation.y=-0.4*(1-e);},
@@ -1755,7 +1773,7 @@ function startGame(){
   $('fever').classList.remove('off');
   eatenEl.textContent=TX('eaten')(0);
   $('start').hidden=true; $('result').hidden=true;
-  patrolReset(); caughtEnd=false; elapsed=0; mood=0;
+  patrolReset(); caughtEnd=false; meltedEnd=false; elapsed=0; mood=0;
   $('mood').classList.toggle('off',!HARD);
   if(HARD){ sfx.fridgeOpen(); setTimeout(()=>{ if(HARD&&state!=='over'&&state!=='idle') humStart(); },550); } else humStop();
   boxNo=0; paused=false; $('pauseOv').hidden=true; $('pauseBtn').hidden=false; state='arrive'; nextBox();
@@ -1865,7 +1883,19 @@ function showCoverHint(){
   const t=document.createElement('img'); t.alt=''; setSprite(t,TX('hint_cover'),'bad',20); el.prepend(t);
   el.style.left=sp.x+'px'; el.style.top=sp.y+'px'; $('pops').appendChild(el); setTimeout(()=>el.remove(),1100);
 }
-let caughtEnd=false, elapsed=0, mood=0;
+let caughtEnd=false, meltedEnd=false, elapsed=0, mood=0;
+const MELT_TIME=5;
+// hard: once the box is open the pinos start to soften; sag them as the clock runs down
+function meltLook(b){
+  const p=Math.max(0,1-b.meltT/MELT_TIME), q=Math.max(0,Math.min(1,(p-0.35)/0.65)), e=q*q*(3-2*q);
+  b.pinos.forEach(m=>{ if(m.userData.eaten) return; if(!m.userData.s0) m.userData.s0=m.scale.clone();
+    const s0=m.userData.s0; m.scale.set(s0.x*(1+0.2*e),s0.y*(1-0.38*e),s0.z*(1+0.2*e)); });
+}
+function meltEnd(){
+  meltedEnd=true; const b=cur; b.meltT=0;
+  tween(0.6,k=>{ b.pinos.forEach(m=>{ if(m.userData.eaten||!m.userData.s0) return; const s0=m.userData.s0; m.scale.set(s0.x*(1.2+0.25*k),s0.y*(0.62-0.4*k),s0.z*(1.2+0.25*k)); }); });
+  sNoise(500,0.6,0.3,0.4,'lowpass'); popCenter(TX('melt_over'),'bad'); startSwat();
+}
 function patrolCaught(){   // spotted: that's the end of the night
   caughtEnd=true; breakCombo(); shake=0.4; buzz([60,40,120]);
   popCenter(TX('patrol_caught'),'bad'); startSwat();
@@ -1891,7 +1921,7 @@ function endGame(){
   $('rLucky').textContent=luckyCount+TX('unitCount');
   $('rBoxes').textContent=boxesDone+TX('unitCount');
   $('rBest').textContent=isNew?TX('newBest'):TX('best').replace('{n}',best.toLocaleString(LOCALE()));
-  $('rTitle').textContent=caughtEnd?TX('caughtTitle'):TX('resultTitle');
+  $('rTitle').textContent=meltedEnd?TX('meltTitle'):caughtEnd?TX('caughtTitle'):TX('resultTitle');
   const gr=gradeOf(score), ge=$('rGrade'); $('sayText').textContent=TX('say_'+gr[0]); setSprite($('rGradeImg'),gr[0],'g'+gr[0],68);
   ge.classList.remove('go'); void ge.offsetWidth; ge.classList.add('go');
   submitted=false; myEntry=null; $('submitBtn').disabled=false; $('submitBtn').textContent=TX('rankSubmit'); $('submitMsg').textContent='';
@@ -2119,6 +2149,10 @@ function loop(t){
   const active=state!=='idle'&&state!=='over';
   if(active){
     const held=patrol.phase==='watch';   // frozen while Kouga watches: holding still costs nothing
+    // the melt clock only runs while the box is open and Kouga isn't on his way
+    if(HARD&&cur&&(state==='pick'||state==='eat')&&cur.eaten<6&&patrol.phase==='none'&&!cur.covered&&!held){
+      cur.meltT-=dt; meltLook(cur); if(cur.meltT<=0){ meltEnd(); }
+    }
     if(state!=='swat'&&!held){ if(HARD){ elapsed+=dt; mood=Math.min(100,mood+0.175*dt); } else { timeLeft-=dt; if(timeLeft<=0){ timeLeft=0; startSwat(); } } }
     patrolTick(dt);
     if(combo>0&&!held){ comboT-=dt; if(comboT<=0) breakCombo(); }
@@ -2128,6 +2162,11 @@ function loop(t){
   timeEl.textContent=(HARD?elapsed:Math.max(0,timeLeft)).toFixed(1);
   timeStat.classList.toggle('low',!HARD&&timeLeft<10&&state!=='idle');
   if(HARD) $('moodG').style.transform='scaleX('+(mood/100)+')';
+  { const mEl=$('melt'), show=HARD&&cur&&(state==='pick'||state==='eat')&&cur.eaten<6&&cur.meltT>0;
+    mEl.hidden=!HARD||state==='idle'||state==='over'; mEl.classList.toggle('rest',!show);   // keep its slot so the gauges don't jump
+    if(show){
+      $('meltT').textContent=Math.max(0,cur.meltT).toFixed(1); $('meltG').style.transform='scaleX('+Math.max(0,cur.meltT/MELT_TIME)+')';
+      mEl.classList.toggle('hot',cur.meltT<2); mEl.classList.toggle('held',patrol.phase!=='none'||!!cur.covered); } }
   comboG.style.transform='scaleX('+Math.max(0,comboT/COMBO_WIN)+')';
 
   for(let i=tweens.length-1;i>=0;i--){const w=tweens[i];w.t+=dt;const k=Math.min(1,w.t/w.dur);w.fn(k);if(k>=1){tweens.splice(i,1);w.done&&w.done();}}
