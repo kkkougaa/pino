@@ -1359,7 +1359,7 @@ const bgm=(()=>{
     g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.75,t+(fade||0.4)); src.connect(g); g.connect(bus); src.start(t);
     const old=fileNow; fileNow={src,g,key}; if(old) dropFile(old,fade||0.4); return true; }
   function dropFile(f,fade){ const a=ac; if(!a||!f) return; const t=a.currentTime; f.g.gain.cancelScheduledValues(t); f.g.gain.setValueAtTime(Math.max(0.0001,f.g.gain.value),t); f.g.gain.linearRampToValueAtTime(0.0001,t+fade); try{ f.src.stop(t+fade+0.05); }catch(e){} if(fileNow===f) fileNow=null; }
-  const CUT={normal:11000,hard:2300,rage:12000}, VOL={normal:3.6,hard:3.4,rage:1.6};   // the synth tune is sparse and staccato: it needs a strong bus to sit at a normal music level
+  const CUT={normal:11000,hard:2300,rage:12000}, VOL={normal:3.6,hard:3.4,rage:0.8};   // the synth tune is sparse and staccato: it needs a strong bus to sit at a normal music level
   function ensure(){ const a=audio(); if(!a) return null;
     if(!bus){ bus=a.createGain(); bus.gain.value=0.0001; lp=a.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=0.6; lp.frequency.value=CUT.normal;
       bus.connect(lp); lp.connect(BUS.dry); const sd=a.createGain(); sd.gain.value=0.3; lp.connect(sd); sd.connect(BUS.wet); }
