@@ -1645,6 +1645,8 @@ renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 // ---- 2D look: every MeshStandardMaterial becomes a 3-tone cel material, and solid objects get a brown ink outline ----
 const TOON_RAMP=(()=>{ const t=new THREE.DataTexture(new Uint8Array([168,168,168,255, 220,220,220,255, 255,255,255,255]),3,1,THREE.RGBAFormat);
   t.minFilter=t.magFilter=THREE.NearestFilter; t.generateMipmaps=false; t.needsUpdate=true; return t; })();
+const CHOCO_RAMP=(()=>{ const t=new THREE.DataTexture(new Uint8Array([115,115,115,255, 175,175,175,255, 235,235,235,255, 255,255,255,255]),4,1,THREE.RGBAFormat);   // the pinos: deeper shade steps, so their shape reads
+  t.minFilter=t.magFilter=THREE.NearestFilter; t.generateMipmaps=false; t.needsUpdate=true; return t; })();
 THREE.MeshStandardMaterial=function(p){ p=Object.assign({},p); ['roughness','metalness','envMap','envMapIntensity'].forEach(k=>delete p[k]);
   return new THREE.MeshToonMaterial(Object.assign({gradientMap:TOON_RAMP},p)); };
 const INK_W=0.026, INK_MAT=new THREE.MeshBasicMaterial({color:col('#3A2416'),side:THREE.BackSide});
@@ -2019,11 +2021,11 @@ function buildMaterials(){
     filmGloss:new THREE.MeshBasicMaterial({map:tx(sheenCanvas()),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:0.6}),
     filmEdge:new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.5,depthWrite:false}),
     tape:std('#FBFBF8',0.28),
-    tray:std('#4A2C1E',0.3),
+    tray:std('#2E1A12',0.3),   // dark tray, so the chocolate stands off it
     inner:std('#D6D8D4',0.9,{side:THREE.DoubleSide}),
-    dimple:std('#55331F',0.3),
-    cup:std('#4A2C1E',0.3,{side:THREE.DoubleSide}),
-    choco:std('#5B3420',0.36,{metalness:0.05}),   // milk-chocolate brown: a step lighter than the tray so the pinos stand out
+    dimple:std('#3A2216',0.3),
+    cup:std('#2E1A12',0.3,{side:THREE.DoubleSide}),
+    choco:std('#7A4A2C',0.36,{metalness:0.05,gradientMap:CHOCO_RAMP}),   // milk-chocolate brown, clearly lighter than the tray, with its own deeper shading
     bitten:new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.5,metalness:0.03}),
     pickR:std('#E52A35',0.3,{metalness:0.05,emissive:0xffffff,emissiveMap:glitterTex(8),emissiveIntensity:0.5}),
     pickRp:std('#F06A78',0.38,{metalness:0.05,emissive:0xffffff,emissiveMap:glitterTex(14),emissiveIntensity:0.8}),
