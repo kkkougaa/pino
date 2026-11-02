@@ -2111,7 +2111,7 @@ function makePizza(){
 
 function texFromCanvas(c){ const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.anisotropy=4; return t; }
 function shovePizza(dir){
-  const b=cur; state='throwing'; setGuide(null); sfx.toss(); buzz(12);
+  const b=cur; state='throwing'; setGuide(null); sfx.toss(); buzz(12); keepCombo();   // shoving the decoy away is the right call: the combo carries on
   const sp=toScreen(b.group.position.clone().setY(0.6)); pop(TX('pizza_away'),sp.x,sp.y,'good');
   setTimeout(()=>{ playOnce('pkShove'); whoosh(2400,500,0.22,0.16,{pan:0.6}); thump(80,0.32,{delay:0.08,pan:0.4}); },120);
   const x0=b.group.position.x;
@@ -2139,7 +2139,7 @@ function nextBox(){
     const b=makePizza(); cur=b; scene.add(b.group); boxNo++;
     b.group.position.set(6,0,0); b.group.rotation.y=-0.4; state='arrive'; setGuide(null);
     tween(0.38,k=>{const e=easeOut(k);b.group.position.x=6*(1-e);b.group.rotation.y=-0.4*(1-e);},
-      ()=>{ if(state!=='arrive') return; state='pizza'; popCenter(TX('pizza_hint'),'pizza'); });
+      ()=>{ if(state!=='arrive') return; state='pizza'; keepCombo(); popCenter(TX('pizza_hint'),'pizza'); });   // the combo clock restarts when the pizza lands, so deciding doesn't cost it
     return;
   }
   const b=makeBox(); cur=b; scene.add(b.group); boxNo++; b.covered=false; b.meltT=MELT_TIME/NM();
@@ -2856,7 +2856,8 @@ function stampGrade(){
 function endGame(){
   if(cur&&cur.pick&&cur.pick.parent&&cur.pick.parent!==cur.group&&cur.group.parent) cur.group.attach(cur.pick);
   state='over'; paused=false; $('pauseBtn').hidden=true; humStop(); rageOff(); bgm.stop(0.5); setMode(MODE); $('mood').classList.add('off');
-  $('rTime').textContent=elapsed.toFixed(1)+TX('sec'); { const g=gradeOf(score)[0]; if(caughtEnd||meltedEnd||pizzaEnd||g==='C'||g==='F'||g==='B') sadHorn(); else sfx.end(); }   // lost (or a so-so run): the sad horn setGuide(null); pickHeld=false; combo=0; endFever(); $('fever').classList.add('off'); renderCombo();
+  $('rTime').textContent=elapsed.toFixed(1)+TX('sec'); { const g=gradeOf(score)[0]; if(caughtEnd||meltedEnd||pizzaEnd||g==='C'||g==='F'||g==='B') sadHorn(); else sfx.end(); }   // lost (or a so-so run): the sad horn
+  setGuide(null); pickHeld=false; combo=0; endFever(); $('fever').classList.add('off'); renderCombo();
   let best=0, isNew=false;
   try{ best=+localStorage.getItem('six-bites-best-score')||0; if(score>best){ isNew=best>0; best=score; localStorage.setItem('six-bites-best-score',String(best)); } }catch(e){ best=Math.max(best,score); }
   $('rScore').textContent=score.toLocaleString(LOCALE());
