@@ -5,7 +5,7 @@
   const R = 3;                                   // drawn 3x for sharp phones
   const INK = '#3A2416', PAPER = '#FFFBEF', SHADOW = 'rgba(58,36,22,.30)';
   const FACE = {
-    display: { ko: '"Do Hyeon"', ja: '"Mochiy Pop One"', x: '"Titan One","Do Hyeon"' },
+    display: { ko: '700 1px "Galmuri11"', ja: '"Mochiy Pop One"', x: '700 1px "Galmuri11"' },   // pixel arcade face for Korean and the shared English words
     hand:    { ko: '700 1px "Gaegu"', ja: '"Hachi Maru Pop"', x: '700 1px "Gaegu"' },
     num:     { ko: '"Titan One"', ja: '"Titan One"', x: '"Titan One"' },
   };
@@ -37,8 +37,8 @@
   };
   const cv = (w, h) => { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return c; };
   const rngOf = s => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507), h = Math.imul(h ^ (h >>> 13), 3266489909), (h ^= h >>> 16) >>> 0) / 4294967296); };
-  const SCALE = {};   // some faces draw small for their size (Dongle): scale them up to match
-  function setFace(face, lang, css, scale) { FACE[face][lang] = css; SCALE[face + lang] = scale || 1; }
+  const SCALE = {}, BOLD = {};   // some faces draw small for their size (Dongle): scale them up to match
+  function setFace(face, lang, css, scale, bold) { FACE[face][lang] = css; SCALE[face + lang] = scale || 1; BOLD[face + lang] = bold || 0; }
   function fontOf(face, lang, fs) { fs = Math.round(fs * (SCALE[face + lang] || 1)); const f = FACE[face][lang] || FACE[face].x; return f.includes('1px') ? f.replace('1px', fs + 'px') : fs + 'px ' + f; }
 
   // ---------- one line of sticker lettering ----------
@@ -50,7 +50,7 @@
     // Hangul syllables are dense: thinner borders keep them readable, more so at small sizes
     const dense = lang === 'ko' && face === 'display' && /[가-힣]/.test(text) ? (size < 30 ? 0.8 : 0.9) : 1;
     const inkW = fs * (sk.ink != null ? sk.ink : 0.075) * dense, paperW = fs * (sk.paper != null ? sk.paper : 0.13) * dense;
-    const edge = inkW + paperW, shOff = fs * 0.07, pad = edge + fs * 0.04;
+    const extra = fs * (BOLD[face + lang] || 0) / 2, edge = inkW + paperW + extra, shOff = fs * 0.07, pad = edge + fs * 0.04;
     const m = cv(4, 4).getContext('2d'); m.font = font;
     const chars = Array.from(text);
     const adv = chars.map(ch => opts.tab && /[0-9]/.test(ch) ? opts.tab * fs : m.measureText(ch).width * (opts.num ? 0.96 : 0.94));
@@ -70,11 +70,12 @@
     // shadow, paper border, ink line
     g.save(); g.translate(0, shOff); g.strokeStyle = SHADOW; g.fillStyle = SHADOW; g.lineWidth = edge * 2; each(g, (gg, ch) => { gg.strokeText(ch, 0, 0); gg.fillText(ch, 0, 0); }); g.restore();
     if (paperW > 0) { g.strokeStyle = PAPER; g.lineWidth = edge * 2; each(g, (gg, ch) => gg.strokeText(ch, 0, 0)); }
-    g.strokeStyle = sk.inkC || INK; g.lineWidth = inkW * 2; each(g, (gg, ch) => gg.strokeText(ch, 0, 0));
+    g.strokeStyle = sk.inkC || INK; g.lineWidth = (inkW + extra) * 2; each(g, (gg, ch) => gg.strokeText(ch, 0, 0));
     // fill + gloss, built on a mask so the gloss stays inside the letters
     const f = cv(W, H), fg = f.getContext('2d'); setup(fg);
     const gr = fg.createLinearGradient(0, base - fs * 0.85, 0, base + fs * 0.05); gr.addColorStop(0, sk.fill[0]); gr.addColorStop(1, sk.fill[1]);
     fg.fillStyle = gr; each(fg, (gg, ch) => gg.fillText(ch, 0, 0));
+    const bold = BOLD[face + lang] || 0; if (bold) { fg.strokeStyle = gr; fg.lineWidth = fs * bold; each(fg, (gg, ch) => gg.strokeText(ch, 0, 0)); }
     fg.globalCompositeOperation = 'source-atop';
     const gl = fg.createLinearGradient(0, base - fs * 0.9, 0, base - fs * 0.38); gl.addColorStop(0, 'rgba(255,255,255,.62)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
     fg.fillStyle = gl; fg.beginPath(); fg.ellipse(W / 2, base - fs * 0.9, W * 0.62, fs * 0.5, 0, 0, Math.PI * 2); fg.fill();

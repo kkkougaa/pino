@@ -9,14 +9,14 @@
 window.CATALOG = {
   // ---- judgement & feedback (word parts; numbers are added from the digit sets) ----
   feedback: [
-    { key: 'w_perfect',   ko: '퍼펙트!',        ja: 'パーフェクト！',   style: 'good',  size: 24 },
-    { key: 'fx_nice',     ko: '나이스!',        ja: 'ナイス！',         style: 'good',  size: 24 },
-    { key: 'fx_miss',     ko: '미스 −1초',      ja: 'ミス −1秒',        style: 'bad',   size: 22 },
-    { key: 'w_miss',      ko: '미스',           ja: 'ミス',             style: 'bad',   size: 22 },
+    { key: 'w_perfect',   x: 'PERFECT!',                                style: 'good',  size: 24 },   // shared English
+    { key: 'fx_nice',     x: 'NICE!',                                   style: 'good',  size: 24 },
+    { key: 'fx_miss',     ko: 'MISS −1초',      ja: 'MISS −1秒',        style: 'bad',   size: 22 },
+    { key: 'w_miss',      x: 'MISS',                                    style: 'bad',   size: 22 },
     { key: 'w_speed',     ko: '스피드 보너스',  ja: 'スピードボーナス', style: 'good',  size: 24 },
     { key: 'fx_heart',    ko: '하트',           ja: 'ハート',           style: 'lucky', size: 28, icon: 'heart' },
     { key: 'fx_star',     ko: '별',             ja: 'ほし',             style: 'lucky', size: 28, icon: 'star' },
-    { key: 'w_combo',     ko: '콤보!',          ja: 'コンボ！',         style: 'combo', size: 40 },
+    { key: 'w_combo',     x: 'COMBO!',                                  style: 'combo', size: 40 },
     { key: 'fx_break',    ko: '콤보 끊김…',     ja: 'コンボきれた…',    style: 'bad',   size: 22 },
     { key: 'fx_snap',     ko: '띠 끊김!',       ja: '帯が切れた！',     style: 'alert', size: 34 },
     { key: 'w_safe',      ko: '안 들켰다!',     ja: 'バレなかった！',   style: 'good',  size: 24 },
@@ -35,17 +35,17 @@ window.CATALOG = {
     { key: 'q',           x: '…?',                                      style: 'bad',   size: 26 },
     { key: 'pino',        x: 'PINO!',                                   style: 'combo', size: 28 },
     // labels inside the combo / fever rings
-    { key: 'comboWord',   ko: '콤보',           ja: 'コンボ',           style: 'ring',  size: 12 },
-    { key: 'feverWord',   ko: '피버',           ja: 'フィーバー',       style: 'ring',  size: 15 },
-    { key: 'feverWordOn', ko: '피버!',          ja: 'フィーバー！',     style: 'ringOn', size: 16 },
+    { key: 'comboWord',   x: 'COMBO',                                   style: 'ring',  size: 11 },
+    { key: 'feverWord',   x: 'FEVER',                                   style: 'ring',  size: 13 },
+    { key: 'feverWordOn', x: 'FEVER!',                                  style: 'ringOn', size: 14 },
   ],
   // ---- grades on the result memo ----
   grades: ['S', 'A', 'B', 'C', 'F'].map(g => ({ key: 'g' + g, x: g, style: 'g' + g, size: 68 })),
   // ---- state-change banners ----
   banners: [
     { key: 'ready',         ko: '준비~',            ja: 'よーい…',             style: 'score', size: 40, plate: 'tag' },
-    { key: 'go_',           ko: '시작!',            ja: 'ドン！',              style: 'go',    size: 54, plate: 'stamp' },
-    { key: 'fx_fever',      ko: '피버 타임!',       ja: 'フィーバー！',        style: 'fever', size: 52, plate: 'fever' },
+    { key: 'go_',           x: 'START!',                                  style: 'go',    size: 50, plate: 'stamp' },
+    { key: 'fx_fever',      x: 'FEVER TIME!',                             style: 'fever', size: 46, plate: 'fever' },
     { key: 'rage_on',       ko: '코우가가 화났다!', ja: 'コウガが怒った！',    style: 'rage',  size: 36, plate: 'rage' },
     { key: 'nm_on',         ko: '코우가가 폭주합니다!!!!', ja: 'コウガが暴走します!!!!', style: 'nm', size: 30, plate: 'nm' },
     { key: 'superUnlock',   ko: '초하드 모드 해금!', ja: '超ハードモード解放！', style: 'unlock', size: 26, plate: 'ribbon' },

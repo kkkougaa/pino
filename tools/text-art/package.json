@@ -8,10 +8,10 @@
     "preview": "node build.js preview"
   },
   "devDependencies": {
-    "@fontsource/do-hyeon": "^5.3.0",
     "@fontsource/gaegu": "^5.3.0",
     "@fontsource/hachi-maru-pop": "^5.3.0",
     "@fontsource/mochiy-pop-one": "^5.3.0",
-    "@fontsource/titan-one": "^5.3.0"
+    "@fontsource/titan-one": "^5.3.0",
+    "galmuri": "^2.40.3"
   }
 }
