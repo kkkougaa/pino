@@ -142,7 +142,6 @@ body{
   box-shadow:0 3px 4px rgba(0,0,0,.35),inset 0 -2px 3px rgba(0,0,0,.25)}
 #result .card{--rot:.9deg} #result .card::before{background:radial-gradient(circle at 36% 30%,#BFE6FF 0 14%,#2F86E0 42%,#1B4F8A 100%)}
 #pauseOv .card{--rot:-.6deg} #pauseOv .card::before{background:radial-gradient(circle at 36% 30%,#FFF2B0 0 14%,#F2B21F 42%,#A8740C 100%)}
-#rankOv .card{--rot:.5deg} #rankOv .card::before{background:radial-gradient(circle at 36% 30%,#C8F5DA 0 14%,#2FB36B 42%,#17713F 100%)}
 .card .memo-title{display:inline-block;font-family:var(--display);font-size:calc(var(--k,1)*(30px));line-height:1.15;margin:0 0 6px;padding:0 4px;
   background:linear-gradient(transparent 58%,rgba(255,214,0,.75) 58% 92%,transparent 92%)}
 .memo-big{font-family:var(--display);font-size:calc(var(--k,1)*(36px));line-height:1.15;margin:6px 0 2px;transform:rotate(-2deg);transform-origin:left center}
@@ -291,31 +290,14 @@ html[lang="ko"] .card{word-break:keep-all}
 .grade img{display:block}
 .grade.go img{animation:gradeIn .7s cubic-bezier(.2,.9,.3,1.35) both}
 @keyframes gradeIn{0%{opacity:0;transform:scale(2.2) rotate(-12deg)}60%{opacity:1;transform:scale(.92) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
-.submit{display:flex;gap:8px;margin:2px 0 4px}
-.submit input{flex:1;min-width:0;border:0;border-bottom:2.5px dashed #3A2E28;border-radius:0;padding:8px 4px;font:inherit;font-size:calc(var(--k,1)*(20px));background:transparent;color:var(--card-ink);user-select:text;-webkit-user-select:text}
-.submit input:focus-visible{outline:3px solid var(--pick);outline-offset:1px}
-.btn.mini{width:auto;font-size:calc(var(--k,1)*(20px));padding:8px 14px;white-space:nowrap}
 .btn[disabled]{opacity:.6;cursor:default}
 .res.small{font-size:calc(var(--k,1)*(16px));margin:0 0 10px;min-height:1.2em;opacity:.85}
 .two{display:flex;gap:10px;margin-bottom:10px}
 .two .btn{flex:1;margin:0;min-width:0}
 .two #again{flex:1.4}
-.two #rankBtn2,.two #homeBtn{padding:9px 4px}
+.two #homeBtn{padding:9px 4px}
 .two .btn.ghost{font-size:calc(var(--k,1)*(19px));padding:9px}
 .card .two .btn.xbtn{font-size:calc(var(--k,1)*(20px))}
-.rankcard{max-width:420px}
-.ranklist{list-style:none;margin:8px 0 0;padding:0;max-height:min(58vh,480px);overflow:auto}
-.ranklist li{display:grid;grid-template-columns:34px 1fr auto auto;align-items:center;gap:10px;padding:9px 6px;border-bottom:1.5px dashed rgba(127,110,96,.35)}
-.ranklist li.msg{display:block;border:0;opacity:.8;font-size:calc(var(--k,1)*(14px))}
-.ranklist .no{font-family:var(--display);font-weight:800;text-align:center;font-size:calc(var(--k,1)*(17px))}
-.ranklist li:nth-child(1) .no{color:#E0A100}.ranklist li:nth-child(2) .no{color:#8E9AA6}.ranklist li:nth-child(3) .no{color:#C47A3A}
-.ranklist .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:calc(var(--k,1)*(15px))}
-.ranklist .gd{font-family:var(--display);font-weight:800;font-size:calc(var(--k,1)*(12px));border:2px solid currentColor;border-radius:6px;padding:0 5px;line-height:1.4}
-.ranklist .sc{font-family:var(--display);font-weight:800;font-variant-numeric:tabular-nums}
-.ranklist li.me{background:rgba(255,63,108,.12);border-radius:10px}
-.myrank{font-family:var(--display);font-weight:800;margin:4px 0 0;font-size:calc(var(--k,1)*(16px));color:var(--pick)}
-.xclose{appearance:none;flex:none;border:2.5px solid var(--line);background:transparent;color:var(--card-ink);width:38px;height:38px;border-radius:50%;font-size:calc(var(--k,1)*(22px));line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
-.xclose:focus-visible{outline:3px solid var(--pick);outline-offset:2px}
 .say{display:flex;align-items:flex-end;gap:6px;margin:4px 0 6px}
 .say img{width:62px;height:auto;flex:none;margin-bottom:-4px}
 .say p{margin:0;flex:1;background:#fff;border:2px solid #3A2E28;border-radius:16px 16px 16px 4px;padding:8px 12px;font-size:calc(var(--k,1)*(18px));line-height:1.3}
@@ -522,7 +504,6 @@ html[lang="ja"]{--ui:"M PLUS Rounded 1c","Fredoka",system-ui,sans-serif}
 .card .big span{font-family:var(--ui);font-weight:800}
 .card .rows dd{font-family:var(--num);font-weight:600;font-size:22px;font-variant-numeric:tabular-nums}
 .card .res.best{font-family:var(--ui);font-weight:800}
-.ranklist .no,.ranklist .sc{font-family:var(--num);font-weight:700}
 #melt b{font-family:var(--num);font-weight:700}
 #melt .ml{font-family:var(--ui);font-weight:800}
 .pausebtn{background:#FFFFFF;color:#3A2416;border:3px solid #3A2416;box-shadow:0 4px 0 #3A2416}
@@ -713,8 +694,17 @@ body.nightmare #rageFx::after{background:radial-gradient(55% 38% at 8% 92%,rgba(
 .mchip{display:inline-block;padding:3px 12px 2px;border-radius:999px;border:2px solid #3A2416;font-family:var(--ui),sans-serif;font-weight:700;font-size:calc(var(--k,1)*(13px));line-height:1.3;color:#fff;box-shadow:0 2px 0 rgba(58,36,22,.3)}
 .mchip[data-m="normal"]{background:#4C9A6A} .mchip[data-m="hard"]{background:#3E4C6E} .mchip[data-m="super"]{background:#D3263A} .mchip[data-m="nm"]{background:#7A2FD0}
 
-/* ranking removed */
-#rankBtn,#rankBtn2,#rankOv,.submit{display:none!important}
+/* ===== first-time rule cards ===== */
+#introOv .card{--rot:-.8deg}
+#introOv .card::before{background:radial-gradient(circle at 36% 30%,#FFC9C2 0 14%,#D3263A 42%,#7E1220 100%)}
+#introOv[data-k="hard"] .card::before{background:radial-gradient(circle at 36% 30%,#C9D3F0 0 14%,#3E4C6E 42%,#1E2740 100%)}
+#introOv[data-k="nm"] .card::before{background:radial-gradient(circle at 36% 30%,#E6D2FF 0 14%,#7A2FD0 42%,#3D1170 100%)}
+#introOv h2{margin-top:8px;font-size:min(calc(var(--k,1)*(32px)),8vw);white-space:normal!important}
+.introlist{margin:12px 0 18px;padding:0;list-style:none}
+.introlist li{position:relative;padding:4px 0 4px 20px;font-size:calc(var(--k,1)*(16px));line-height:1.45}
+.introlist li::before{content:"";position:absolute;left:3px;top:.72em;width:9px;height:9px;border-radius:50%;background:#D3263A}
+#introOv[data-k="hard"] .introlist li::before{background:#3E4C6E}
+#introOv[data-k="nm"] .introlist li::before{background:#7A2FD0}
 </style>
 </head>
 <body>
@@ -780,7 +770,6 @@ body.nightmare #rageFx::after{background:radial-gradient(55% 38% at 8% 92%,rgba(
     <div class="mode"><div class="seg" role="group" aria-label="Mode"><button type="button" data-mode="normal" data-i18n="modeNormal"></button><button type="button" data-mode="hard" data-i18n="modeHard"></button><button type="button" data-mode="super" data-i18n="modeSuper" hidden></button></div></div>
     <p class="hardnote" id="hardNote" data-i18n="hardNote"></p>
     <button class="btn" id="go" data-i18n="start">시작!</button>
-    <button class="btn ghost" id="rankBtn" type="button" data-i18n="rank"></button>
     <button class="btn ghost bgmset" id="bgmSetBtn" type="button" data-i18n="bgmSet" hidden></button>
     <p class="legal" data-i18n="legal"></p>
   </div>
@@ -825,26 +814,24 @@ body.nightmare #rageFx::after{background:radial-gradient(55% 38% at 8% 92%,rgba(
       <dt class="hardrow" data-i18n="timeHard"></dt><dd class="hardrow" id="rTime">0</dd>
     </dl>
     <p class="res best" id="rBest"></p>
-    <div class="submit"><input id="nick" maxlength="12" autocomplete="nickname" enterkeyhint="send" data-i18n-ph="nickPh"><button class="btn mini" id="submitBtn" type="button" data-i18n="rankSubmit"></button></div>
-    <p class="res small" id="submitMsg" role="status"></p>
+    <p class="res small" id="shareMsg" role="status"></p>
     <div class="two">
       <a class="btn xbtn" id="shareX" href="https://x.com/intent/tweet" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/></svg><span data-i18n="shareX"></span></a>
       <button class="btn ghost" id="saveImg" type="button" data-i18n="saveImg"></button>
     </div>
     <div class="two">
       <button class="btn" id="again" data-i18n="again"></button>
-      <button class="btn ghost" id="rankBtn2" type="button" data-i18n="rank"></button>
       <button class="btn ghost" id="homeBtn" type="button" data-i18n="home"></button>
     </div>
   </div>
 </div>
 
-<div class="overlay" id="rankOv" hidden>
-  <div class="card rankcard">
-    <div class="rhead"><h2 data-i18n="rankTitle"></h2><button class="xclose" id="rankClose" type="button"><span aria-hidden="true">×</span><span class="vh" data-i18n="close"></span></button></div>
-    <p class="res small" id="rankNote"></p>
-    <p class="myrank" id="myRank" hidden></p>
-    <ol class="ranklist" id="rankList"></ol>
+<div class="overlay" id="introOv" hidden>
+  <div class="card">
+    <span class="mchip" id="introChip"></span>
+    <h2 id="introTitle"></h2>
+    <ul class="introlist" id="introList"></ul>
+    <button class="btn" id="introOk" type="button"></button>
   </div>
 </div>
 
@@ -863,7 +850,7 @@ var I18N={
     say_F:'뭐야, 그거밖에 안 먹었냐? 그 정도는 용서해 주지!',
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.',
     pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', restart:'처음부터',
-    fx_perfect:'퍼펙트! +{n}', fx_nice:'나이스!', fx_miss:'미스 −1초', fx_missHard:'미스 −1000', fx_speed:'스피드 보너스 +{n}',
+    fx_perfect:'퍼펙트! +{n}', fx_nice:'나이스!', fx_miss:'미스 −1초', fx_missHard:'미스 −{n}', fx_speed:'스피드 보너스 +{n}',
     ready:'준비~', go_:'시작!', modeNormal:'보통', modeHard:'하드', modeSuper:'초하드', superNote:'초하드: 처음부터 코우가가 화나 있어요! 점수 ×5', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'하드: 시간제한 없음, 점수 ×1.7! 상자를 열면 5초 안에 다 먹기, 발소리가 들리면 상자 덮기. 들키거나 녹으면 끝!',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
     timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_open:'앗, 피자잖아! −{n}', pizza_away:'휙!', yell_pizza:'이 피자 냄새는 뭐야?! 피자녀석?!', pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:'이 몸의 피노가 없어졌잖아!?! 누구야!!!', nm_on:'코우가가 폭주합니다!!!!', shout_nm:'피노 돌려줘!!!!!!!!!!💢💢💢', dbgNm:'나이트메어', legal:'본 게임은 비상업적이며 모든 리소스의 권리는 원 저작권자에게 있습니다.', bgmSet:'🎵 음악 바꾸기', bgmTitle:'내 음악 넣기', bgmLead:'내 기기에 있는 음악 파일을 고르면 그 모드에서 대신 나와요. 이 기기에만 저장되고, 직접 가진 음원만 넣어 주세요.', bgmRage:'초하드 BGM', bgmNm:'나이트메어 BGM', bgmHintRage:'코우가가 화났을 때', bgmHintNm:'폭주했을 때 (자연스럽게 넘어가요)', bgmPick:'파일 고르기', bgmChange:'바꾸기', bgmClear:'지우기', bgmBad:'이 파일은 재생할 수 없어요. mp3나 m4a 파일인지 확인해 주세요.', recheck:'…응?!', streak:'{s}연속!', cover_calm:'침착! +{n}', cover_close:'간발의 차! +{n}', quit:'그만하기',
@@ -871,12 +858,6 @@ var I18N={
     fx_snap:'띠 끊김!', fx_regrab:'다시 잡았다!', hint_snap:'다시 잡기', yell:'네 녀석!!!!!💢💢💢', fx_heart:'하트', fx_star:'별',
     fx_combo:'콤보', fx_comboUp:'×{t} 콤보!', fx_break:'콤보 끊김…', fx_fever:'피버 타임!', fx_feverWord:'피버',
     hint_film:'띠를 쭉 당겨요!', hint_tear:'위로 쭉 열어요!',
-    rank:'랭킹', rankTitle:'랭킹', rankSubmit:'랭킹 등록', rankSubmitted:'등록 완료!', rankSending:'등록 중…',
-    nickPh:'닉네임 (12자까지)', nickNeed:'닉네임을 입력해 주세요.', rankLoading:'불러오는 중…',
-    rankError:'랭킹 서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.', rankEmpty:'아직 기록이 없어요. 첫 번째 주인공이 되어 보세요!',
-    rankLocal:'온라인 랭킹이 아직 연결되지 않아 이 기기 기록만 보여요.',
-    myRank:function(r,t){return '내 순위 '+r+'위 / '+t+'명';},
-    close:'닫기',
     s1:'비닐 흰 띠를 쭉 당겨서 벗기기',
     s2:'앞쪽 손잡이를 위로 들어 올려 상자 열기',
     s3:'피크 집기 (손잡이를 집으면 보너스)',
@@ -905,8 +886,12 @@ var I18N={
     slot_back:'뒷면', hint_back:'128×23mm, 경첩 쪽',
     slot_bottom:'바닥', hint_bottom:'128×82mm',
     pickImg:'사진 선택', change:'바꾸기', done:'완료', reset:'기본으로 되돌리기',
-    caughtTitle:'들켰다…!', resultTitle:'끝!', pts:'점', rEaten:'먹은 개수', rCombo:'최대 콤보', rLucky:'하트와 별', rBoxes:'먹은 상자',
+    caughtTitle:'들켰다…!', resultTitle:'끝!', endTitle:'끝!', pts:'점', rEaten:'먹은 개수', rCombo:'최대 콤보', rLucky:'하트와 별', rBoxes:'먹은 상자',
     unitPiece:'알', unitCount:'개', best:'최고 기록 {n}점', newBest:'새 기록!', again:'한 판 더', home:'처음 화면',
+    introOk:'알았어!',
+    intro_hard_t:'하드 모드 규칙', intro_hard:['시간제한 없이 들키거나 녹을 때까지! 점수 ×1.7','상자를 열면 5초 안에 6알 다 먹기. 늦으면 녹아서 끝','발소리가 들리면 아래로 쓸거나 「숨기기!」 버튼으로 상자 숨기기','코우가가 보는 동안(쉿…)엔 화면을 만지면 안 돼요','비닐 띠를 너무 빨리 당기면 끊어져요. 다시 잡고 당기기','피자 상자는 옆으로 밀어내기. 열면 냄새로 들켜요!','미스는 −1000점. 오래 버티면 코우가가 화를 내요…'],
+    intro_super_t:'코우가가 화났다!', intro_super:['점수 ×5 (하드 도중에 화났을 땐 ×2.5)','5~6초마다 순찰, 경고는 단 0.8초','발소리 없이 오기도 해요. 「코우가가 온다!」 글자를 놓치지 말기','「…?」 소리가 나면 곧 다시 돌아봐요. 바로 다시 숨기기!','분노 게이지가 꽉 차면… 코우가가 폭주해요'],
+    intro_nm_t:'코우가 폭주!', intro_nm:['점수 ×6','순찰도 경고도 1.35배 빨라져요','녹기까지 약 3.7초, 띠와 뚜껑은 더 많이 당겨야 해요','미스는 −1350점, 다시 돌아보기도 더 잦아요'],
     nogl:'이 브라우저는 3D(WebGL)를 지원하지 않아요. 최신 크롬이나 사파리로 열어 주세요.'
   },
   ja:{
@@ -919,7 +904,7 @@ var I18N={
     say_F:'なんだ、それしか食ってねぇのか？それくらいなら許してやるぜ！',
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。',
     pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', restart:'さいしょから',
-    fx_perfect:'パーフェクト！+{n}', fx_nice:'ナイス！', fx_miss:'ミス −1秒', fx_missHard:'ミス −1000', fx_speed:'スピードボーナス +{n}',
+    fx_perfect:'パーフェクト！+{n}', fx_nice:'ナイス！', fx_miss:'ミス −1秒', fx_missHard:'ミス −{n}', fx_speed:'スピードボーナス +{n}',
     ready:'よーい…', go_:'ドン！', modeNormal:'ふつう', modeHard:'ハード', modeSuper:'超ハード', superNote:'超ハード：最初からコウガが怒ってる！スコア×5', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'ハード：時間無制限、スコア×1.7！箱をあけたら5秒以内に完食、足音がしたら箱をとじる。バレても溶けても終わり！',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
     timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_open:'あっ、ピザだ！−{n}', pizza_away:'ポイッ！', yell_pizza:'このピザのにおいはなんなんだ？！ピザ野郎？！', pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:'俺様のピノがなくなってるじゃねぇか!?! 誰だ!!!', nm_on:'コウガが暴走します!!!!', shout_nm:'ピノ返せ!!!!!!!!!!💢💢💢', dbgNm:'ナイトメア', legal:'本ゲームは非営利であり、すべての素材の権利は原著作者に帰属します。', bgmSet:'🎵 音楽を変える', bgmTitle:'自分の音楽を入れる', bgmLead:'端末にある音楽ファイルを選ぶと、そのモードで代わりに流れます。この端末にだけ保存されます。自分で持っている音源だけを入れてください。', bgmRage:'超ハードBGM', bgmNm:'ナイトメアBGM', bgmHintRage:'コウガが怒ったとき', bgmHintNm:'暴走したとき（自然に切り替わります）', bgmPick:'ファイルを選ぶ', bgmChange:'変える', bgmClear:'消す', bgmBad:'このファイルは再生できません。mp3かm4aか確認してください。', recheck:'…ん？！', streak:'{s}連続！', cover_calm:'冷静！+{n}', cover_close:'ギリギリセーフ！+{n}', quit:'やめる',
@@ -927,12 +912,6 @@ var I18N={
     fx_snap:'帯が切れた！', fx_regrab:'つかみ直した！', hint_snap:'つかみ直す', yell:'てめぇ！！！！！💢💢💢', fx_heart:'ハート', fx_star:'ほし',
     fx_combo:'コンボ', fx_comboUp:'×{t} コンボ！', fx_break:'コンボきれた…', fx_fever:'フィーバー！', fx_feverWord:'フィーバー',
     hint_film:'帯をひっぱって！', hint_tear:'上にグイッとあけて！',
-    rank:'ランキング', rankTitle:'ランキング', rankSubmit:'登録する', rankSubmitted:'登録しました！', rankSending:'登録中…',
-    nickPh:'ニックネーム（12文字まで）', nickNeed:'ニックネームを入力してね。', rankLoading:'読み込み中…',
-    rankError:'ランキングにつながりませんでした。少し待ってからもう一度ためしてね。', rankEmpty:'まだ記録がありません。一番乗りしよう！',
-    rankLocal:'オンラインランキング未接続のため、この端末の記録だけ表示しています。',
-    myRank:function(r,t){return t+'人中 '+r+'位';},
-    close:'閉じる',
     s1:'フィルムの白い帯をひっぱってはがす',
     s2:'前のつまみを持ち上げて箱をあける',
     s3:'ピックをつまむ（持ち手ならボーナス）',
@@ -961,8 +940,12 @@ var I18N={
     slot_back:'背面', hint_back:'128×23mm、ちょうつがい側',
     slot_bottom:'底面', hint_bottom:'128×82mm',
     pickImg:'画像を選ぶ', change:'変える', done:'完了', reset:'元に戻す',
-    caughtTitle:'バレた…！', resultTitle:'タイムアップ！', pts:'点', rEaten:'食べた数', rCombo:'最大コンボ', rLucky:'ハートと星', rBoxes:'食べた箱',
+    caughtTitle:'バレた…！', resultTitle:'タイムアップ！', endTitle:'おしまい！', pts:'点', rEaten:'食べた数', rCombo:'最大コンボ', rLucky:'ハートと星', rBoxes:'食べた箱',
     unitPiece:'粒', unitCount:'個', best:'ベスト {n}点', newBest:'新記録！', again:'もう一回', home:'タイトルへ',
+    introOk:'わかった！',
+    intro_hard_t:'ハードモードのルール', intro_hard:['時間無制限、バレるか溶けるまで続く！スコア×1.7','箱をあけたら5秒以内に6粒完食。おそいと溶けて終わり','足音がしたら下にスワイプか「かくす！」ボタンで箱をかくす','コウガが見ている間（しーっ…）は画面にさわらないで','帯をいきおいよく引っぱると切れちゃう。つかみ直して引っぱろう','ピザの箱は横にどかそう。あけるとにおいでバレる！','ミスは−1000点。長くねばるとコウガが怒りだす…'],
+    intro_super_t:'コウガが怒った！', intro_super:['スコア×5（ハード中に怒ったときは×2.5）','5〜6秒ごとに見回り、予告はたった0.8秒','足音なしで来ることも。「コウガが来る！」の文字を見のがさないで','「…？」が聞こえたらすぐまた振り返る。すぐかくし直そう','怒りゲージが満タンになると…コウガが暴走する'],
+    intro_nm_t:'コウガ暴走！', intro_nm:['スコア×6','見回りも予告も1.35倍速','溶けるまで約3.7秒、帯とふたはもっと引っぱる必要あり','ミスは−1350点、振り返りもさらに増える'],
     nogl:'このブラウザは3D（WebGL）に対応していません。最新のChromeかSafariで開いてください。'
   }
 };
@@ -2014,8 +1997,11 @@ function pinoIcon(){
   PINO_ICON_C=c; return PINO_ICON=c.toDataURL();
 }
 // ===== grades: score thresholds =====
-const GRADES=[['S',100000],['A',60000],['B',35000],['C',15000],['F',0]];
-function gradeOf(sc){ for(const g of GRADES) if(sc>=g[1]) return g; return GRADES[GRADES.length-1]; }
+// per chosen mode, set from a simulation of the scoring rules: S ~ an expert's typical run, A ~ a skilled player's, B ~ a casual player's, C ~ a beginner's good run
+const GRADES={normal:[['S',100000],['A',60000],['B',30000],['C',10000],['F',0]],
+  hard:[['S',700000],['A',250000],['B',100000],['C',30000],['F',0]],
+  super:[['S',1200000],['A',300000],['B',80000],['C',20000],['F',0]]};
+function gradeOf(sc){ const L=GRADES[MODE]||GRADES.normal; for(const g of L) if(sc>=g[1]) return g; return L[L.length-1]; }
 Object.assign(SKIN,{gS:{c:'#FFB300',a:'#FFFFFF',b:'#FFE27A'},gA:{c:'#FF3F6C',a:'#FFFFFF',b:'#FFD6E1'},gB:{c:'#FF8A1E',a:'#FFFFFF',b:'#FFE6C4'},
   gC:{c:'#13B5A4',a:'#FFFFFF',b:'#D6FFF7'},gF:{c:'#7A8899',a:'#FFFFFF',b:'#E7ECF1'}});
 
@@ -2030,71 +2016,6 @@ function makeLogo(){
   const img=$('logo'); img.src=c.toDataURL(); img.style.width=w+'px'; img.alt=TX('title');
 }
 
-// ===== online ranking =====
-// Supabase 프로젝트를 만들고 url(https://xxxx.supabase.co)과 anon public key를 넣으면 온라인 랭킹이 켜져요.
-// 비워두면 이 기기 기록만 보여요. (테이블 만드는 SQL은 안내 문서 참고)
-const RANKING={ url:'', key:'', table:'kouga_scores' };
-const online=()=>!!(RANKING.url&&RANKING.key);
-const rHead=x=>Object.assign({apikey:RANKING.key,Authorization:'Bearer '+RANKING.key},x||{});
-const rUrl=q=>RANKING.url.replace(/\/$/,'')+'/rest/v1/'+RANKING.table+(q||'');
-function localRanks(){ try{ return JSON.parse(localStorage.getItem('kouga-ranks')||'[]'); }catch(e){ return []; } }
-function saveLocal(row){ const l=localRanks(); l.push(row); l.sort((x,y)=>y.score-x.score||x.created_at-y.created_at);
-  try{ localStorage.setItem('kouga-ranks',JSON.stringify(l.slice(0,30))); }catch(e){} return l; }
-async function fetchTop(){
-  if(!online()) return localRanks();
-  let r=await fetch(rUrl('?select=name,score,grade,mode,created_at&order=score.desc,created_at.asc&limit=50'),{headers:rHead()});
-  if(r.status===400) r=await fetch(rUrl('?select=name,score,grade,created_at&order=score.desc,created_at.asc&limit=50'),{headers:rHead()});
-  if(!r.ok) throw new Error('rank '+r.status); return r.json();
-}
-async function countRows(q){
-  const r=await fetch(rUrl('?select=id'+(q||'')),{headers:rHead({Prefer:'count=exact',Range:'0-0'})});
-  if(!r.ok) throw new Error('count '+r.status); const cr=r.headers.get('content-range')||''; return +(cr.split('/')[1]||0);
-}
-let myEntry=null, submitted=false;
-async function submitScore(name){
-  const row={name,score,grade:gradeOf(score)[0],eaten:totalEaten,boxes:boxesDone,lang:LANG,mode:MODE};
-  if(!online()){ row.created_at=Date.now(); const l=saveLocal(row); return {rank:l.indexOf(row)+1,total:l.length}; }
-  const post=b=>fetch(rUrl(),{method:'POST',headers:rHead({'Content-Type':'application/json',Prefer:'return=minimal'}),body:JSON.stringify(b)});
-  let r=await post(row);
-  if(r.status===400){ const {mode,...rest}=row; r=await post(rest); }   // table made before the mode column existed
-  if(!r.ok) throw new Error('post '+r.status);
-  const [above,total]=await Promise.all([countRows('&score=gt.'+score),countRows()]);
-  return {rank:above+1,total:Math.max(total,above+1)};
-}
-function cleanName(v){ return String(v||'').replace(/\s+/g,' ').trim().slice(0,12); }
-async function onSubmit(){
-  if(submitted) return;
-  const name=cleanName($('nick').value); if(!name){ $('submitMsg').textContent=TX('nickNeed'); $('nick').focus(); return; }
-  try{ localStorage.setItem('kouga-name',name); }catch(e){}
-  const btn=$('submitBtn'); btn.disabled=true; $('submitMsg').textContent=TX('rankSending');
-  try{
-    const res=await submitScore(name); submitted=true; myEntry={name,score,res};
-    btn.textContent=TX('rankSubmitted'); $('submitMsg').textContent=TX('myRank')(res.rank,res.total);
-  }catch(e){ btn.disabled=false; $('submitMsg').textContent=TX('rankError'); }
-}
-async function openRank(){
-  $('rankOv').hidden=false; $('rankClose').focus({preventScroll:true});
-  $('rankNote').textContent=online()?'':TX('rankLocal');
-  const me=$('myRank'); me.hidden=!myEntry; if(myEntry) me.textContent=TX('myRank')(myEntry.res.rank,myEntry.res.total);
-  const ol=$('rankList'); ol.innerHTML=''; const msg=t=>{ const li=document.createElement('li'); li.className='msg'; li.textContent=t; ol.appendChild(li); };
-  msg(TX('rankLoading'));
-  try{
-    const rows=await fetchTop(); ol.innerHTML='';
-    if(!rows.length){ msg(TX('rankEmpty')); return; }
-    let marked=false;
-    rows.forEach((r,i)=>{
-      const li=document.createElement('li');
-      const isMe=!marked&&myEntry&&r.name===myEntry.name&&+r.score===myEntry.score; if(isMe){ li.className='me'; marked=true; }
-      const g=r.grade||gradeOf(+r.score)[0], col=(SKIN['g'+g]||SKIN.gF).c;
-      li.innerHTML='<span class="no"></span><span class="nm"></span><span class="gd"></span><span class="sc"></span>';
-      li.children[0].textContent=i+1; li.children[1].textContent=r.name;
-      if(r.mode==='hard'||r.mode==='super'){ const t=document.createElement('span'); t.className='hardtag'; t.style.display='inline-block'; t.textContent=TX(r.mode==='super'?'superTag':'hardTag'); li.children[1].appendChild(t); } li.children[2].textContent=g; li.children[2].style.color=col;
-      li.children[3].textContent=(+r.score).toLocaleString(LOCALE());
-      ol.appendChild(li);
-    });
-  }catch(e){ ol.innerHTML=''; msg(TX('rankError')); }
-}
-function applyPh(){ document.querySelectorAll('[data-i18n-ph]').forEach(e=>e.placeholder=TX(e.dataset.i18nPh)); }
 
 function celebrate(){
   const c=$('cele'), slots=[16,28,72,84];
@@ -2383,8 +2304,8 @@ function tap(x,y){
     const ud=cur.pick.userData;
     if(isFever()||ray.intersectObject(ud.gripHit,false).length) grab(true,x,y);
     else if(ray.intersectObject(ud.shaftHit,false).length) grab(false,x,y);
-    else { if(HARD){ score=Math.max(0,score-Math.round(1000*NM())); addScore(0); } else timeLeft-=1;   // hard has no clock: a miss costs 1000 points
-      sfx.miss(); buzz(40); addShake(0.18); fx.burst(x,y,{n:5,even:true,speed:120,gravity:-60,drag:4,size:10,life:0.45,shape:'puff',colors:['#fff']}); pop(TX(HARD?'fx_missHard':'fx_miss'),x,y,'bad'); pop('💢',x+34,y-38,'anger'); breakCombo(); }
+    else { const pen=Math.round(1000*NM()); if(HARD){ score=Math.max(0,score-pen); addScore(0); } else timeLeft-=1;   // hard has no clock: a miss costs 1000 points
+      sfx.miss(); buzz(40); addShake(0.18); fx.burst(x,y,{n:5,even:true,speed:120,gravity:-60,drag:4,size:10,life:0.45,shape:'puff',colors:['#fff']}); pop(HARD?TX('fx_missHard').replace('{n}',pen):TX('fx_miss'),x,y,'bad'); pop('💢',x+34,y-38,'anger'); breakCombo(); }
   } else if(state==='eat'){
     setRay(x,y);
     const left=cur.pinos.filter(p=>!p.userData.eaten);
@@ -2523,6 +2444,7 @@ function humStop(){
   setTimeout(()=>h.nodes.forEach(o=>{ try{o.stop();}catch(e){} }),800);
 }
 function startGame(){
+  introQueue.length=0;
   audio(); if(HARD){ bgm.stop(0.2); decodeCBGM(['rage']); } document.body.classList.remove('resultFx','paused'); decoyAway(true); fx.clear(); shownScore=0; hitStop=0; kick=0;
   disposeCur();
   for(const p of parts) scene.remove(p.mesh); parts.length=0; tweens.length=0;
@@ -2532,7 +2454,7 @@ function startGame(){
   $('fever').classList.remove('off');
   eatenEl.textContent=TX('eaten')(0);
   $('start').hidden=true; $('result').hidden=true;
-  patrolReset(); ['pkShove','pkLaugh'].forEach(i=>$(i).classList.remove('go')); pizzaEnd=false; caughtEnd=false; meltedEnd=false; elapsed=0; mood=SUPER?100:0; fury=0; nightmare=false; nightmareReached=false; rageReached=false; $('fridgeGlow').style.opacity='';
+  patrolReset(); ['pkShove','pkLaugh'].forEach(i=>$(i).classList.remove('go')); pizzaEnd=false; caughtEnd=false; meltedEnd=false; quitEnd=false; elapsed=0; mood=SUPER?100:0; fury=0; nightmare=false; nightmareReached=false; rageReached=false; $('fridgeGlow').style.opacity='';
   $('mood').classList.toggle('off',!HARD);
   if(HARD){ sfx.fridgeOpen(); setTimeout(()=>{ if(HARD&&state!=='over'&&state!=='idle') humStart(); },550); } else humStop();
   boxNo=0; paused=false; $('pauseOv').hidden=true; $('pauseBtn').hidden=false; state='arrive'; nextBox();
@@ -2544,14 +2466,15 @@ function disposeCur(){
   scene.remove(cur.group);
 }
 function goHome(){   // drop the current run and go back to the start memo
+  introQueue.length=0;
   audio(); paused=false; humStop(); rageOff(); patrolReset(); endFever(); bgm.play('normal'); document.body.classList.remove('resultFx','paused'); decoyAway(true); ['pkShove','pkLaugh'].forEach(i=>$(i).classList.remove('go'));
   disposeCur();
   for(const p of parts) scene.remove(p.mesh); parts.length=0; tweens.length=0;
   while(pile.children.length) pile.remove(pile.children[0]); pileCount=0;
   cur=makeBox(); scene.add(cur.group); pickHeld=false; state='idle'; setGuide(null);
   combo=0; comboT=0; renderCombo(); score=0; addScore(0); totalEaten=0; eatenEl.textContent=TX('eaten')(0);
-  timeLeft=60; elapsed=0; mood=0; pizzaEnd=false; caughtEnd=false; meltedEnd=false;
-  $('pauseOv').hidden=true; $('result').hidden=true; $('rankOv').hidden=true; $('start').hidden=false;
+  timeLeft=60; elapsed=0; mood=0; pizzaEnd=false; caughtEnd=false; meltedEnd=false; quitEnd=false;
+  $('pauseOv').hidden=true; $('result').hidden=true; $('start').hidden=false;
   $('pauseBtn').hidden=true; $('fever').classList.add('off'); $('mood').classList.add('off'); $('melt').hidden=true;
   $('fridgeGlow').style.opacity='';
   setMode(MODE); $('go').focus({preventScroll:true});
@@ -2847,7 +2770,7 @@ function showCoverHint(){
   const t=document.createElement('img'); t.alt=''; setSprite(t,TX('hint_cover'),'warn',22); el.prepend(t);
   el.style.left=sp.x+'px'; el.style.top=sp.y+'px'; $('pops').appendChild(el); setTimeout(()=>el.remove(),1100);
 }
-let pizzaEnd=false, caughtEnd=false, meltedEnd=false, elapsed=0, mood=0, rage=false, rageTimer=0;
+let pizzaEnd=false, caughtEnd=false, meltedEnd=false, quitEnd=false, elapsed=0, mood=0, rage=false, rageTimer=0;
 let fury=0, nightmare=false, nightmareReached=false, rageReached=false;   // super-hard has a second gauge: fill it (half speed) and Kouga goes berserk
 const NM=()=>nightmare?1.35:1;                          // nightmare: everything 1.35x harder
 const TEST_NIGHTMARE_BTN=true;                          // TEST ONLY: "nightmare" button while in super-hard
@@ -2866,13 +2789,13 @@ function shout(key,purple){   // Kouga bellowing, just above the caption
   shoutT=setTimeout(()=>{ el.classList.add('out'); shoutT=setTimeout(()=>{ el.hidden=true; el.classList.remove('go','out'); },240); },3000);
 }
 function enterNightmare(){
-  if(nightmare||!rage) return; nightmare=true; nightmareReached=true; bgm.nightmare(); fury=100; document.body.classList.add('nightmare'); moodBadge();
+  if(nightmare||!rage) return; queueIntro('nm'); nightmare=true; nightmareReached=true; bgm.nightmare(); fury=100; document.body.classList.add('nightmare'); moodBadge();
   popCenter(TX('nm_on'),'alert'); shout('shout_nm',true);
   thump(34,0.6,{dur:1.2,send:0.5}); [37,38,43,44].forEach((n,i)=>bell(n,{vol:0.06,delay:i*0.015,dur:2.4})); whoosh(200,3000,0.6,0.12); sNoise(600,0.6,0.25,1,'lowpass',0,{send:0.6});
   buzz([80,40,80,40,200]); shake=0.45; flash('#9B5CF0',0.35,0.6);
 }
 function enterRage(){
-  rage=true; rageReached=true; document.body.classList.add('rage'); decodeCBGM(['rage','nightmare']); bgm.setMode('rage');
+  queueIntro('super'); rage=true; rageReached=true; document.body.classList.add('rage'); decodeCBGM(['rage','nightmare']); bgm.setMode('rage');
   if(!superOpen&&!SUPER){ superOpen=true; try{ localStorage.setItem('kouga-super','1'); }catch(e){} setTimeout(()=>popCenter(TX('superUnlock'),'lucky'),900); }
   fury=0; const say=()=>{ popCenter(TX('rage_on'),'alert'); shout('shout_rage'); };
   if(readyT>0) setTimeout(()=>{ if(rage&&state!=='over'&&state!=='idle') say(); },(readyT+0.9)*1000); else say();
@@ -2919,6 +2842,7 @@ function revealResult(){
   (function tick(){ const q=Math.min(1,(performance.now()-t0)/dur), e=1-Math.pow(1-q,3);
     el.textContent=Math.round(target*e).toLocaleString(LOCALE()); if(q<1){ if(Math.random()<0.45) woodblock(84+Math.floor(q*12),{vol:0.05}); requestAnimationFrame(tick); } else stampGrade(); })();
 }
+function endTitle(){ return pizzaEnd?TX('pizzaTitle'):meltedEnd?TX('meltTitle'):caughtEnd?TX('caughtTitle'):(HARD||quitEnd)?TX('endTitle'):TX('resultTitle'); }   // hard has no clock, so never "time up"
 function reachedMode(){ return nightmareReached?'nm':rageReached?'super':HARD?'hard':'normal'; }
 function stampGrade(){
   const ge=$('rGrade'); ge.classList.remove('go'); void ge.offsetWidth; ge.classList.add('go');
@@ -2943,11 +2867,10 @@ function endGame(){
   $('rBest').textContent=isNew?TX('newBest'):TX('best').replace('{n}',best.toLocaleString(LOCALE()));
   $('rCrown').toggleAttribute('hidden',!nightmareReached); $('rCrown').classList.remove('go');   // svg: use the attribute, not .hidden
   { const m=reachedMode(); $('rMode').dataset.m=m; $('rMode').textContent=TX('mc_'+m); }
-  $('rTitle').textContent=pizzaEnd?TX('pizzaTitle'):meltedEnd?TX('meltTitle'):caughtEnd?TX('caughtTitle'):TX('resultTitle');
+  $('rTitle').textContent=endTitle();
   const gr=gradeOf(score), ge=$('rGrade'); $('sayText').textContent=''; setTimeout(()=>typeText($('sayText'),TX('say_'+gr[0]),34,360),1300); setSprite($('rGradeImg'),gr[0],'g'+gr[0],68);
   ge.classList.remove('go');
-  submitted=false; myEntry=null; $('submitBtn').disabled=false; $('submitBtn').textContent=TX('rankSubmit'); $('submitMsg').textContent='';
-  try{ $('nick').value=localStorage.getItem('kouga-name')||''; }catch(e){}
+  $('shareMsg').textContent='';
   shareFile=null; updateShareLink();
   const showRes=()=>{ $('result').hidden=false; const rc=$('result').querySelector('.card'); rc.scrollTop=0; $('result').scrollTop=0; fitScore(); fitTitle(); requestAnimationFrame(()=>{ rc.scrollTop=0; }); $('again').focus({preventScroll:true}); revealResult(); makeShareImage().then(f=>shareFile=f).catch(()=>{}); };
   const cpos=cur&&cur.group.parent?toScreen(cur.group.position.clone().setY(0.4)):{x:innerWidth/2,y:innerHeight/2};
@@ -2957,21 +2880,36 @@ function endGame(){
     },220));
   },120);
 }
-$('go').addEventListener('click',()=>{ if(irisBusy) return; irisBusy=true; audio();
-  iris.close(innerWidth/2,innerHeight/2,380,()=>{ startGame(); setTimeout(()=>iris.open(innerWidth/2,innerHeight*0.55,480,()=>{ irisBusy=false; }),80); }); });
+// ===== first-time rule cards: hard and super-hard before the run starts, angry Kouga / nightmare when they first happen =====
+let introOpen=false; const introQueue=[];
+function introSeen(k){ try{ return localStorage.getItem('kouga-intro-'+k)==='1'; }catch(e){ return false; } }
+function showIntro(k,done){
+  introOpen=true; try{ localStorage.setItem('kouga-intro-'+k,'1'); }catch(e){}
+  const ov=$('introOv'); ov.dataset.k=k; $('introChip').dataset.m=k; $('introChip').textContent=TX('mc_'+k);
+  $('introTitle').textContent=TX('intro_'+k+'_t'); $('introOk').textContent=TX('introOk');
+  const ul=$('introList'); ul.innerHTML=''; TX('intro_'+k).forEach(t=>{ const li=document.createElement('li'); li.textContent=t; ul.appendChild(li); });
+  ov.hidden=false; ov.querySelector('.card').scrollTop=0; $('introOk').focus({preventScroll:true}); woodblock(79,{vol:0.12});
+  $('introOk').onclick=()=>{ ov.hidden=true; introOpen=false; done&&done(); };
+}
+function runIntros(list,done){ if(!list.length){ done(); return; } showIntro(list.shift(),()=>runIntros(list,done)); }
+function queueIntro(k){ if(!introSeen(k)&&introQueue.indexOf(k)<0) introQueue.push(k); }
+function openMidIntro(){   // the run freezes (like pause) while the card is up
+  const k=introQueue.shift(); paused=true; document.body.classList.add('paused'); if(ac) ac.suspend(); down=null; $('pauseBtn').hidden=true;
+  showIntro(k,()=>{ paused=false; document.body.classList.remove('paused'); audio(); if(state!=='over'&&state!=='idle') $('pauseBtn').hidden=false; });
+}
+function beginRun(){ irisBusy=true;
+  iris.close(innerWidth/2,innerHeight/2,380,()=>{ startGame(); setTimeout(()=>iris.open(innerWidth/2,innerHeight*0.55,480,()=>{ irisBusy=false; }),80); }); }
+$('go').addEventListener('click',()=>{ if(irisBusy||introOpen) return; audio();
+  const l=[]; if(HARD&&!introSeen('hard')) l.push('hard'); if(SUPER&&!introSeen('super')) l.push('super');
+  if(!l.length){ beginRun(); return; }
+  $('start').hidden=true; runIntros(l,beginRun); });
 let irisBusy=false;
 $('homeBtn').addEventListener('click',goHome);
 $('homeBtn2').addEventListener('click',goHome);
 document.querySelectorAll('.mode button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
 setMode(MODE);
-$('rankBtn').addEventListener('click',openRank);
-$('rankBtn2').addEventListener('click',openRank);
-$('rankClose').addEventListener('click',()=>{ $('rankOv').hidden=true; });
-$('submitBtn').addEventListener('click',onSubmit);
-$('nick').addEventListener('keydown',e=>{ if(e.key==='Enter') onSubmit(); });
-applyPh();
 document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>{
-  setLang(b.dataset.lang); preloadFonts(LANG).then(()=>{ setFeverLab(); setSprite($('moodLab'),TX('mood'),'lucky',17); setSprite($('celeT'),'PINO!','combo',28); }); setFeverLab(); setMode(MODE); setSprite($('moodLab'),TX('mood'),'lucky',17); applyPh(); setSprite($('celeT'),'PINO!','combo',28);
+  setLang(b.dataset.lang); preloadFonts(LANG).then(()=>{ setFeverLab(); setSprite($('moodLab'),TX('mood'),'lucky',17); setSprite($('celeT'),'PINO!','combo',28); }); setFeverLab(); setMode(MODE); setSprite($('moodLab'),TX('mood'),'lucky',17); setSprite($('celeT'),'PINO!','combo',28);
   eatenEl.textContent=TX('eaten')(totalEaten); renderCombo(); addScore(0); updateShareLink(); setFeverLab();
   document.querySelectorAll('.slot input').forEach(inp=>markSlot(inp.dataset.slot,inp.parentElement.classList.contains('done')));
 }));
@@ -2980,7 +2918,7 @@ eatenEl.textContent=TX('eaten')(0);
 $('again').addEventListener('click',startGame);
 // pause / resume / restart
 function pauseGame(){ if(paused||state==='idle'||state==='over') return; paused=true; document.body.classList.add('paused'); bgmLabel(); if(ac) ac.suspend(); down=null; $('pauseOv').hidden=false; $('resumeBtn').focus({preventScroll:true}); }
-function resumeGame(){ if(!paused) return; paused=false; document.body.classList.remove('paused'); audio(); $('pauseOv').hidden=true; }
+function resumeGame(){ if(!paused||introOpen) return; paused=false; document.body.classList.remove('paused'); audio(); $('pauseOv').hidden=true; }
 $('pauseBtn').addEventListener('click',pauseGame);
 $('resumeBtn').addEventListener('click',resumeGame);
 function bgmSlots(){ ['rage','nightmare'].forEach(k=>{ const has=!!CBGM.blobs[k], lab=$('bgmLab_'+k);
@@ -3008,9 +2946,9 @@ $('hideBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropa
 function bgmLabel(){ $('bgmBtn').textContent=TX(bgm.on?'bgmOn':'bgmOff'); }
 $('bgmBtn').addEventListener('click',()=>{ audio(); bgm.toggle(); bgmLabel(); });
 $('restartBtn').addEventListener('click',()=>{ paused=false; document.body.classList.remove('paused'); $('pauseOv').hidden=true; startGame(); });
-$('quitBtn').addEventListener('click',()=>{ paused=false; document.body.classList.remove('paused'); $('pauseOv').hidden=true; audio(); patrolSet('none'); endGame(); });
+$('quitBtn').addEventListener('click',()=>{ quitEnd=true; paused=false; document.body.classList.remove('paused'); $('pauseOv').hidden=true; audio(); patrolSet('none'); endGame(); });
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) pauseGame(); });
-addEventListener('keydown',e=>{ if(e.key==='Escape'){ paused?resumeGame():pauseGame(); } });
+addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(introOpen){ $('introOk').click(); return; } paused?resumeGame():pauseGame(); } });
 // big score shrinks to fit the card, however many digits
 function fitScore(){
   const el=$('rScore'), box=el.parentElement; if(!box.clientWidth) return;
@@ -3056,7 +2994,7 @@ function makeShareImage(){
     { const m=reachedMode(), lab=TX('mc_'+m), col={normal:'#4C9A6A',hard:'#3E4C6E',super:'#D3263A',nm:'#7A2FD0'}[m];
       g.font='700 30px '+disp; const tw=g.measureText(TX('title')).width; g.font='700 28px '+disp; const lw=g.measureText(lab).width, cx=X+P+tw+(g.measureText(' ').width)+20, cy=Y+56;
       g.fillStyle=col; rr(cx,cy,lw+40,48,24); g.fill(); g.lineWidth=4; g.strokeStyle=line; g.stroke(); g.fillStyle='#fff'; g.fillText(lab,cx+20,cy+35); g.fillStyle=ink; }
-    g.font='800 64px '+disp; g.fillText(TX('resultTitle'),X+P,Y+178);
+    g.font='800 64px '+disp; g.fillText(endTitle(),X+P,Y+178);
     { const gr=gradeOf(score), gs=sprite(gr[0],'g'+gr[0],58), gh=230, gw=gh*gs.canvas.width/gs.canvas.height;
       g.save(); g.translate(X+Wc-P-gw/2+24,Y+6+gh/2); g.rotate(0.08); g.drawImage(gs.canvas,-gw/2,-gh/2,gw,gh); g.restore();
       if(nightmareReached){ const p=new Path2D('M6 40 3 9l15 14L32 3l14 20 15-14-3 31Z'), cw=110; g.save(); g.translate(X+Wc-P-gw/2+24-cw/2,Y-62); g.scale(cw/64,cw/64); g.fillStyle='#F2B705'; g.fill(p); g.lineWidth=2; g.strokeStyle='#C48F00'; g.stroke(p); g.restore(); } }
@@ -3103,7 +3041,7 @@ $('saveImg').addEventListener('click',async()=>{ const f=shareFile||await makeSh
 $('shareX').addEventListener('click',e=>{
   const f=shareFile, text=TX('shareText')(totalEaten,boxesDone)+'\n'+TX('shareTag');
   if(f&&navigator.canShare&&navigator.canShare({files:[f]})){ e.preventDefault(); navigator.share({files:[f],text}).catch(()=>{}); return; }
-  if(f){ saveFile(f).then(ok=>{ if(ok) $('submitMsg').textContent=TX('shareHint'); }); }
+  if(f){ saveFile(f).then(ok=>{ if(ok) $('shareMsg').textContent=TX('shareHint'); }); }
 });
 $('assetsDone').addEventListener('click',()=>{ $('assets').hidden=true; $('start').hidden=false; });
 function texFrom(c){const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t;}
@@ -3181,7 +3119,7 @@ canvas.addEventListener('pointermove',e=>{
   if(!down) return;
   if(state==='pizza'){ const dx=e.clientX-down.x, dy=e.clientY-down.y;
     if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2){ shovePizza(Math.sign(dx)); down=null; return; }
-    if(Math.abs(dy)>45&&Math.abs(dy)>Math.abs(dx)*1.2){ openPizza(); down=null; return; }
+    if(dy<-45&&-dy>Math.abs(dx)*1.2){ openPizza(); down=null; return; }   // up only: a downward 'hide' swipe must never open it
     return; }
   if((patrol.phase==='warn'||patrol.pendingRecheck)&&boxShowing()&&e.clientY-down.y>50){ coverBox(); down=null; return; }
   if(cur&&cur.covered){ down.lastX=e.clientX; down.lastY=e.clientY; return; }
@@ -3237,6 +3175,7 @@ function loop(t){
     const comboHold=held||(HARD&&(patrol.phase!=='none'||patrol.pendingRecheck||(cur&&cur.covered)));   // hands tied by Kouga: the combo waits
     if(combo>0&&!comboHold){ comboT-=dt; if(comboT<=0) breakCombo(); }
     if(feverT>0&&!held){ feverT-=dt; if(feverT<=0) endFever(); }
+    if(introQueue.length&&!paused&&!introOpen&&state!=='swat'&&readyT<=0&&patrol.phase==='none'&&!patrol.pendingRecheck&&$('shout').hidden) openMidIntro();
     setRing('feverRing',isFever()?Math.max(0,feverT/FEVER_LEN):charge); $('fever').classList.toggle('full',!isFever()&&charge>0.85);
   }
   timeEl.textContent=(HARD?elapsed:Math.max(0,timeLeft)).toFixed(1);
