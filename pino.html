@@ -3182,7 +3182,7 @@ function patrolTick(dt){
     popCenter(say('w_safe','+'+Math.round(sb*SM())),'good');
     patrolSet('none'); uncoverBox();
     // double check: when he's suspicious enough he may spin straight back round
-    const again=rage&&patrol.kind!=='recheck'&&rnd()<0.6*NM();
+    const again=rage&&patrol.kind!=='recheck'&&rnd()<0.3*NM();   // recheck: 30% in rage, ~40% in nightmare
     if(again){ patrol.pendingRecheck=true; patrol.linger=true; patrol.next=1.0+rnd()*0.4;
       later(()=>{ if(!patrol.pendingRecheck) return; creak(); const el=document.createElement('img'); el.className='pop sprite bad'; el.alt='';
         setArt(el,'q',22,'bad','…?'); el.style.left=(innerWidth*0.84)+'px'; el.style.top=(innerHeight*0.36)+'px'; $('pops').appendChild(el); later(()=>el.remove(),1200); },250);
