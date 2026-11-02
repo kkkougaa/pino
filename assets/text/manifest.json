@@ -114,7 +114,7 @@
    },
    "patrol_fake": {
     "s": 22,
-    "p": 5.39
+    "p": 4.49
    },
    "w_pizzaOpen": {
     "s": 29,
@@ -170,7 +170,7 @@
    },
    "patrol_watch": {
     "s": 24,
-    "p": 5.88
+    "p": 4.9
    },
    "patrol_caught": {
     "s": 36,
@@ -228,7 +228,7 @@
    },
    "patrol_fake": {
     "s": 22,
-    "p": 5.39
+    "p": 6.05
    },
    "w_pizzaOpen": {
     "s": 29,
@@ -284,7 +284,7 @@
    },
    "patrol_watch": {
     "s": 24,
-    "p": 5.88
+    "p": 6.6
    },
    "patrol_caught": {
     "s": 36,
