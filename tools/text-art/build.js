@@ -65,11 +65,11 @@ function embed() {
   if (!re.test(html)) throw new Error('pino.html has no "const TEXT_ART=" line to replace');
   html = html.replace(re, () => line);
   // the loading screen's pixel art: <img id="bootLogo|bootBox" ... src="..."> with its cell size as width/height
-  for (const [id, name, k] of [['bootLogo', 'logo', 3], ['bootBox', 'box', 3]]) {   // k: CSS px per cell
+  for (const [id, name, k] of [['bootLogo', 'logo', 2], ['bootLogoJa', 'logo_ja', 2], ['bootBox', 'box', 3]]) {   // k: CSS px per cell
     const own = path.join(ROOT, 'assets', name + '.png');   // a hand-made picture (1 cell = 1 pixel) wins over the drawn one: assets/logo.png
     const f = fs.existsSync(own) ? own : path.join(OUT, 'pixel', name + '.png'), buf = fs.readFileSync(f), [w, h] = sizeOf(buf), url = 'data:image/png;base64,' + buf.toString('base64');
     const tag = new RegExp(`<img id="${id}"[^>]*>`); if (!tag.test(html)) throw new Error(`pino.html has no <img id="${id}">`);
-    html = html.replace(tag, () => `<img id="${id}" width="${w * k}" height="${h * k}" alt="" src="${url}">`);
+    html = html.replace(tag, () => `<img id="${id}" width="${w * k}" height="${h * k}" data-cells="${w}" alt="" src="${url}">`);
   }
   fs.writeFileSync(GAME, html);
   console.log(`embedded text art into pino.html (${(line.length / 1024).toFixed(0)} KB)`);
