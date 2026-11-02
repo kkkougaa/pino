@@ -811,7 +811,8 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 #sus.kick{animation:susKick .35s cubic-bezier(.2,1.8,.4,1)}
 @keyframes susKick{0%{transform:translateX(-50%) scale(1.25)}100%{transform:translateX(-50%) scale(1)}}
 @keyframes susShake{0%{transform:translateX(-1px)}100%{transform:translateX(1px)}}
-.dbgbtn{top:calc(env(safe-area-inset-top,0px) + 100px)!important}
+.dbgbtn{top:calc(env(safe-area-inset-top,0px) + 118px)!important}
+#autoBadge{top:auto!important;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);left:16px;transform:none;background:rgba(20,140,90,.88)}   /* TEST ONLY */
 /* ===== hands off while he looks ===== */
 #patrol .nohand{display:none;position:absolute;left:50%;top:calc(var(--midY,240px) + 62px);width:68px;height:68px;margin-left:-34px;filter:drop-shadow(0 4px 0 rgba(58,36,22,.35))}
 #patrol .nohand svg{width:100%;height:100%}
@@ -898,7 +899,7 @@ bootStep(0.1);</script>
 
 <div id="cutin" hidden aria-live="polite"><div class="ci-dim"></div><div class="ci-wrap"><div class="ci-paper" id="ciPaper"></div><div class="ci-band" id="ciBand"><div class="ci-stripes"></div><i class="ci-flash"></i><p class="ci-bg" id="ciBg"></p><img class="ci-face" id="ciFace" alt=""></div></div><div class="ci-bub"><svg class="ci-burst" id="ciBurst" aria-hidden="true"><path/></svg><p id="ciLine"></p></div></div>
 <div id="shout" hidden><svg class="burst" viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true"><path class="sh"/><path class="bd"/></svg><img class="face" id="shoutFace" alt=""><p id="shoutTxt"></p></div>
-<button id="dbgNm" class="dbgbtn" type="button" hidden></button>
+<button id="dbgNm" class="dbgbtn" type="button" hidden></button><button id="autoBadge" class="dbgbtn" type="button" hidden>AUTO</button>
 <button id="hideBtn" type="button" hidden><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4v15m-7-6 7 7 7-7" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 24h22" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg><span id="hideLab"></span></button>
 <div id="tut" hidden><div class="tut-card" id="tutCard"><span class="tut-n" id="tutN"></span><p id="tutTxt"></p><button id="tutSkip" type="button"></button></div></div>
 
@@ -919,6 +920,7 @@ bootStep(0.1);</script>
     <button class="btn ghost" id="quitBtn" type="button" data-i18n="quit"></button>
     <button class="btn ghost" id="homeBtn2" type="button" data-i18n="home"></button>
     <button class="btn ghost" id="bgmBtn" type="button"></button>
+    <button class="btn ghost" id="autoBtn" type="button" hidden></button>
   </div>
 </div>
 <div id="confetti"></div>
@@ -1029,7 +1031,7 @@ var I18N={
     fx_perfect:'퍼펙트! +{n}', fx_nice:'NICE!', fx_miss:'MISS −1초', fx_missHard:'미스 −{n}', fx_speed:'스피드 보너스 +{n}',
     ready:'준비~', go_:'START!', modeNormal:'보통', modeHard:'하드', modeSuper:'초하드', superNote:'초하드: 처음부터 코우가가 화나 있어요! 점수 ×5', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'하드: 시간제한 없음, 점수 ×1.7! 상자를 열면 5초 안에 다 먹기, 발소리가 들리면 상자 덮기. 들키거나 녹으면 끝!',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
-    timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_open:'앗, 피자잖아! −{n}', pizza_away:'휙!', yell_pizza:'이 피자 냄새는 뭐야?! 피자녀석?!', pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:'이 몸의 피노가 없어졌잖아!?!\n누구야!!!', nm_on:'코우가가 폭주한다!', shout_nm:'피노 돌려줘!!!!!!!!!!', dbgNm:'나이트메어', legal:'본 게임은 비상업적이며 모든 리소스의 권리는 원 저작권자에게 있습니다.', bgmSet:'🎵 음악 바꾸기', bgmTitle:'내 음악 넣기', bgmLead:'내 기기에 있는 음악 파일을 고르면 그 모드에서 대신 나와요. 이 기기에만 저장되고, 직접 가진 음원만 넣어 주세요.', bgmRage:'초하드 BGM', bgmNm:'나이트메어 BGM', bgmHintRage:'코우가가 화났을 때', bgmHintNm:'폭주했을 때 (자연스럽게 넘어가요)', bgmPick:'파일 고르기', bgmChange:'바꾸기', bgmClear:'지우기', bgmBad:'이 파일은 재생할 수 없어요. mp3나 m4a 파일인지 확인해 주세요.', recheck:'…응?!', streak:'{s}연속!', cover_calm:'침착! +{n}', cover_close:'간발의 차! +{n}', quit:'그만하기',
+    timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_open:'앗, 피자잖아! −{n}', pizza_away:'휙!', yell_pizza:'이 피자 냄새는 뭐야?! 피자녀석?!', pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:'이 몸의 피노가 없어졌잖아!?!\n누구야!!!', nm_on:'코우가가 폭주한다!', shout_nm:'피노 돌려줘!!!!!!!!!!', dbgNm:'나이트메어', autoOn:'자동 플레이: 켜짐', autoOff:'자동 플레이: 꺼짐', legal:'본 게임은 비상업적이며 모든 리소스의 권리는 원 저작권자에게 있습니다.', bgmSet:'🎵 음악 바꾸기', bgmTitle:'내 음악 넣기', bgmLead:'내 기기에 있는 음악 파일을 고르면 그 모드에서 대신 나와요. 이 기기에만 저장되고, 직접 가진 음원만 넣어 주세요.', bgmRage:'초하드 BGM', bgmNm:'나이트메어 BGM', bgmHintRage:'코우가가 화났을 때', bgmHintNm:'폭주했을 때 (자연스럽게 넘어가요)', bgmPick:'파일 고르기', bgmChange:'바꾸기', bgmClear:'지우기', bgmBad:'이 파일은 재생할 수 없어요. mp3나 m4a 파일인지 확인해 주세요.', recheck:'…응?!', streak:'{s}연속!', cover_calm:'침착! +{n}', cover_close:'간발의 차! +{n}', quit:'그만하기',
     patrol_warn:'코우가가 온다!', patrol_watch:'쉿…', hint_cover:'↓ 쓸어서 상자 덮기!', hideBtn:'숨기기!', unhideBtn:'꺼내기', patrol_caught:'들켰다!', patrol_safe:'안 들켰다! +{n}', hardTag:'하드',
     fx_snap:'띠 끊김!', fx_regrab:'다시 잡았다!', hint_snap:'다시 잡기', yell:'네 녀석!!!!!', fx_heart:'하트', fx_star:'별',
     fx_combo:'COMBO', fx_comboUp:'×{t} COMBO!', fx_break:'콤보 끊김…', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
@@ -1087,7 +1089,7 @@ var I18N={
     fx_perfect:'パーフェクト！+{n}', fx_nice:'NICE!', fx_miss:'MISS −1秒', fx_missHard:'ミス −{n}', fx_speed:'スピードボーナス +{n}',
     ready:'よーい…', go_:'START!', modeNormal:'ふつう', modeHard:'ハード', modeSuper:'超ハード', superNote:'超ハード：最初からコウガが怒ってる！スコア×5', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'ハード：時間無制限、スコア×1.7！箱をあけたら5秒以内に完食、足音がしたら箱をとじる。バレても溶けても終わり！',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
-    timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_open:'あっ、ピザだ！−{n}', pizza_away:'ポイッ！', yell_pizza:'このピザのにおいはなんなんだ？！ピザ野郎？！', pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:'俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!', nm_on:'コウガが暴走した！', shout_nm:'ピノ返せ!!!!!!!!!!', dbgNm:'ナイトメア', legal:'本ゲームは非営利であり、すべての素材の権利は原著作者に帰属します。', bgmSet:'🎵 音楽を変える', bgmTitle:'自分の音楽を入れる', bgmLead:'端末にある音楽ファイルを選ぶと、そのモードで代わりに流れます。この端末にだけ保存されます。自分で持っている音源だけを入れてください。', bgmRage:'超ハードBGM', bgmNm:'ナイトメアBGM', bgmHintRage:'コウガが怒ったとき', bgmHintNm:'暴走したとき（自然に切り替わります）', bgmPick:'ファイルを選ぶ', bgmChange:'変える', bgmClear:'消す', bgmBad:'このファイルは再生できません。mp3かm4aか確認してください。', recheck:'…ん？！', streak:'{s}連続！', cover_calm:'冷静！+{n}', cover_close:'ギリギリセーフ！+{n}', quit:'やめる',
+    timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_open:'あっ、ピザだ！−{n}', pizza_away:'ポイッ！', yell_pizza:'このピザのにおいはなんなんだ？！ピザ野郎？！', pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:'俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!', nm_on:'コウガが暴走した！', shout_nm:'ピノ返せ!!!!!!!!!!', dbgNm:'ナイトメア', autoOn:'オートプレイ：オン', autoOff:'オートプレイ：オフ', legal:'本ゲームは非営利であり、すべての素材の権利は原著作者に帰属します。', bgmSet:'🎵 音楽を変える', bgmTitle:'自分の音楽を入れる', bgmLead:'端末にある音楽ファイルを選ぶと、そのモードで代わりに流れます。この端末にだけ保存されます。自分で持っている音源だけを入れてください。', bgmRage:'超ハードBGM', bgmNm:'ナイトメアBGM', bgmHintRage:'コウガが怒ったとき', bgmHintNm:'暴走したとき（自然に切り替わります）', bgmPick:'ファイルを選ぶ', bgmChange:'変える', bgmClear:'消す', bgmBad:'このファイルは再生できません。mp3かm4aか確認してください。', recheck:'…ん？！', streak:'{s}連続！', cover_calm:'冷静！+{n}', cover_close:'ギリギリセーフ！+{n}', quit:'やめる',
     patrol_warn:'コウガが来る！', patrol_watch:'しーっ…', hint_cover:'↓ スワイプで箱をとじる！', hideBtn:'かくす！', unhideBtn:'とりだす', patrol_caught:'バレた！', patrol_safe:'バレなかった！+{n}', hardTag:'ハード',
     fx_snap:'帯が切れた！', fx_regrab:'つかみ直した！', hint_snap:'つかみ直す', yell:'てめぇ！！！！！', fx_heart:'ハート', fx_star:'ほし',
     fx_combo:'COMBO', fx_comboUp:'×{t} COMBO!', fx_break:'コンボきれた…', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
@@ -3090,6 +3092,30 @@ function showCoverHint(){
 let pizzaEnd=false, caughtEnd=false, meltedEnd=false, quitEnd=false, elapsed=0, mood=0, rage=false, rageTimer=0;
 let fury=0, nightmare=false, nightmareReached=false, rageReached=false;   // super-hard has a second gauge: fill it (half speed) and Kouga goes berserk
 const NM=()=>nightmare?1.35:1;                          // nightmare: everything 1.35x harder
+/* ---------- TEST ONLY: autoplay, a master who never misses ----------
+   on with ?auto in the address, the pause menu button, or Shift+A; tap the green AUTO badge to stop.
+   It plays through the same game functions a finger would reach, at a quick human pace:
+   hides the box the instant Kouga is coming, stays perfectly still while he looks, shoves pizzas aside,
+   peels and opens without snapping the band, always grabs the pick by the handle (PERFECT), eats all six, tosses. */
+const TEST_AUTOPLAY=true;                                 // TEST ONLY: remove before release
+const AUTO={on:false,cd:0,st:''};
+try{ AUTO.on=TEST_AUTOPLAY&&/[?&]auto\b/.test(location.search); }catch(e){}
+function setAuto(on){ AUTO.on=TEST_AUTOPLAY&&on; AUTO.cd=0.2; $('autoBadge').hidden=!AUTO.on; $('autoBtn').textContent=TX(AUTO.on?'autoOn':'autoOff'); }
+function autoStep(rdt){
+  if(!AUTO.on||paused||!cur||readyT>0||state==='over'||state==='idle'||state==='swat') return;
+  if(patrol.phase==='watch') return;                                                   // not a twitch while he looks
+  const kouga=patrol.phase==='warn'||patrol.pendingRecheck;
+  if(kouga&&boxShowing()&&state!=='arrive'){ coverBox(); return; }                      // hide at once
+  if(cur.covered) return;
+  if(state!==AUTO.st){ AUTO.st=state; AUTO.cd=state==='film'?0.08:0.12; }               // a beat to react to each new step
+  AUTO.cd-=rdt; if(AUTO.cd>0) return;
+  if(state==='pizza'){ shovePizza(rnd()<0.5?-1:1); }
+  else if(state==='film'){ if(!cur.tapeBroken) addFilm(rdt/0.32); }                     // a steady pull: never fast enough to snap
+  else if(state==='tear') addTear(rdt/0.28);
+  else if(state==='pick'){ const q=toScreen(cur.pick.userData.gripHit.getWorldPosition(new V3())); grab(true,q.x,q.y); }
+  else if(state==='eat'){ const t=cur.pinos.find(p=>!p.userData.eaten); if(t){ eat(t); AUTO.cd=0.11; } }
+  else if(state==='toss') tossBox();
+}
 const TEST_NIGHTMARE_BTN=true;                          // TEST ONLY: "nightmare" button while in super-hard
 let shoutT=0;
 function burstPath(){   // a spiky shout: sharp points of uneven length round an ellipse
@@ -3328,7 +3354,7 @@ document.querySelectorAll('.slot input').forEach(inp=>markSlot(inp.dataset.slot,
 eatenEl.textContent=TX('eaten')(0);
 $('again').addEventListener('click',startGame);
 // pause / resume / restart
-function pauseGame(){ if(paused||state==='idle'||state==='over') return; paused=true; document.body.classList.add('paused'); bgmLabel(); if(ac) ac.suspend(); down=null; $('pauseOv').hidden=false; $('resumeBtn').focus({preventScroll:true}); }
+function pauseGame(){ if(paused||state==='idle'||state==='over') return; paused=true; $('autoBtn').textContent=TX(AUTO.on?'autoOn':'autoOff'); document.body.classList.add('paused'); bgmLabel(); if(ac) ac.suspend(); down=null; $('pauseOv').hidden=false; $('resumeBtn').focus({preventScroll:true}); }
 function resumeGame(){ if(!paused||introOpen||!$('tutDone').hidden) return; paused=false; document.body.classList.remove('paused'); audio(); $('pauseOv').hidden=true; }
 $('pauseBtn').addEventListener('click',pauseGame);
 $('resumeBtn').addEventListener('click',resumeGame);
@@ -3347,6 +3373,10 @@ document.querySelectorAll('#bgmOv input[data-bgm]').forEach(inp=>inp.addEventLis
 }));
 document.querySelectorAll('#bgmOv .bgmclr').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.clr; bundledBGM(k); bgmDB.del(k).catch(()=>{}); bgmSlots(); }));
 $('dbgNm').addEventListener('click',e=>{ e.stopPropagation(); enterNightmare(); });   // TEST ONLY
+$('autoBtn').hidden=!TEST_AUTOPLAY; $('autoBtn').addEventListener('click',()=>setAuto(!AUTO.on));   // TEST ONLY
+$('autoBadge').addEventListener('click',e=>{ e.stopPropagation(); setAuto(false); });
+addEventListener('keydown',e=>{ if(TEST_AUTOPLAY&&e.shiftKey&&(e.key==='A'||e.key==='a')) setAuto(!AUTO.on); });
+setAuto(AUTO.on);
 // title music: browsers only allow sound after a tap, so the normal tune starts on the first tap anywhere on the start memo
 document.addEventListener('pointerdown',()=>{ if(state==='idle'&&!bgm.playing){ audio(); bgm.play('normal'); } },true);
 $('hideBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation();
@@ -3641,6 +3671,7 @@ function loop(t){
     setNum(scoreEl,Math.round(shownScore).toLocaleString(LOCALE()),'hud'); }
   // fever: rays centred on the box, golden motes drifting up
   floorLight(rdt);   // fever: light rays on the floor behind the box
+  autoStep(rdt);   // TEST ONLY
   { const db=$('dbgNm'), w=TEST_NIGHTMARE_BTN&&rage&&!nightmare&&!paused&&state!=='idle'&&state!=='over'&&state!=='swat'; if(db.hidden===w){ db.hidden=!w; db.textContent=TX('dbgNm'); } }   // TEST ONLY
   { const hb=$('hideBtn'), near=(HARD||lateOn)&&!paused&&cur&&!cur.pizza&&(patrol.phase==='warn'||patrol.phase==='watch'), cov=!!(near&&cur.covered),
       want=!!(near&&(cov||(patrol.phase==='warn'&&boxShowing())));
