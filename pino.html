@@ -3110,8 +3110,8 @@ function creak(){   // a floorboard giving under his weight
 function footstep(i,n){
   const g=0.18+0.5*(i/n);   // louder as he gets closer
   const pan=i%2?0.45:-0.45;   // a heavy heel: a deep body thump, a low floor boom under it, a dull knock on top
-  thump(34,0.26+g*0.62,{dur:0.46,pan}); thump(22,0.16+g*0.4,{dur:0.6,delay:0.012,pan:pan*0.5}); thump(78,0.05+g*0.12,{dur:0.09,pan});
-  sNoise(110,0.8,g*0.55,0.22,'lowpass'); sNoise(420,1.4,g*0.1,0.05,'bandpass'); buzz(18+Math.round(30*i/n)); shake=Math.max(shake,0.04+0.08*i/n);
+  thump(25,0.3+g*0.66,{dur:0.5,pan}); thump(16,0.18+g*0.44,{dur:0.65,delay:0.012,pan:pan*0.5}); thump(52,0.05+g*0.12,{dur:0.09,pan});   // pitched well under the heartbeat
+  sNoise(80,0.8,g*0.6,0.24,'lowpass'); sNoise(300,1.4,g*0.1,0.05,'bandpass'); buzz(18+Math.round(30*i/n)); shake=Math.max(shake,0.04+0.08*i/n);
   const el=document.createElement('img'); el.className='pop sprite thud step'; el.style.setProperty('--r',((i%2?1:-1)*(6+rnd()*8)).toFixed(1)+'deg'); el.alt='';
   setArt(el,'thud',26+Math.round(22*i/n),'thud',LANG==='ja'?'ドスッ':'쿵');
   el.style.left=(innerWidth*(i%2?0.82:0.18))+'px'; el.style.top=(innerHeight*(0.24+0.06*((i*7)%4)))+'px'; $('pops').appendChild(el); later(()=>el.remove(),900);
