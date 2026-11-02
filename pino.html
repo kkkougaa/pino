@@ -896,9 +896,10 @@ body.title .hud,body.title #sus,body.title #fever,body.title #mood{visibility:hi
 #cutin .ci-burst{position:absolute;left:0;top:0;overflow:visible;filter:drop-shadow(0 4px 0 rgba(58,36,22,.3))}
 #cutin .ci-burst path{fill:#FFFBEF;stroke:#3A2416;stroke-width:3;stroke-linejoin:miter;stroke-miterlimit:8}
 #cutin .ci-bub p{position:relative;margin:0;min-height:1.2em;padding:16px 26px 15px;box-sizing:border-box;
-  font-family:var(--hand);font-size:clamp(15px,calc(var(--ciH) * .112),30px);line-height:1.2;color:#C0141C;word-break:keep-all;white-space:pre-line}
+  font-family:var(--hand);font-size:clamp(15px,calc(var(--ciH) * .112),30px);line-height:1.2;color:#C0141C;word-break:keep-all;white-space:pre-line;text-align:center}
 #cutin.nm .ci-bub p{color:#6A12B8}
-html[lang="ja"] #cutin .ci-bub p{font-size:clamp(13px,calc(var(--ciH) * .098),26px);word-break:normal}
+html[lang="ja"] #cutin .ci-bub p{font-size:clamp(13px,calc(var(--ciH) * .098),26px);white-space:pre}   /* Japanese: only the line's own break, so it stays two lines */
+html[lang="ja"] #cutin .ci-bub{max-width:none}
 #cutin.go .ci-bub{animation:bubIn 2.9s cubic-bezier(.2,1.5,.4,1) forwards}
 @keyframes bubIn{0%,15%{transform:scale(0) rotate(-3deg)}21%{transform:scale(1.06) rotate(-3deg)}25%{transform:scale(1) rotate(-3deg)}90%{opacity:1;transform:scale(1) rotate(-3deg)}100%{opacity:0;transform:scale(.9) rotate(-3deg)}}
 #cutin.go .ci-wrap{animation:ciIn 2.9s cubic-bezier(.2,.9,.3,1) forwards}
@@ -3303,7 +3304,9 @@ function cutIn(nm,lineKey){   // Kouga's face, the banner and his line on one st
   later(()=>{ addShake(nm?0.14:0.09); buzz(18); },580);   // a second, smaller jolt when he shouts
   const ln=$('ciLine'); if(ln._tw){ cancelLater(ln._tw); ln._tw=0; } cancelLater(cutIn.ty); ln.style.width=ln.style.height=''; $('ciBurst').style.display='none';   // a new cut-in drops any line still being typed
   const mouth=placeFace();
-  if(lineKey){ ln.textContent=TX(lineKey); const w=ln.offsetWidth+2, h=ln.offsetHeight; ln.style.width=w+'px'; ln.style.height=h+'px'; ln.textContent='';   // size the bubble for the whole line before he types it
+  if(lineKey){ ln.textContent=TX(lineKey); ln.style.fontSize='';
+    { let f=parseFloat(getComputedStyle(ln).fontSize); while(f>11&&ln.offsetWidth>innerWidth-24){ f-=1; ln.style.fontSize=f+'px'; } }   // a long unbroken line shrinks to fit the screen
+    const w=ln.offsetWidth+2, h=ln.offsetHeight; ln.style.width=w+'px'; ln.style.height=h+'px'; ln.textContent='';   // size the bubble for the whole line before he types it
     const bub=ln.parentElement, bl=Math.max(8,Math.min(innerWidth-w-12,mouth.x+mouth.fw*0.2)), bt=mouth.H*0.87;   // just right of and below his mouth, kept on screen
     bub.style.left=bl.toFixed(1)+'px'; bub.style.right='auto';
     const sv=$('ciBurst'); sv.setAttribute('width',w); sv.setAttribute('height',h); sv.firstChild.setAttribute('d',bubPath(w,h,mouth.x-bl,mouth.y-bt)); sv.style.display='';
