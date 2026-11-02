@@ -1515,7 +1515,7 @@ function sadHorn(){   // muted-trombone fail jingle: four steps down, the last o
   note(60,t0,0.26); note(59,t0+0.32,0.13); note(58,t0+0.46,0.2); note(57,t0+0.72,0.26); note(56,t0+1.04,1.15,0.9,true);   // doom · du-dum · doom · dooooo
   thump(52,0.14,{delay:0.05,dur:0.3}); thump(46,0.154,{delay:1.09,dur:0.5});
 }
-function heartbeat(v){   // lub-dub: a body thump with enough upper energy to come through a phone speaker
+function heartbeat(v){ v*=0.5;   // half level, under the footsteps. lub-dub: a body thump with enough upper energy to come through a phone speaker
   thump(78,0.5*v,{dur:0.17,send:0}); sNoise(170,1.1,0.42*v,0.09,'lowpass',0,{send:0}); sTone('sine',112,70,0.22*v,0.12);
   thump(70,0.36*v,{dur:0.15,delay:0.17,send:0}); sNoise(150,1.1,0.3*v,0.08,'lowpass',0.17,{send:0}); sTone('sine',100,64,0.16*v,0.11,0.17);
 }
@@ -3110,8 +3110,8 @@ function creak(){   // a floorboard giving under his weight
 function footstep(i,n){
   const g=0.18+0.5*(i/n);   // louder as he gets closer
   const pan=i%2?0.45:-0.45;   // a heavy heel: a deep body thump, a low floor boom under it, a dull knock on top
-  thump(25,0.45+g*0.95,{dur:0.5,pan}); thump(16,0.27+g*0.62,{dur:0.65,delay:0.012,pan:pan*0.5}); thump(52,0.05+g*0.12,{dur:0.09,pan});   // pitched well under the heartbeat
-  sNoise(80,0.8,0.15+g*0.85,0.24,'lowpass'); sNoise(300,1.4,g*0.1,0.05,'bandpass'); buzz(18+Math.round(30*i/n)); shake=Math.max(shake,0.04+0.08*i/n);
+  thump(25,0.9+g*1.9,{dur:0.5,pan}); thump(16,0.54+g*1.24,{dur:0.65,delay:0.012,pan:pan*0.5}); thump(52,0.1+g*0.24,{dur:0.09,pan});   // pitched well under the heartbeat
+  sNoise(80,0.8,0.3+g*1.7,0.24,'lowpass'); sNoise(300,1.4,g*0.2,0.05,'bandpass'); buzz(18+Math.round(30*i/n)); shake=Math.max(shake,0.04+0.08*i/n);
   const el=document.createElement('img'); el.className='pop sprite thud step'; el.style.setProperty('--r',((i%2?1:-1)*(6+rnd()*8)).toFixed(1)+'deg'); el.alt='';
   setArt(el,'thud',26+Math.round(22*i/n),'thud',LANG==='ja'?'ドスッ':'쿵');
   el.style.left=(innerWidth*(i%2?0.82:0.18))+'px'; el.style.top=(innerHeight*(0.24+0.06*((i*7)%4)))+'px'; $('pops').appendChild(el); later(()=>el.remove(),900);
