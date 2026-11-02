@@ -3347,10 +3347,9 @@ function enterNightmare(){
   buzz([80,40,80,40,200]); shake=0.45;
 }
 function enterRage(){
-  alarm(3);   // the furious stage begins (hard mode tipping over, or a super-hard run starting): the alarm goes off
   rage=true; rageReached=true; document.body.classList.add('rage'); decodeCBGM(['rage','nightmare']); bgm.setMode('rage');
   if(!superOpen&&!SUPER){ superOpen=true; try{ localStorage.setItem('kouga-super','1'); }catch(e){} later(()=>popUnderShout('superUnlock','lucky',1),900); }
-  fury=0; const announce=()=>cutIn(false,'shout_rage');
+  fury=0; const announce=()=>{ alarm(3); cutIn(false,'shout_rage'); };   // the alarm goes off with the "코우가가 화났다!" cut-in (super-hard: after READY / START)
   if(readyT>0) later(()=>{ if(rage&&state!=='over'&&state!=='idle') announce(); },(readyT+0.9)*1000); else announce();
   thump(40,0.45,{dur:0.7}); [49,48,47].forEach((n,i)=>bell(n,{vol:0.07,delay:i*0.02,dur:2})); whoosh(2000,200,0.8,0.12); buzz([60,40,60,40,120]); shake=0.3;
   clearInterval(rageTimer); rageTimer=setInterval(floatAnger,700);
