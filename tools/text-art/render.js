@@ -144,7 +144,6 @@
       g.save(); g.translate(cx, cy); g.rotate(-0.05); g.translate(-cx, -cy);
       sticker(g, gg => scallop(gg, cx, cy, W / 2 - u * 0.15, H / 2 - u * 0.15, 14), lin(box[1], box[1] + H, '#FF7C93', '#D9214F'), u, { box });
       g.restore();
-      spark(g, cx + W * 0.36, cy - H * 0.3, u * 0.2);
       g.drawImage(t.c, cx - t.c.width / 2, cy - t.c.height / 2); return c;
     },
     fever(t, rnd) {   // arcade jackpot: a gold sunburst, a slanted hot-pink band, speed lines either side
@@ -162,7 +161,7 @@
       const band = gg => { gg.beginPath(); gg.moveTo(x0 + sk, y0); gg.lineTo(x0 + W + sk, y0); gg.lineTo(x0 + W - sk, y0 + H); gg.lineTo(x0 - sk, y0 + H); gg.closePath(); };
       sticker(g, band, lin(y0, y0 + H, '#FF5C9A', '#E0261B'), u, { box });
       g.save(); band(g); g.clip(); g.fillStyle = 'rgba(255,255,255,.14)'; for (let i = -2; i < 9; i++) { const x = x0 + i * u * 1.1; g.beginPath(); g.moveTo(x, y0 + H); g.lineTo(x + u * 0.45, y0 + H); g.lineTo(x + u * 0.95, y0); g.lineTo(x + u * 0.5, y0); g.closePath(); g.fill(); } g.restore();
-      spark(g, cx + W * 0.5 + sk * 0.3, y0 - u * 0.1, u * 0.24);
+      
       g.drawImage(t.c, cx - t.c.width / 2, cy - t.c.height / 2); return c;
     },
     rage(t, rnd) { return PLATES._torn(t, rnd, ['#FF5D4A', '#B5121B'], '#E0261B', false); },
@@ -240,8 +239,8 @@
   }
   function renderDigits(set, chars, size) {
     const m = cv(4, 4).getContext('2d'); m.font = fontOf('num', 'x', size * R);
-    const tab = Math.max(...'0123456789'.split('').map(d => m.measureText(d).width)) / (size * R) * 0.8;
-    return Array.from(chars).map(ch => { const t = letters(ch, set, size, 'x', { num: true, tab }); return { set, ch, c: t.c, s: size, p: t.pad / R, e: t.edge / R, o: (2 * (t.pad - t.edge) + t.edge) / R }; });   // o: how far the next glyph tucks in: the paper borders merge, the ink lines stay apart
+    const tab = Math.max(...'0123456789'.split('').map(d => m.measureText(d).width)) / (size * R) * 0.78;
+    return Array.from(chars).map(ch => { const t = letters(ch, set, size, 'x', { num: true, tab }); return { set, ch, c: t.c, s: size, p: t.pad / R, e: t.edge / R, o: 2 * (t.pad - t.edge) / R }; });   // o: how far the next glyph tucks in: only the empty margin, so the stickers just touch and never overlap
   }
   async function fontsReady(cat) {
     const all = [...cat.feedback, ...cat.grades, ...cat.banners];
