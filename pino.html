@@ -1124,7 +1124,7 @@ var I18N={
     introOk:'알았어!',
     intro_hard_t:'하드 모드 규칙', intro_hard:['코우가가 더 열심히 순찰해요. 발소리가 들리면 상자를 숨기고, 쳐다보는 동안엔 화면을 만지지 마세요','의심 게이지가 오를수록 순찰이 잦아지고 예고가 짧아져요','상자를 열면 피노가 녹기 시작해요. 다 녹으면 끝!','포장 띠를 너무 빨리 당기면 끊어질 수도 있어요','피자 상자를 열면 냄새로 들켜요','미스하면 점수가 깎여요. 콤보가 높을수록 더 많이','시간제한은 없지만, 들키면 끝!'],
     intro_super_t:'코우가가 화났다!', intro_super:['처음부터 코우가가 화나 있어요','순찰이 더 잦고, 예고도 훨씬 짧아요','발소리 없이 몰래 오기도 해요','돌아간 줄 알았는데… 다시 돌아볼 때가 있어요','분노가 끝까지 차오르면… 코우가가 폭주해요'],
-    intro_nm_t:'코우가 폭주!', intro_nm:['순찰이 더 잦아지고, 예고는 눈 깜짝할 새예요','버틸수록 점점 더 심해져요','발소리 없이 오는 일이 늘어나요','피노가 더 빨리 녹고, 포장도 더 뜯기 힘들어요'],
+    intro_nm_t:'코우가 폭주!', intro_nm:['순찰이 더 잦아지고, 예고는 눈 깜짝할 새예요','버틸수록 점점 더 심해져요','발소리 없이 오는 일이 늘어나요','피노가 더 빨리 녹아요'],
     nogl:'이 브라우저는 3D(WebGL)를 지원하지 않아요. 최신 크롬이나 사파리로 열어 주세요.'
   },
   ja:{
@@ -1182,7 +1182,7 @@ var I18N={
     introOk:'わかった！',
     intro_hard_t:'ハードモードのルール', intro_hard:['コウガがもっと見回りに来る。足音がしたら箱をかくして、見ている間は画面にさわらないで','あやしさゲージが上がるほど、見回りが増えて予告も短くなる','箱をあけるとピノが溶けはじめる。溶けきったら終わり！','帯をいきおいよく引っぱると切れちゃうかも','ピザの箱をあけるとにおいでバレる','ミスすると減点。コンボが高いほど大きく減る','時間制限はないけど、バレたら終わり！'],
     intro_super_t:'コウガが怒った！', intro_super:['最初からコウガが怒ってる','見回りがもっと多く、予告もずっと短い','足音なしでこっそり来ることも','帰ったと思ったら…また振り返ることがある','怒りが限界まで達すると…コウガが暴走する'],
-    intro_nm_t:'コウガ暴走！', intro_nm:['見回りがさらに増えて、予告は一瞬','ねばるほど、どんどん激しくなる','足音なしで来ることが増える','ピノがもっと早く溶けて、包装もはがしにくくなる'],
+    intro_nm_t:'コウガ暴走！', intro_nm:['見回りがさらに増えて、予告は一瞬','ねばるほど、どんどん激しくなる','足音なしで来ることが増える','ピノがもっと早く溶ける'],
     nogl:'このブラウザは3D（WebGL）に対応していません。最新のChromeかSafariで開いてください。'
   }
 };
@@ -2532,7 +2532,7 @@ function nextBox(){
       [-1,1].forEach(sx=>{ const q=toScreen(b.group.localToWorld(new V3(sx*W/2,0,D/2))); fx.burst(q.x,q.y,{n:3,dir:sx>0?-0.2:Math.PI+0.2,spread:0.7,speed:150,gravity:-40,drag:4.5,size:15,life:0.5,shape:'puff',colors:['#fff']}); });
       tween(0.34,k=>{ const w=(1-k)*Math.cos(k*Math.PI*2.4); b.group.scale.set(1+0.08*w,1-0.15*w,1+0.08*w); },()=>b.group.scale.set(1,1,1)); });
 }
-function addFilm(amount){ amount/=NM();
+function addFilm(amount){
   const b=cur; b.filmP=Math.min(1,b.filmP+amount); const p=b.filmP;
   const steps=Math.floor(p*18);
   while(b.filmStep<steps){ sfx.crinkle(); b.filmStep++; if(b.filmStep%3===0) buzz(4); }
@@ -2559,7 +2559,7 @@ function lidAngle(p){
   if(p<TEAR_FRONT+TEAR_SIDE) return -0.06-0.9*((p-TEAR_FRONT)/TEAR_SIDE);
   return -0.96-0.9*easeOut((p-TEAR_FRONT-TEAR_SIDE)/(1-TEAR_FRONT-TEAR_SIDE));
 }
-function addTear(amount){ amount/=NM();
+function addTear(amount){
   const b=cur; b.tearP=Math.min(1,b.tearP+amount);
   const L=b.tearList; let snd=0;   // cap the clicks per frame so a one-swipe fever tear isn't a wall of noise
   while(b.segIdx<L.length&&L[b.segIdx].at<=b.tearP){
@@ -2706,7 +2706,7 @@ function grab(perfect,x,y){
 }
 function eat(p){
   const b=cur; p.userData.eaten=true; b.eaten++; totalEaten++;
-  if(HARD) mood=Math.min(100,mood+0.7*HARD_K); if(rage&&!nightmare) fury=Math.min(100,fury+0.35);
+  if(HARD) mood=Math.min(100,mood+0.7*HARD_K); if(rage&&!nightmare) fury=Math.min(100,fury+0.5);
   combo++; maxCombo=Math.max(maxCombo,combo); keepCombo();
   addCharge(0.06);
   const t=tier()*(isFever()?2:1);
@@ -3134,29 +3134,29 @@ function patrolSet(phase){
     // super-hard (rage) only: no "he's coming" caption, shadow-only visits, double checks, 0.8 s warning
     $('patrolTxt').style.visibility=''; setArt($('patrolTxt'),'patrol_warn',29,'warn');
     const first=!patrol.count;
-    patrol.kind=patrol.pendingRecheck?'recheck':(rage&&rnd()<(nightmare?Math.min(1,0.4+0.05*NM_MIN()):0.2))?'silent':'steps';   // silent: 20% in rage, 40% in nightmare +5% a minute
+    patrol.kind=patrol.pendingRecheck?'recheck':(!first&&rnd()<0.05)?'cat'   // a passing dog: 5%, footsteps only, nothing overrides it
+      :(rage&&rnd()<(nightmare?Math.min(1,0.3+0.05*NM_STEP()):0.2))?'silent':'steps';   // silent: 20% in rage, 30% in nightmare +5% every 30 s
     patrol.pendingRecheck=false; patrol.linger=false; patrol.leave=null;
-    if(patrol.kind!=='recheck'&&!first){ const r=rnd(); if(r<0.15) patrol.kind='cat'; }   // footsteps that turn out to be a passing dog
     patrol.warnT=patrol.kind==='recheck'?Math.max(0.6,0.8-0.1*RAGE_MIN())   // recheck 0.8 s, -0.1 s a minute, down to 0.6 s
-      :nightmare?Math.max(0.8,1-0.1*NM_MIN()):rage?1.8:lerpN(3,2,m)/HARD_K;   // hard 3 s -> 2 s, rage 1.8 s, nightmare 1 s -> 0.8 s
+      :nightmare?Math.max(0.6,0.8-0.1*NM_STEP()):rage?1.3:lerpN(3,2,m)/HARD_K;   // hard 3 s -> 2 s (/1.2), rage 1.3 s, nightmare 0.8 s, -0.1 s every 30 s, down to 0.6 s
     if(patrol.kind==='silent') patrol.warnT*=1.25;   // no footsteps to warn you, so a touch longer
     patrol.t=patrol.warnT; patrol.steps=0; patrol.coverK=null;
-    patrol.fake=patrol.kind!=='recheck'&&patrol.kind!=='cat'&&!first&&rnd()<lerpN(0.35,0.2,m);
+    patrol.fake=patrol.kind!=='recheck'&&patrol.kind!=='cat'&&!first&&rnd()<(nightmare?0.05:rage?0.1:0.2);   // he turns back: hard 20%, rage 10%, nightmare 5%
     patrol.count=(patrol.count||0)+1;
     if(patrol.kind==='recheck'){ popCenter(say('recheck'),'warn'); voice(300,{vol:0.07,dur:0.14,bend:1.4}); woodblock(61,{vol:0.1,delay:0.1}); buzz(30); } }
   if(phase==='watch'){ $('patrolTxt').style.visibility=''; setArt($('patrolTxt'),'patrol_watch',24,'hush'); patrol.t=lerpN(1.8,2.6,mood/100); buzz(40); bell(61,{vol:0.05,dur:1.6}); bell(62,{vol:0.04,dur:1.6}); thump(45,0.2,{dur:0.4}); }
-  if(phase==='none'&&kougaShade&&patrol.leave==null) patrol.leave=1;
+  if(phase==='none'&&kougaShade&&patrol.leave==null&&patrol.kind!=='cat') patrol.leave=1;   // the dog: no shadow at all
 }
 const PATROL_STEPS=6;
 const lerpN=(a,b,t)=>a+(b-a)*t;
 // ---- patrol tuning (seconds). Hard: suspicion m 0..1 eases the numbers from the first to the second value.
 // Nightmare: every minute survived tightens it, down to a floor.
-const NM_MIN=()=>Math.floor(nmT/60), RAGE_MIN=()=>Math.floor(rageT/60);
+const NM_MIN=()=>Math.floor(nmT/60), RAGE_MIN=()=>Math.floor(rageT/60), NM_STEP=()=>Math.floor(nmT/30);   // NM_STEP: every 30 s survived in nightmare
 function patrolGap(){
-  if(nightmare){ let g=Math.max(5,6-0.5*NM_MIN())+rnd()*4;   // 6~10 s, -0.5 s a minute, down to 5~9 s
+  if(nightmare){ let g=Math.max(5,6-0.5*NM_STEP())+rnd()*2;   // 6~8 s, -0.5 s every 30 s, down to 5~7 s
     patrol.nmLeft=(patrol.nmLeft||(2+Math.floor(rnd()*2)))-1; if(patrol.nmLeft<=0){ g*=2; patrol.nmLeft=2+Math.floor(rnd()*2); }   // a breather now and then
     return g; }
-  if(rage) return 8+rnd()*4;                                   // 8~12 s
+  if(rage) return 7+rnd()*2;                                   // 7~9 s
   const m=mood/100; return (lerpN(13,10,m)+rnd()*4)/HARD_K; }  // hard: 13~17 s -> 10~14 s, then / 1.2
 function patrolTick(dt){
   if(!(HARD||lateOn)||state==='swat'||state==='over'||state==='idle') return;
@@ -3182,7 +3182,7 @@ function patrolTick(dt){
     popCenter(say('w_safe','+'+Math.round(sb*SM())),'good');
     patrolSet('none'); uncoverBox();
     // double check: when he's suspicious enough he may spin straight back round
-    const again=rage&&patrol.kind!=='recheck'&&rnd()<0.3*NM();   // recheck: 30% in rage, ~40% in nightmare
+    const again=rage&&patrol.kind!=='recheck'&&rnd()<(nightmare?Math.min(1,0.3+0.05*NM_STEP()):0.2);   // recheck: rage 20%, nightmare 30% +5% every 30 s
     if(again){ patrol.pendingRecheck=true; patrol.linger=true; patrol.next=1.0+rnd()*0.4;
       later(()=>{ if(!patrol.pendingRecheck) return; creak(); const el=document.createElement('img'); el.className='pop sprite bad'; el.alt='';
         setArt(el,'q',22,'bad','…?'); el.style.left=(innerWidth*0.84)+'px'; el.style.top=(innerHeight*0.36)+'px'; $('pops').appendChild(el); later(()=>el.remove(),1200); },250);
@@ -3389,8 +3389,8 @@ function floatAnger(){   // 💢 drifting up round the edges
   document.body.appendChild(el); later(()=>el.remove(),3400);
 }
 const MELT_TIME=5;
-const HARD_K=1.2;   // hard mode before Kouga loses his temper: patrols, warnings, melting all 1.2x tighter, suspicion 1.2x quicker
-const meltTime=()=>nightmare?4:rage?MELT_TIME:MELT_TIME/HARD_K;   // hard 5 s / 1.2, rage 5 s, nightmare 4 s
+const HARD_K=1.2;   // hard mode before Kouga loses his temper: patrols and warnings 1.2x tighter, suspicion 1.2x quicker
+const meltTime=()=>nightmare?Math.max(3,4-0.5*NM_STEP()):rage?4.5:MELT_TIME;   // hard 5 s, rage 4.5 s, nightmare 4 s -0.5 s every 30 s, down to 3 s
 // hard: once the box is open the pinos start to soften; sag them as the clock runs down
 function meltLook(b){
   const p=Math.max(0,1-b.meltT/MELT_TIME), q=Math.max(0,Math.min(1,(p-0.35)/0.65)), e=q*q*(3-2*q);
