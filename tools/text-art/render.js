@@ -2,12 +2,12 @@
 // Every word is a die-cut fridge sticker: a soft shadow, a fat cream paper border, a brown ink line,
 // a flavour-coloured fill with a candy gloss, and the odd sparkle. Banners sit on paper/sticker plates.
 (function () {
-  const R = 3;                                   // drawn 3x for sharp phones
+  const R = 2;                                   // drawn 2x, like the game's own sprites (keeps pino.html light)
   const INK = '#3A2416', PAPER = '#FFFBEF', SHADOW = 'rgba(58,36,22,.30)';
   const FACE = {
-    display: { ko: '700 1px "Galmuri11"', ja: '"Mochiy Pop One"', x: '700 1px "Galmuri11"' },   // pixel arcade face for Korean and the shared English words
+    display: { ko: '700 1px "Galmuri11"', ja: '"DotGothic16"', x: '700 1px "Galmuri11"' },   // pixel arcade face for Korean and the shared English words
     hand:    { ko: '700 1px "Gaegu"', ja: '"Hachi Maru Pop"', x: '700 1px "Gaegu"' },
-    num:     { ko: '"Titan One"', ja: '"Titan One"', x: '"Titan One"' },
+    num:     { ko: '700 1px "Galmuri11"', ja: '700 1px "Galmuri11"', x: '700 1px "Galmuri11"' },   // pixel digits to match
   };
   // fill: top -> bottom; sp = sparkles; paper/ink: border widths as a share of the font size
   const SKINS = {
@@ -37,7 +37,7 @@
   };
   const cv = (w, h) => { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return c; };
   const rngOf = s => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507), h = Math.imul(h ^ (h >>> 13), 3266489909), (h ^= h >>> 16) >>> 0) / 4294967296); };
-  const SCALE = {}, BOLD = {};   // some faces draw small for their size (Dongle): scale them up to match
+  const SCALE = {}, BOLD = { displayja: 0.06 };   // DotGothic16 is a thin pixel face: give it some body   // some faces draw small for their size (Dongle): scale them up to match
   function setFace(face, lang, css, scale, bold) { FACE[face][lang] = css; SCALE[face + lang] = scale || 1; BOLD[face + lang] = bold || 0; }
   function fontOf(face, lang, fs) { fs = Math.round(fs * (SCALE[face + lang] || 1)); const f = FACE[face][lang] || FACE[face].x; return f.includes('1px') ? f.replace('1px', fs + 'px') : fs + 'px ' + f; }
 
@@ -53,7 +53,7 @@
     const extra = fs * (BOLD[face + lang] || 0) / 2, edge = inkW + paperW + extra, shOff = fs * 0.07, pad = edge + fs * 0.04;
     const m = cv(4, 4).getContext('2d'); m.font = font;
     const chars = Array.from(text);
-    const adv = chars.map(ch => opts.tab && /[0-9]/.test(ch) ? opts.tab * fs : m.measureText(ch).width * (opts.num ? 0.96 : 0.94));
+    const adv = chars.map(ch => opts.tab && /[0-9]/.test(ch) ? opts.tab * fs : opts.tab && /[.,]/.test(ch) ? opts.tab * fs * 0.42 : m.measureText(ch).width * (opts.num ? 0.96 : 0.94));   // narrow . and , between equal-width digits
     const tw = adv.reduce((a, b) => a + b, 0);
     const W = tw + pad * 2, H = fs * 1.18 + pad * 2 + shOff, base = pad + fs * 0.92;
     const lay = []; let x = pad;
@@ -238,8 +238,8 @@
     return { key: it.key, lang: it.x != null ? 'x' : lang, c, s: it.size, p: t.pad / R };
   }
   function renderDigits(set, chars, size) {
-    const m = cv(4, 4).getContext('2d'); m.font = size * R + 'px "Titan One"';
-    const tab = Math.max(...'0123456789'.split('').map(d => m.measureText(d).width)) / (size * R) * 0.95;
+    const m = cv(4, 4).getContext('2d'); m.font = fontOf('num', 'x', size * R);
+    const tab = Math.max(...'0123456789'.split('').map(d => m.measureText(d).width)) / (size * R) * 0.8;
     return Array.from(chars).map(ch => { const t = letters(ch, set, size, 'x', { num: true, tab }); return { set, ch, c: t.c, s: size, p: t.pad / R, e: t.edge / R, o: (2 * (t.pad - t.edge) + t.edge) / R }; });   // o: how far the next glyph tucks in: the paper borders merge, the ink lines stay apart
   }
   async function fontsReady(cat) {
@@ -249,7 +249,7 @@
       const txt = all.map(i => i.x != null ? i.x : i[lang]).join('');
       for (const face of ['display', 'hand']) loads.push(document.fonts.load(fontOf(face, lang, 40), txt));
     }
-    loads.push(document.fonts.load('40px "Titan One"', cat.digits.chars + 'SABCFPINO!?…'));
+    loads.push(document.fonts.load(fontOf('num', 'x', 40), cat.digits.chars + 'SABCFPINO!?…'));
     await Promise.all(loads); await document.fonts.ready;
   }
   window.TextArt = { R, setFace, letters, renderItem, renderDigits, fontsReady, SKINS, PLATES };

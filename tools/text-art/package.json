@@ -4,14 +4,12 @@
   "description": "Draws the game's lettering (feedback, numbers, banners) as WebP stickers and embeds them in pino.html",
   "scripts": {
     "build": "node build.js",
-    "embed": "node build.js embed",
-    "preview": "node build.js preview"
+    "embed": "node build.js embed"
   },
   "devDependencies": {
+    "@fontsource/dotgothic16": "^5.3.1",
     "@fontsource/gaegu": "^5.3.0",
     "@fontsource/hachi-maru-pop": "^5.3.0",
-    "@fontsource/mochiy-pop-one": "^5.3.0",
-    "@fontsource/titan-one": "^5.3.0",
     "galmuri": "^2.40.3"
   }
 }

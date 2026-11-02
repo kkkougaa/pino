@@ -2,7 +2,7 @@
 //   key   : the name the game asks for (pino.html: artOf(key))
 //   ko/ja : the text per language; x = the same in both languages
 //   style : the lettering skin (see SKINS in render.js)
-//   size  : the size it is shown at, in CSS px (it is drawn 3x larger so it stays sharp)
+//   size  : the size it is shown at, in CSS px (it is drawn 2x larger so it stays sharp)
 //   plate : an optional banner drawn behind the letters (see PLATES in render.js)
 // Edit a line here and run `npm run build` to redraw it. To use your own picture for one, drop it in
 // assets/text/<lang>/<key>.webp (same name) and run `npm run embed`.
@@ -58,7 +58,7 @@ window.CATALOG = {
   // ---- digit sets: one glyph per file, all digits the same width so numbers don't wobble ----
   digits: {
     chars: '0123456789+−×.,',
-    size: 60,
+    size: 48,
     sets: ['score', 'good', 'lucky', 'bad', 'alert', 'combo', 'hud', 'hudLow'],
   },
 };
