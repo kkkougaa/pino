@@ -128,6 +128,14 @@
     for (let i = 0; i < n; i++) { g.save(); g.translate(x + rnd() * w, y + rnd() * h); g.rotate(rnd() * Math.PI); rr(g, -u * 0.18, -u * 0.06, u * 0.36, u * 0.12, u * 0.06); g.fillStyle = cols[i % cols.length]; g.fill(); g.lineWidth = u * 0.03; g.strokeStyle = 'rgba(58,36,22,.5)'; g.stroke(); g.restore(); }
   }
 
+  // draw a cell mask (rows of colours or null) at whole-cell steps: one-cell shadow, cream rim, ink edge, then the cells
+  function pixelStamp(g, M, ox, oy, k) {
+    const H = M.length, W = M[0].length, on = (x, y) => y >= 0 && x >= 0 && y < H && x < W && M[y][x];
+    const near = (x, y, d) => { for (let a = -d; a <= d; a++) for (let b = -d; b <= d; b++) if (on(x + a, y + b)) return true; return false; };
+    for (const [d, col, dy] of [[2, SHADOW, 1], [2, PAPER, 0], [1, INK, 0]])
+      for (let y = -2; y < H + 2; y++) for (let x = -2; x < W + 2; x++) if (!on(x, y) && near(x, y, d)) { g.fillStyle = col; g.fillRect(ox + x * k, oy + (y + dy) * k, k, k); }
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (M[y][x]) { g.fillStyle = M[y][x]; g.fillRect(ox + x * k, oy + y * k, k, k); }
+  }
   // the pino box sprite from pixel.js, scaled by a whole number: square cells, a one-cell cream rim and ink edge
   function pixelBox(px) {
     const k = Math.max(2, Math.round(px * 0.62)), src = PixelArt.boxCanvas(), w = src.width + 4, h = src.height + 4, c = cv(w * k, h * k), g = c.getContext('2d');
@@ -162,22 +170,22 @@
       const PB = pixelBox(Math.max(2, Math.round(u * 0.062))), side = PB.width * 0.7;
       const W = F.c.width + u * 0.1, top = u * 1.2, fy = top, H = top + F.c.height + T.c.height * 0.42 + u * 0.3;
       const c = cv(W + side + u * 0.6, H + u * 0.5), g = c.getContext('2d'), x0 = u * 0.3, baseY = fy + F.c.height * 0.5;
-      g.translate(c.width / 2, c.height / 2); g.rotate(-0.05); g.translate(-c.width / 2, -c.height / 2);
+      // no tilt: the flames and the box are real pixel art, so every cell stays square on the pixel grid
       // pixel flames: columns on a grid, three nested layers (red, orange, yellow)
-      const cols = Math.floor((W - u * 0.6) / gp), cx0 = x0 + (W - cols * gp) / 2, ph = rnd() * 6;
+      const cols = Math.floor((W - u * 0.6) / gp), cx0 = Math.round(x0 + (W - cols * gp) / 2), ph = rnd() * 6;
       const height = i => { const k = i / cols, tongue = 0.35 + 0.45 * Math.abs(Math.sin(k * Math.PI * 3.1 + ph)) + 0.2 * Math.abs(Math.sin(k * Math.PI * 7.3 + ph * 2)), edge = Math.min(1, 0.35 + k * 3, 0.35 + (1 - k) * 3); return Math.round(flameH * tongue * edge / gp) * gp; };
-      const layer = (scale, inset) => gg => { gg.beginPath(); for (let i = inset; i < cols - inset; i++) { const h = Math.round(height(i) * scale / gp) * gp; if (h > 0) gg.rect(cx0 + i * gp, baseY - h, gp + 0.5, h + u * 0.25); } };
-      const box = [cx0, baseY - flameH, cols * gp, flameH];
-      sticker(g, layer(1, 0), lin(baseY - flameH, baseY, '#FF6A3D', '#D62A1E'), u * 0.8, { box, gloss: false });
-      g.fillStyle = '#FF9A1F'; layer(0.68, 2)(g); g.fill();
-      g.fillStyle = '#FFE45C'; layer(0.36, 4)(g); g.fill();
+      // the flames as a cell mask: red body (two tones), orange and yellow cores, then a one-cell ink edge and cream rim
+      const rowsN = Math.round(flameH / gp) + 3, base = Math.round(baseY / gp) * gp, M = Array.from({ length: rowsN }, () => Array(cols).fill(null));
+      const fill = (scale, inset, col) => { for (let i = inset; i < cols - inset; i++) { const hc = Math.round(height(i) * scale / gp); for (let r = 0; r < hc + 3; r++) M[rowsN - 1 - r][i] = typeof col === 'function' ? col(r, hc) : col; } };
+      fill(1, 0, (r, hc) => r > hc * 0.55 ? '#FF6A3D' : '#D62A1E'); fill(0.68, 2, '#FF9A1F'); fill(0.36, 4, '#FFE45C');
+      pixelStamp(g, M, cx0, base + 3 * gp - rowsN * gp, gp);
       // one dark plate holds FEVER and TIME!, so nothing hangs outside the badge
       const py0 = fy + F.c.height * 0.2, py1 = fy + F.c.height + T.c.height * 0.42, pbox = [x0, py0, W, py1 - py0];
       sticker(g, gg => rr(gg, x0, py0, W, py1 - py0, u * 0.28), lin(py0, py1, '#4E2E1E', '#2A170D'), u, { box: pbox });
       g.drawImage(F.c, x0 + (W - F.c.width) / 2, fy);
       g.drawImage(T.c, x0 + (W - T.c.width) / 2, fy + F.c.height - T.c.height * 0.4);
       // the pixel pino box leans in at the right of FEVER
-      g.save(); g.translate(x0 + W + side * 0.4, fy + F.c.height * 0.5); g.drawImage(PB, Math.round(-PB.width / 2), Math.round(-PB.height / 2)); g.restore();
+      g.drawImage(PB, Math.round(x0 + W + side * 0.4 - PB.width / 2), Math.round(fy + F.c.height * 0.5 - PB.height / 2));
       return c;
     },
     rage(t, rnd) { return PLATES._torn(t, rnd, ['#FF5D4A', '#B5121B'], '#E0261B', false); },
