@@ -2005,6 +2005,16 @@ function glitterTex(rep){
   for(let i=0;i<70;i++){ g.fillStyle='rgba(255,255,255,'+(0.25+rnd()*0.6).toFixed(2)+')'; g.fillRect(rnd()*128,rnd()*128,1+rnd()*1.4,1+rnd()*1.4); }
   const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(rep,rep); return t;
 }
+// the tray inside a pino box is hammered metallic foil: grey-brown with little embossed dents catching the light
+function foilTex(){
+  const N=256, c=cv(N,N), g=c.getContext('2d'); g.fillStyle='#6B625B'; g.fillRect(0,0,N,N);
+  for(let i=0;i<420;i++){ const x=rnd()*N, y=rnd()*N, r=4+rnd()*7, a=rnd()*Math.PI;
+    for(const [dx,dy,col] of [[-1.2,-1.2,'rgba(235,228,220,.55)'],[1.2,1.2,'rgba(28,22,18,.5)'],[0,0,'rgba(120,110,102,.9)']]){   // lit rim, shadowed rim, the dent itself
+      for(const ox of [-N,0,N]) for(const oy of [-N,0,N]){ g.fillStyle=col; g.beginPath(); g.ellipse(x+dx+ox,y+dy+oy,r,r*0.55,a,0,7); g.fill(); } } }
+  const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.wrapS=t.wrapT=THREE.RepeatWrapping; return t; }
+// chocolate coating: dark and matte, with the pale frost bloom a frozen pino has, strongest where the surface turns away (its silhouette)
+function frostRim(m,amt){ m.onBeforeCompile=sh=>{ sh.fragmentShader=sh.fragmentShader.replace('#include <dithering_fragment>',
+  'float fr=pow(1.0-abs(dot(normalize(normal),normalize(vViewPosition))),2.2);\n gl_FragColor.rgb=mix(gl_FragColor.rgb,vec3(0.62,0.57,0.55),fr*'+amt.toFixed(2)+');\n#include <dithering_fragment>'); }; return m; }
 function buildMaterials(){
   const tx=c=>{const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t;};
   const std=(c,r,extra)=>new THREE.MeshStandardMaterial(Object.assign({color:col(c),roughness:r},extra||{}));
@@ -2021,11 +2031,11 @@ function buildMaterials(){
     filmGloss:new THREE.MeshBasicMaterial({map:tx(sheenCanvas()),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:0.6}),
     filmEdge:new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.5,depthWrite:false}),
     tape:std('#FBFBF8',0.28),
-    tray:std('#2E1A12',0.3),   // dark tray, so the chocolate stands off it
+    tray:std('#FFFFFF',0.3,{map:(()=>{ const t=foilTex(); t.repeat.set(4,2.6); return t; })()}),   // hammered foil
     inner:std('#D6D8D4',0.9,{side:THREE.DoubleSide}),
-    dimple:std('#3A2216',0.3),
-    cup:std('#2E1A12',0.3,{side:THREE.DoubleSide}),
-    choco:std('#7A4A2C',0.36,{metalness:0.05,gradientMap:CHOCO_RAMP}),   // milk-chocolate brown, clearly lighter than the tray, with its own deeper shading
+    dimple:std('#8E857D',0.3),
+    cup:std('#FFFFFF',0.3,{side:THREE.DoubleSide,map:(()=>{ const t=foilTex(); t.repeat.set(3,0.6); return t; })()}),
+    choco:frostRim(std('#3F2519',0.36,{metalness:0.05,gradientMap:CHOCO_RAMP}),0.6),   // dark chocolate, frosted at the edges, on grey foil
     bitten:new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.5,metalness:0.03}),
     pickR:std('#E52A35',0.3,{metalness:0.05,emissive:0xffffff,emissiveMap:glitterTex(8),emissiveIntensity:0.5}),
     pickRp:std('#F06A78',0.38,{metalness:0.05,emissive:0xffffff,emissiveMap:glitterTex(14),emissiveIntensity:0.8}),
