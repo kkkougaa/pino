@@ -19,8 +19,11 @@ async function draw() {
   const b = await chromium.launch(), p = await b.newPage();
   p.on('pageerror', e => console.error('render error:', e.message));
   await p.goto('file://' + path.join(__dirname, 'render.html'));
+  const boxFile = path.join(ROOT, 'assets/box.png');   // the hand-made pino box sprite, handed in as a data URL (a file:// picture would taint the canvas)
+  if (fs.existsSync(boxFile)) await p.evaluate(u => { window.BOX_IMG = new Image(); window.BOX_IMG.src = u; }, 'data:image/png;base64,' + fs.readFileSync(boxFile).toString('base64'));
   const res = await p.evaluate(async () => {
     const C = CATALOG; await TextArt.fontsReady(C);
+    if (window.BOX_IMG && !BOX_IMG.complete) await new Promise(r => { BOX_IMG.onload = BOX_IMG.onerror = r; });
     const url = c => c.toDataURL('image/webp', 0.86), words = [], nums = [];
     for (const it of [...C.feedback, ...C.grades, ...C.banners]) for (const lang of it.x != null ? ['x'] : ['ko', 'ja']) {
       const r = TextArt.renderItem(it, lang === 'x' ? 'ko' : lang); words.push({ lang, key: it.key, s: r.s, p: r.p, u: url(r.c) });

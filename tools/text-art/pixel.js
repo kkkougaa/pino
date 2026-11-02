@@ -24,6 +24,8 @@ window.PixelArt = (() => {
   }
   const PAL = { K: INK, R: '#E2332B', r: '#D3241F', W: '#FFFFFF', C: '#5A3020', c: '#8A5434', d: '#3E1F14' };
   function boxCanvas() {
+    const own = window.BOX_IMG;   // a hand-made sprite (assets/box.png, 1 cell = 1 pixel) wins over the drawn one
+    if (own && own.complete && own.naturalWidth) { const c = document.createElement('canvas'); c.width = own.naturalWidth; c.height = own.naturalHeight; c.getContext('2d').drawImage(own, 0, 0); return c; }
     const rows = boxRows(), c = document.createElement('canvas'); c.width = rows[0].length; c.height = rows.length + 1;
     const g = c.getContext('2d');
     g.fillStyle = 'rgba(58,36,22,.35)'; g.fillRect(1, rows.length, rows[0].length - 1, 1);   // one-cell drop shadow
