@@ -11,33 +11,35 @@
   };
   // fill: top -> bottom; sp = sparkles; paper/ink: border widths as a share of the font size
   const SKINS = {
-    good:   { fill: ['#7EEBCF', '#20A98B'], sp: 1 },          // mint
-    lucky:  { fill: ['#FFA6CB', '#EC3F86'], sp: 2 },          // strawberry
+    good:   { fill: ['#7EEBCF', '#20A98B'] },          // mint
+    lucky:  { fill: ['#FFA6CB', '#EC3F86'] },          // strawberry
     bad:    { fill: ['#C9D5E2', '#7F90A6'] },                 // ice
     alert:  { fill: ['#FF7A5E', '#D81F1F'] },                 // Kouga red
     warn:   { fill: ['#FFEC6E', '#FFB000'] },                 // lemon
     hint:   { fill: ['#96D4FF', '#2F86E0'] },                 // soda
-    combo:  { fill: ['#FF86A4', '#E02F5C'], sp: 1 },          // berry
+    combo:  { fill: ['#FF86A4', '#E02F5C'] },          // berry
     score:  { fill: ['#FFC766', '#F07A10'] },                 // caramel
     hush:   { fill: ['#D7C7FF', '#8D6BE3'], face: 'hand' },   // lavender, handwritten
     thud:   { fill: ['#9A6644', '#4A2A18'], tilt: 1.6 },      // chocolate, heavy
     ring:   { fill: ['#FFFFFF', '#FFEFCC'], paper: 0.0, ink: 0.11 },
     ringOn: { fill: ['#FFF27A', '#FFB300'], paper: 0.0, ink: 0.11 },
     go:     { fill: ['#FFFFFF', '#FFE6D2'] },
-    fever:  { fill: ['#FFFFFF', '#FFF07A'], sp: 2 },          // white-gold letters on the hot band
+    fever:  { fill: ['#FFFFFF', '#FFF07A'] },          // white-gold letters on the hot band
     rage:   { fill: ['#FFFFFF', '#FFD9CF'] },
     nm:     { fill: ['#FFFFFF', '#EBD9FF'] },
-    unlock: { fill: ['#FFFFFF', '#FFE7A8'], sp: 2 },
+    unlock: { fill: ['#FFFFFF', '#FFE7A8'] },
     melt:   { fill: ['#93603D', '#43230F'] },
     pizza:  { fill: ['#FF7350', '#C8261A'] },
-    gS: { fill: ['#FFF07A', '#F2A400'], sp: 3 }, gA: { fill: ['#FFA6CB', '#EC3F86'], sp: 2 },
-    gB: { fill: ['#FFC766', '#F07A10'], sp: 1 }, gC: { fill: ['#7EEBCF', '#20A98B'] }, gF: { fill: ['#C9D5E2', '#7F90A6'] },
+    gS: { fill: ['#FFF07A', '#F2A400'], sp: 1 }, gA: { fill: ['#FFA6CB', '#EC3F86'] },
+    gB: { fill: ['#FFC766', '#F07A10'] }, gC: { fill: ['#7EEBCF', '#20A98B'] }, gF: { fill: ['#C9D5E2', '#7F90A6'] },
     hud:    { fill: ['#FFFFFF', '#FFF0D4'], paper: 0.0, ink: 0.12 },
     hudLow: { fill: ['#FFE5DD', '#FF8D78'], paper: 0.0, ink: 0.12, inkC: '#9E1C14' },
   };
   const cv = (w, h) => { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return c; };
   const rngOf = s => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507), h = Math.imul(h ^ (h >>> 13), 3266489909), (h ^= h >>> 16) >>> 0) / 4294967296); };
-  function fontOf(face, lang, fs) { const f = FACE[face][lang] || FACE[face].x; return f.includes('1px') ? f.replace('1px', fs + 'px') : fs + 'px ' + f; }
+  const SCALE = {};   // some faces draw small for their size (Dongle): scale them up to match
+  function setFace(face, lang, css, scale) { FACE[face][lang] = css; SCALE[face + lang] = scale || 1; }
+  function fontOf(face, lang, fs) { fs = Math.round(fs * (SCALE[face + lang] || 1)); const f = FACE[face][lang] || FACE[face].x; return f.includes('1px') ? f.replace('1px', fs + 'px') : fs + 'px ' + f; }
 
   // ---------- one line of sticker lettering ----------
   // opts.tab: fixed advance (digits); returns {c, pad, edge} (pad = empty margin, edge = sticker border width), all in canvas px
@@ -141,7 +143,7 @@
       g.save(); g.translate(cx, cy); g.rotate(-0.05); g.translate(-cx, -cy);
       sticker(g, gg => scallop(gg, cx, cy, W / 2 - u * 0.15, H / 2 - u * 0.15, 14), lin(box[1], box[1] + H, '#FF7C93', '#D9214F'), u, { box });
       g.restore();
-      spark(g, cx + W * 0.36, cy - H * 0.3, u * 0.22); spark(g, cx - W * 0.4, cy + H * 0.26, u * 0.15);
+      spark(g, cx + W * 0.36, cy - H * 0.3, u * 0.2);
       g.drawImage(t.c, cx - t.c.width / 2, cy - t.c.height / 2); return c;
     },
     fever(t, rnd) {   // arcade jackpot: a gold sunburst, a slanted hot-pink band, speed lines either side
@@ -159,7 +161,7 @@
       const band = gg => { gg.beginPath(); gg.moveTo(x0 + sk, y0); gg.lineTo(x0 + W + sk, y0); gg.lineTo(x0 + W - sk, y0 + H); gg.lineTo(x0 - sk, y0 + H); gg.closePath(); };
       sticker(g, band, lin(y0, y0 + H, '#FF5C9A', '#E0261B'), u, { box });
       g.save(); band(g); g.clip(); g.fillStyle = 'rgba(255,255,255,.14)'; for (let i = -2; i < 9; i++) { const x = x0 + i * u * 1.1; g.beginPath(); g.moveTo(x, y0 + H); g.lineTo(x + u * 0.45, y0 + H); g.lineTo(x + u * 0.95, y0); g.lineTo(x + u * 0.5, y0); g.closePath(); g.fill(); } g.restore();
-      spark(g, cx + W * 0.5 + sk * 0.3, y0 - u * 0.1, u * 0.26); spark(g, cx - W * 0.46, y0 + H + u * 0.12, u * 0.2); spark(g, cx - W * 0.22, y0 - u * 0.45, u * 0.14);
+      spark(g, cx + W * 0.5 + sk * 0.3, y0 - u * 0.1, u * 0.24);
       g.drawImage(t.c, cx - t.c.width / 2, cy - t.c.height / 2); return c;
     },
     rage(t, rnd) { return PLATES._torn(t, rnd, ['#FF5D4A', '#B5121B'], '#E0261B', false); },
@@ -178,7 +180,7 @@
       const u = t.fs, W = t.c.width + u * 0.8, H = t.c.height + u * 0.25, tail = u * 1.1, c = cv(W + tail * 2 + u, H + u * 1.4), g = c.getContext('2d'), x0 = tail + u / 2, y0 = u * 0.5, box = [x0, y0, W, H];
       [[-1, x0 + u * 0.2], [1, x0 + W - u * 0.2]].forEach(([s, x]) => sticker(g, gg => { gg.beginPath(); gg.moveTo(x, y0 + u * 0.35); gg.lineTo(x + s * tail, y0 + u * 0.35); gg.lineTo(x + s * tail * 0.7, y0 + H / 2 + u * 0.35); gg.lineTo(x + s * tail, y0 + H + u * 0.35); gg.lineTo(x, y0 + H + u * 0.35); gg.closePath(); }, '#A3141E', u, { box, gloss: false }));
       sticker(g, gg => rr(gg, x0, y0, W, H, u * 0.12), lin(y0, y0 + H, '#FF5A4A', '#C81D25'), u, { box });
-      spark(g, x0 + W - u * 0.1, y0 - u * 0.05, u * 0.22); spark(g, x0 + u * 0.1, y0 + H, u * 0.16);
+      spark(g, x0 + W - u * 0.1, y0 - u * 0.05, u * 0.2);
       g.drawImage(t.c, x0 + (W - t.c.width) / 2, y0 + (H - t.c.height) / 2); return c;
     },
     cloud(t, rnd) {   // a hushed thought bubble
@@ -214,10 +216,24 @@
     },
   };
 
+  function icon(kind, size) {   // a little heart or star sticker
+    const u = size * R, s = u * 0.78, c = cv(s + u * 0.5, s + u * 0.55), g = c.getContext('2d'), cx = c.width / 2, cy = c.height / 2 - u * 0.03;
+    const heart = gg => { gg.beginPath(); gg.moveTo(cx, cy + s * 0.42); gg.bezierCurveTo(cx - s * 0.62, cy, cx - s * 0.5, cy - s * 0.52, cx, cy - s * 0.2); gg.bezierCurveTo(cx + s * 0.5, cy - s * 0.52, cx + s * 0.62, cy, cx, cy + s * 0.42); gg.closePath(); };
+    const star = gg => { gg.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? s * 0.25 : s * 0.52, a = -Math.PI / 2 + i * Math.PI / 5; gg.lineTo(cx + Math.cos(a) * r, cy + s * 0.04 + Math.sin(a) * r); } gg.closePath(); };
+    const box = [cx - s / 2, cy - s / 2, s, s];
+    g.translate(cx, cy); g.rotate(kind === 'heart' ? -0.18 : 0.12); g.translate(-cx, -cy);
+    sticker(g, kind === 'heart' ? heart : star, kind === 'heart' ? lin(box[1], box[1] + s, '#FF9BC2', '#EC3F86') : lin(box[1], box[1] + s, '#FFF07A', '#F2A400'), u * 0.75, { box });
+    return c;
+  }
+  function withIcon(t, kind, size) {
+    const ic = icon(kind, size), tuck = t.pad * 1.1, c = cv(ic.width + t.c.width - tuck, Math.max(ic.height, t.c.height)), g = c.getContext('2d');
+    g.drawImage(t.c, ic.width - tuck, (c.height - t.c.height) / 2); g.drawImage(ic, 0, (c.height - ic.height) / 2 - size * R * 0.04);
+    return c;
+  }
   function renderItem(it, lang) {
     const text = it.x != null ? it.x : it[lang];
     const t = letters(text, it.style, it.size, lang);
-    const c = it.plate ? PLATES[it.plate](t, rngOf(it.key + lang)) : t.c;
+    const c = it.plate ? PLATES[it.plate](t, rngOf(it.key + lang)) : it.icon ? withIcon(t, it.icon, it.size) : t.c;
     return { key: it.key, lang: it.x != null ? 'x' : lang, c, s: it.size, p: t.pad / R };
   }
   function renderDigits(set, chars, size) {
@@ -235,5 +251,5 @@
     loads.push(document.fonts.load('40px "Titan One"', cat.digits.chars + 'SABCFPINO!?…'));
     await Promise.all(loads); await document.fonts.ready;
   }
-  window.TextArt = { R, letters, renderItem, renderDigits, fontsReady, SKINS, PLATES };
+  window.TextArt = { R, setFace, letters, renderItem, renderDigits, fontsReady, SKINS, PLATES };
 })();
