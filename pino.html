@@ -3137,7 +3137,7 @@ function patrolSet(phase){
     patrol.kind=patrol.pendingRecheck?'recheck':(!first&&rnd()<0.05)?'cat'   // a passing dog: 5%, footsteps only, nothing overrides it
       :(rage&&rnd()<(nightmare?Math.min(0.5,0.3+0.05*NM_STEP()):0.2))?'silent':'steps';   // silent: 20% in rage, 30% in nightmare +5% every 30 s, up to 50%
     patrol.pendingRecheck=false; patrol.linger=false; patrol.leave=null;
-    patrol.warnT=patrol.kind==='recheck'?Math.max(0.6,0.8-0.1*RAGE_MIN())   // recheck 0.8 s, -0.1 s a minute, down to 0.6 s
+    patrol.warnT=patrol.kind==='recheck'?(nightmare?Math.max(0.8,1-0.1*NM_STEP()):1.2)   // recheck: rage 1.2 s; nightmare 1 s, -0.1 s every 30 s, down to 0.8 s
       :nightmare?Math.max(1,1.2-0.1*NM_STEP()):rage?1.4:lerpN(3,2,m)/HARD_K;   // hard 3 s -> 2 s (/1.2), rage 1.4 s, nightmare 1.2 s, -0.1 s every 30 s, down to 1 s
     if(patrol.kind==='silent') patrol.warnT*=1.25;   // no footsteps to warn you, so a touch longer
     patrol.t=patrol.warnT; patrol.steps=0; patrol.coverK=null;
