@@ -7,7 +7,14 @@ const ROOT = path.resolve(__dirname, '../..'), OUT = path.join(ROOT, 'assets/tex
 const CHAR_FILE = { '+': 'plus', '−': 'minus', '×': 'times', '.': 'dot', ',': 'comma' };
 const fileOfChar = ch => CHAR_FILE[ch] || ch;
 
+// the memo hand (Goding) lives inside pino.html as a data URL: lift it out for the renderer
+function godingFont() {
+  const m = fs.readFileSync(GAME, 'utf8').match(/font-family:"Goding";src:url\(data:font\/woff2;base64,([A-Za-z0-9+/=]+)\)/);
+  if (!m) throw new Error('Goding font not found in pino.html');
+  fs.mkdirSync(path.join(__dirname, '.cache'), { recursive: true }); fs.writeFileSync(path.join(__dirname, '.cache/goding.woff2'), Buffer.from(m[1], 'base64'));
+}
 async function draw() {
+  godingFont();
   const { chromium } = require('playwright');
   const b = await chromium.launch(), p = await b.newPage();
   p.on('pageerror', e => console.error('render error:', e.message));

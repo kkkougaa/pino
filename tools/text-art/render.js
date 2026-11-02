@@ -6,7 +6,7 @@
   const INK = '#3A2416', PAPER = '#FFFBEF', SHADOW = 'rgba(58,36,22,.30)';
   const FACE = {
     display: { ko: '700 1px "Galmuri11"', ja: '"DotGothic16"', x: '700 1px "Galmuri11"' },   // pixel arcade face for Korean and the shared English words
-    hand:    { ko: '700 1px "Gaegu"', ja: '"Hachi Maru Pop"', x: '700 1px "Gaegu"' },
+    hand:    { ko: '"Goding"', ja: '"Yusei Magic"', x: '"Goding"' },   // the same hand as Kouga's memo
     num:     { ko: '700 1px "Galmuri11"', ja: '700 1px "Galmuri11"', x: '700 1px "Galmuri11"' },   // pixel digits to match
   };
   // fill: top -> bottom; sp = sparkles; paper/ink: border widths as a share of the font size
@@ -19,13 +19,13 @@
     hint:   { fill: ['#96D4FF', '#2F86E0'] },                 // soda
     combo:  { fill: ['#FF86A4', '#E02F5C'] },          // berry
     score:  { fill: ['#FFC766', '#F07A10'] },                 // caramel
-    hush:   { fill: ['#D7C7FF', '#8D6BE3'] },                 // lavender, same pixel face as the rest
+    hush:   { fill: ['#D7C7FF', '#8D6BE3'], face: 'hand' },   // lavender, handwritten: a whisper
     thud:   { fill: ['#9A6644', '#4A2A18'], tilt: 1.6 },      // chocolate, heavy
     ring:   { fill: ['#FFFFFF', '#FFEFCC'], paper: 0.0, ink: 0.11 },
     ringOn: { fill: ['#FFF27A', '#FFB300'], paper: 0.0, ink: 0.11 },
     go:     { fill: ['#FFFFFF', '#FFE6D2'] },
     fever:  { fill: ['#FFFFFF', '#FFE98A'] },          // cream letters in front of the flames
-    feverTab: { fill: ['#FFFFFF', '#FFE7A8'], paper: 0, ink: 0.001 },   // TIME! printed on its ink tab
+    feverTab: { fill: ['#FFF27A', '#FFB000'], paper: 0, ink: 0.001 },   // TIME! printed in yellow on the dark plate
     rage:   { fill: ['#FFFFFF', '#FFD9CF'] },
     nm:     { fill: ['#FFFFFF', '#EBD9FF'] },
     unlock: { fill: ['#FFFFFF', '#FFE7A8'] },
@@ -38,7 +38,7 @@
   };
   const cv = (w, h) => { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return c; };
   const rngOf = s => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507), h = Math.imul(h ^ (h >>> 13), 3266489909), (h ^= h >>> 16) >>> 0) / 4294967296); };
-  const SCALE = {}, BOLD = { displayja: 0.06 };   // DotGothic16 is a thin pixel face: give it some body   // some faces draw small for their size (Dongle): scale them up to match
+  const SCALE = { handko: 1.2 }, BOLD = { displayja: 0.06 };   // DotGothic16 is a thin pixel face: give it some body   // some faces draw small for their size (Dongle): scale them up to match
   function setFace(face, lang, css, scale, bold) { FACE[face][lang] = css; SCALE[face + lang] = scale || 1; BOLD[face + lang] = bold || 0; }
   function fontOf(face, lang, fs) { fs = Math.round(fs * (SCALE[face + lang] || 1)); const f = FACE[face][lang] || FACE[face].x; return f.includes('1px') ? f.replace('1px', fs + 'px') : fs + 'px ' + f; }
 
@@ -129,26 +129,35 @@
   }
 
   // a little pixel-art pino box (open, two pinos peeking out) as a sticker
+  // the box front in pixels, after the real package: red, a white oval with the pino wordmark, white dots, pinos around
   const PINO_BOX = [
-    '...KKK....KKK...',
-    '..KcCCK..KcCCK..',
-    '.KCCCCCKKCCCCCK.',
-    'KKKKKKKKKKKKKKKK',
-    'KRRWRRRRRRRRWRRK',
-    'KRWWWRRRRRRWWWRK',
-    'KRRWRRRRRRRRWRRK',
-    'KWWWWWWWWWWWWWWK',
-    'KWRRWRWRRWRWWRWK',
-    'KWWWWWWWWWWWWWWK',
-    'KRRRRWRRRRWRRRRK',
-    'KrrrrrrrrrrrrrrK',
-    'KKKKKKKKKKKKKKKK'];
-  const PIX = { K: INK, R: '#E2332B', r: '#B21E1B', W: '#FFFFFF', C: '#6B3A22', c: '#B07850' };
+    'KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK',
+    'KRRRRRRRRRCCRRRWWRRRRRRRCcCCRRRK',
+    'KRRRRRRRRCcCRRRWWRRRRRRRCcCCRRRK',
+    'KRWRRRRRRCcCCRRRRRRRRRRCcCCCRRRK',
+    'KWWWRRRRRRRWWWWWWWWWWRRCcCCCRRRK',
+    'KRWRRRRRWWWWWWWWWWWWWWWVVVVVVRRK',
+    'KRRRRRWWWWWRRWWWWWWWWWWVVVVVVRRK',
+    'KRRRRWWWWWWWWWWWWWWWWWWWWWWRRRRK',
+    'KRRRWRRRRWWRRWRRRRWWWRRRWWWWRRRK',
+    'KRRWWRRWRRWRRWRRWRRWRRWRRWWWWRRK',
+    'KRRWWRRWRRWRRWRRWRRWRRWRRWWWWRRK',
+    'KRRWWRRRRWWWWWRRWRRWWRRRWWWWWRRK',
+    'KRRRWRRWWWWWWWWWWWWWWWWWWWWWRWRK',
+    'KRRRRWWWWWWWWWWWWWWWWWWWWWWRWWWK',
+    'KRCcCRWWWWWWWWWWWWWWWWWWWWRRRWRK',
+    'KCcCCRRRWWWWWWWWWWWWWWWWRRRRRRRK',
+    'KCcCCRRRRRRWWWWWWWWWWRRRRRCCRRRK',
+    'KCcCCCRRRRRWWWRRRRRRCRRRRCcCRRRK',
+    'KRRRRRRRRRRRWRRRRRRCcCRRRCcCCRRK',
+    'KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK'];
+  const PIX = { K: INK, R: '#E2332B', r: '#B21E1B', W: '#FFFFFF', C: '#5A3020', c: '#96603F', V: '#F3E6D0' };
   function pixelBox(px) {
-    const rows = PINO_BOX, w = rows[0].length * px, h = rows.length * px, m = px * 2.2, c = cv(w + m * 2, h + m * 2), g = c.getContext('2d');
+    const rows = PINO_BOX, w = rows[0].length * px, h = rows.length * px, m = Math.round(px * 2.2),   // whole-pixel offsets: no seams between cells
+      c = cv(w + m * 2, h + m * 2), g = c.getContext('2d');
     const cells = gg => { gg.beginPath(); rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== '.') gg.rect(m + x * px, m + y * px, px + 0.5, px + 0.5); })); };
     sticker(g, cells, INK, px * 4, { box: [m, m, w, h], gloss: false, paper: px * 0.9 });
-    rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== '.') { g.fillStyle = PIX[ch]; g.fillRect(m + x * px, m + y * px, px + 0.5, px + 0.5); } }));
+    rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== '.') { g.fillStyle = PIX[ch]; g.fillRect(m + x * px, m + y * px, px, px); } }));
     return c;
   }
   // each plate gets the rendered letters (t) and returns the finished canvas
@@ -171,10 +180,10 @@
       g.drawImage(t.c, cx - t.c.width / 2, cy - t.c.height / 2); return c;
     },
     fever(t, rnd) {   // a two-line lockup: big FEVER over pixel flames, a small ink tab saying TIME!
-      const size = t.fs / R, F = letters('FEVER', 'fever', size, 'x'), T = letters('TIME!', 'feverTab', size * 0.42, 'x');
+      const size = t.fs / R, F = letters('FEVER', 'fever', size, 'x'), T = letters('TIME!', 'feverTab', size * 0.56, 'x');
       const u = t.fs, gp = Math.max(2, Math.round(u * 0.12)), flameH = u * 1.75;
-      const PB = pixelBox(Math.round(u * 0.1)), side = PB.width * 0.72;
-      const W = F.c.width + u * 0.3, top = u * 1.2, fy = top, H = top + F.c.height + T.c.height * 0.6 + u * 0.1;
+      const PB = pixelBox(Math.max(2, Math.round(u * 0.062))), side = PB.width * 0.7;
+      const W = F.c.width + u * 0.1, top = u * 1.2, fy = top, H = top + F.c.height + T.c.height * 0.42 + u * 0.3;
       const c = cv(W + side + u * 0.6, H + u * 0.5), g = c.getContext('2d'), x0 = u * 0.3, baseY = fy + F.c.height * 0.5;
       g.translate(c.width / 2, c.height / 2); g.rotate(-0.05); g.translate(-c.width / 2, -c.height / 2);
       // pixel flames: columns on a grid, three nested layers (red, orange, yellow)
@@ -185,13 +194,13 @@
       sticker(g, layer(1, 0), lin(baseY - flameH, baseY, '#FF6A3D', '#D62A1E'), u * 0.8, { box, gloss: false });
       g.fillStyle = '#FF9A1F'; layer(0.68, 2)(g); g.fill();
       g.fillStyle = '#FFE45C'; layer(0.36, 4)(g); g.fill();
+      // one dark plate holds FEVER and TIME!, so nothing hangs outside the badge
+      const py0 = fy + F.c.height * 0.2, py1 = fy + F.c.height + T.c.height * 0.42, pbox = [x0, py0, W, py1 - py0];
+      sticker(g, gg => rr(gg, x0, py0, W, py1 - py0, u * 0.28), lin(py0, py1, '#4E2E1E', '#2A170D'), u, { box: pbox });
       g.drawImage(F.c, x0 + (W - F.c.width) / 2, fy);
-      // the TIME! tab, centred under FEVER and overlapping its foot, so it never sticks out of the lockup
-      const tw = T.c.width + u * 0.25, th = T.c.height * 0.82, tx = x0 + (W - tw) / 2, ty = fy + F.c.height - u * 0.36;
-      sticker(g, gg => rr(gg, tx, ty, tw, th, th * 0.45), INK, u * 0.6, { box: [tx, ty, tw, th], gloss: false });
-      g.drawImage(T.c, tx + (tw - T.c.width) / 2, ty + (th - T.c.height) / 2);
+      g.drawImage(T.c, x0 + (W - T.c.width) / 2, fy + F.c.height - T.c.height * 0.4);
       // the pixel pino box leans in at the right of FEVER
-      g.save(); g.translate(x0 + W + side * 0.32, fy + F.c.height * 0.52); g.rotate(0.16); g.drawImage(PB, -PB.width / 2, -PB.height / 2); g.restore();
+      g.save(); g.translate(x0 + W + side * 0.4, fy + F.c.height * 0.5); g.rotate(0.14); g.drawImage(PB, -PB.width / 2, -PB.height / 2); g.restore();
       return c;
     },
     rage(t, rnd) { return PLATES._torn(t, rnd, ['#FF5D4A', '#B5121B'], '#E0261B', false); },

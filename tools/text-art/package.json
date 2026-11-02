@@ -8,8 +8,7 @@
   },
   "devDependencies": {
     "@fontsource/dotgothic16": "^5.3.1",
-    "@fontsource/gaegu": "^5.3.0",
-    "@fontsource/hachi-maru-pop": "^5.3.0",
-    "galmuri": "^2.40.3"
+    "galmuri": "^2.40.3",
+    "@fontsource/yusei-magic": "^5.3.0"
   }
 }
