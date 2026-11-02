@@ -1214,7 +1214,7 @@ function makeRoom(a,sec,decay){ const len=Math.floor(a.sampleRate*sec), b=a.crea
   for(let c=0;c<2;c++){ const d=b.getChannelData(c); for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay)*(i<a.sampleRate*0.004?i/(a.sampleRate*0.004):1); }
   return b; }
 // the audio context can be suspended or 'interrupted' (lock screen, a call): wake it on the next touch or when the page comes back
-function wakeAudio(){ if(ac&&ac.state!=='running'&&!paused) ac.resume().catch(()=>{}); }
+function wakeAudio(){ if(ac&&ac.state!=='running'&&!paused&&!document.hidden) ac.resume().catch(()=>{}); }
 ['pointerdown','touchend','keydown'].forEach(ev=>document.addEventListener(ev,wakeAudio,true));
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) wakeAudio(); }); addEventListener('pageshow',wakeAudio); addEventListener('focus',wakeAudio);
 try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}   // iOS: play even with the ring switch on silent
@@ -1234,7 +1234,7 @@ function audio(){
       BUS={dry,wet};
     }catch(e){ ac=null; }
   }
-  if(ac&&ac.state!=='running') ac.resume().catch(()=>{});
+  if(ac&&ac.state!=='running'&&!document.hidden&&!paused) ac.resume().catch(()=>{});   // never wakes the sound while the page is in the background or the run is paused
   return ac;
 }
 function out(node,o){   // to the mix: optional pan, reverb send
@@ -1316,13 +1316,22 @@ function bundledBGM(k){ CBGM.blobs[k]=null; CBGM.src[k]=(BUNDLED_BGM&&BUNDLED_BG
 const bgmDB=(()=>{ let p=null; const open=()=>p||(p=new Promise((res,rej)=>{ try{ const r=indexedDB.open('kouga-bgm',1); r.onupgradeneeded=()=>r.result.createObjectStore('f'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }catch(e){ rej(e); } }));
   const run=(mode,fn)=>open().then(db=>new Promise((res,rej)=>{ const t=db.transaction('f',mode), q=fn(t.objectStore('f')); t.oncomplete=()=>res(q&&q.result); t.onerror=()=>rej(t.error); }));
   return { get:k=>run('readonly',st=>st.get(k)), set:(k,v)=>run('readwrite',st=>st.put(v,k)), del:k=>run('readwrite',st=>st.delete(k)) }; })();
-function decodeCBGM(keys){ const a=ac; if(!a) return;
+function decodeCBGM(keys){ const a=ac; if(!a) return;   // a fallback: everything is normally decoded at load (bgmReady)
   (keys||[]).forEach(k=>{ const b=CBGM.blobs[k], src=CBGM.src[k]; if((!b&&!src)||CBGM[k]||CBGM.busy[k]) return; CBGM.busy[k]=true;
-    (b?Promise.resolve(b):fetch(src).then(r=>{ if(!r.ok) throw new Error('bgm '+r.status); return r.blob(); }))   // fetched on first need; the synth tune plays until it's ready
-      .then(bl=>{ if(!CBGM.blobs[k]) CBGM.blobs[k]=bl; return bl.arrayBuffer(); })
+    (b?b.arrayBuffer():Promise.resolve(b64ToBuf(src)))
       .then(x=>new Promise((res,rej)=>a.decodeAudioData(x,res,rej))).then(buf=>{ CBGM[k]=buf; CBGM.busy[k]=false; bgm.refresh(); })
       .catch(()=>{ CBGM.busy[k]=false; if(!b) CBGM.src[k]=null; else CBGM.blobs[k]=null; }); }); }
-['rage','nightmare'].forEach(k=>bgmDB.get(k).then(v=>{ if(v&&v.blob){ CBGM.blobs[k]=v.blob; CBGM.names[k]=v.name; CBGM.own[k]=true; CBGM[k]=null; } }).catch(()=>{}));
+// all music is decoded while the loading screen is up, so it's ready the moment it's needed. An OfflineAudioContext decodes
+// without a tap (an AudioBuffer plays in any context); the embedded base64 is unpacked directly rather than fetched
+function b64ToBuf(url){ const s=atob(url.slice(url.indexOf(',')+1)), u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u.buffer; }
+function decodeBuf(ab){ const O=window.OfflineAudioContext||window.webkitOfflineAudioContext, c=O?new O(2,44100,44100):(audio()||null); if(!c) return Promise.reject(new Error('no audio'));
+  return new Promise((res,rej)=>{ const p=c.decodeAudioData(ab,res,rej); if(p&&p.then) p.then(res,rej); }); }
+const bgmReady=Promise.all(['rage','nightmare'].map(k=>
+  bgmDB.get(k).catch(()=>null).then(v=>{
+    if(v&&v.blob){ CBGM.blobs[k]=v.blob; CBGM.names[k]=v.name; CBGM.own[k]=true; CBGM[k]=null; return v.blob.arrayBuffer(); }   // the player's own track, kept in this browser
+    return CBGM.src[k]?b64ToBuf(CBGM.src[k]):null; })
+  .then(ab=>ab?decodeBuf(ab):null).then(buf=>{ if(buf) CBGM[k]=buf; })
+  .catch(e=>console.warn('bgm',k,e)) ));
 /* ---------- BGM: "Tiptoe Snack" (C major, 112 bpm, swung eighths, 16 bars)
    A: tiptoeing staccato motif over C6-Am7-Dm7-G7, a cheeky A7 turn;  B: Fmaj7-Em7 lift, E7 push back home.
    Three arrangements of the same tune: normal (full little combo), hard (an octave down, muffled, no snare -
@@ -3498,7 +3507,8 @@ function bgmLabel(){ $('bgmBtn').textContent=TX(bgm.on?'bgmOn':'bgmOff'); }
 $('bgmBtn').addEventListener('click',()=>{ audio(); bgm.toggle(); bgmLabel(); });
 $('restartBtn').addEventListener('click',()=>{ tutEnd(); paused=false; document.body.classList.remove('paused'); $('pauseOv').hidden=true; startGame(); });
 $('quitBtn').addEventListener('click',()=>{ tutEnd(); quitEnd=true; paused=false; document.body.classList.remove('paused'); $('pauseOv').hidden=true; audio(); patrolSet('none'); endGame(); });
-document.addEventListener('visibilitychange',()=>{ if(document.hidden) pauseGame(); });
+function hush(){ pauseGame(); if(ac&&ac.state==='running') ac.suspend().catch(()=>{}); }   // off screen: the run pauses and all sound stops, on any screen (the title's music too)
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) hush(); }); addEventListener('pagehide',hush);
 addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(introOpen){ $('introOk').click(); return; } paused?resumeGame():pauseGame(); } });
 // big score shrinks to fit the card, however many digits
 function fitScore(){
@@ -3810,7 +3820,8 @@ function init(){
   restoreFaces();
   cur=makeBox(); scene.add(cur.group); state='idle'; titleOn(); applyTitleCam(); bootStep(0.9);
   requestAnimationFrame(loop);
-  requestAnimationFrame(()=>requestAnimationFrame(bootDone));   // the first frames are on screen: lift the loading screen
+  bootStep(0.95); const lift=()=>requestAnimationFrame(()=>requestAnimationFrame(bootDone));   // the first frames are on screen and the music is decoded: lift the loading screen
+  Promise.race([bgmReady,new Promise(r=>setTimeout(r,12000))]).then(lift,lift);
 }
 bootStep(0.7);   // waiting on the fonts
 const fontsReady=(document.fonts&&document.fonts.load)
