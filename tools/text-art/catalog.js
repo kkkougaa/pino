@@ -52,8 +52,7 @@ window.CATALOG = {
     { key: 'nm_on',         ko: '코우가가 폭주한다!', ja: 'コウガが暴走した！',  style: 'nm',    size: 31, plate: 'nm' },
     { key: 'superUnlock',   ko: '초하드 모드 해금!', ja: '超ハードモード解放！', style: 'unlock', size: 22, plate: 'ribbon' },
     { key: 'late_wake',     ko: '코우가가 깨어났다…!', ja: 'コウガが起きた…！',     style: 'warn',  size: 27 },   // normal mode, last 30 s
-    { key: 'patrol_fridge', ko: '냉장고 문 소리…!', ja: '冷蔵庫の音…！',       style: 'warn',  size: 27 },   // Kouga at the fridge
-    { key: 'cat_pass',      ko: '…고양이였잖아!',   ja: '…ネコだった！',        style: 'hush',  size: 24 },   // fake footsteps: just the cat
+    { key: 'cat_pass',      ko: '…지나가던 강아지였잖아!', ja: '…通りすがりの犬だった！', style: 'hush', size: 22 },   // fake footsteps: just a passing dog
     { key: 'patrol_warn',   ko: '코우가가 온다!',   ja: 'コウガが来る！',      style: 'warn',  size: 29 },
     { key: 'patrol_watch',  ko: '쉿…',              ja: 'しーっ…',             style: 'hush',  size: 24, plate: 'cloud' },
     { key: 'patrol_caught', ko: '들켰다!',          ja: 'バレた！',            style: 'alert', size: 36, plate: 'caught' },
