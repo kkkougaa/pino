@@ -1550,10 +1550,10 @@ function fogColor(){ scene.fog.color.copy(col(NIGHT?'#0B0C12':darkQ.matches?'#3A
 let NIGHT=false;
 function setNight(on){
   NIGHT=on;
-  hemi.intensity=on?0.56:1.05; hemi.color.copy(on?col('#9AA9CF'):new THREE.Color(0xffffff)); hemi.groundColor.copy(col(on?'#4A3A30':'#B49A7C'));   // night: cool spill from the open fridge, never pitch black
+  hemi.intensity=on?0.3:1.05; hemi.color.copy(on?col('#9AA9CF'):new THREE.Color(0xffffff)); hemi.groundColor.copy(col(on?'#4A3A30':'#B49A7C'));   // night: cool spill from the open fridge, never pitch black
   sun.intensity=on?0.12:0.62; sun.castShadow=!on;
-  fillL.intensity=on?0.55:0.35; fillL.color.copy(col(on?'#C2CCEA':'#F2E6D6')); fillL.position.set(on?1:-4,on?5:3,on?7:-2);   // night: a dim room light from the player's side, so the pinos' fronts read as chocolate
-  fridgeLight.intensity=on?2.3:0; fridgeLight.castShadow=on;
+  fillL.intensity=on?0.3:0.35; fillL.color.copy(col(on?'#C2CCEA':'#F2E6D6')); fillL.position.set(on?1:-4,on?5:3,on?7:-2);   // night: a dim room light from the player's side, so the pinos' fronts read as chocolate
+  fridgeLight.intensity=on?1.25:0; fridgeLight.castShadow=on;
   FLOOR_U.uAO.value=on?0:1;
   scene.traverse(o=>{ if(o.material&&!Array.isArray(o.material)) o.material.needsUpdate=true; });
   fogColor();
@@ -2746,7 +2746,7 @@ function shadePos(k){   // k: 0 = off to the side, 1 = across the box with his h
   kougaShade.scale.set(sc,1,sc*1.25);   // stretched a bit along the floor so the perspective doesn't squash him
   kougaShade.position.set(3.6*(1-e)+0.05,0.012,front);
   kougaShade.rotation.y=0.3*(1-e);
-  if(NIGHT){ fridgeLight.intensity=2.3*(1-0.35*e); $('fridgeGlow').style.opacity=String(1-0.55*e); }   // he blocks the fridge light
+  if(NIGHT){ fridgeLight.intensity=1.25*(1-0.35*e); $('fridgeGlow').style.opacity=String(1-0.55*e); }   // he blocks the fridge light
 }
 
 function creak(){   // a floorboard giving under his weight
