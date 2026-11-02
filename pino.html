@@ -374,10 +374,10 @@ body.hard .hardtag{display:inline-block}
 #patrol.warn .pk{transform:translateX(105%)}
 #patrol.watch .pk{transform:translateX(42%) rotate(-6deg);filter:none}
 /* nightmare feint: he starts to leave (half out, the hush fades)... then slams back in */
-#patrol.watch.feint .pk{transform:translateX(74%) rotate(3deg);transition:transform .5s cubic-bezier(.4,0,.8,.6)}
+#patrol.watch.feint .pk{transform:translateX(71%) rotate(4deg);transition:transform .55s cubic-bezier(.4,0,.7,.7)}   /* about half of him off screen */
 #patrol.watch.feint .pt{opacity:0;transition:opacity .3s}
-#patrol.watch.slam .pk{animation:pkSlam .32s cubic-bezier(.2,1.6,.4,1) both}
-@keyframes pkSlam{0%{transform:translateX(74%) rotate(3deg)}55%{transform:translateX(30%) rotate(-10deg) scale(1.08)}100%{transform:translateX(42%) rotate(-6deg)}}
+#patrol.watch.slam .pk{animation:pkSlam .4s cubic-bezier(.2,.9,.3,1) both;transform-origin:100% 100%}
+@keyframes pkSlam{0%{transform:translateX(71%) rotate(4deg)}35%{transform:translateX(22%) rotate(-12deg) scale(1.18,1.06)}55%{transform:translateX(36%) rotate(-8deg) scale(.94,1.06)}75%{transform:translateX(44%) rotate(-5deg) scale(1.03,.98)}100%{transform:translateX(42%) rotate(-6deg)}}
 #patrol .pt{position:absolute;left:50%;top:calc(var(--midY,240px) - 25px);transform:translateX(-50%);animation:ptBob .5s ease-in-out infinite alternate}
 @keyframes ptBob{to{transform:translateX(-50%) translateY(-6px) scale(1.04)}}
 @media (prefers-reduced-motion: reduce){#patrol .pk{transition:none}#patrol .pt{animation:none}}
@@ -816,6 +816,18 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 #sus[data-lv="3"] .sus-g i{background:linear-gradient(90deg,#E0415E,#B3121B)}
 #sus[data-lv="3"] .sus-ico{animation:susShake .18s steps(2) infinite}
 #sus[data-lv="4"] .sus-g i{background:linear-gradient(90deg,#B07CFF,#7A2FD0)} #sus[data-lv="4"] .sus-ico{color:#7A2FD0;animation:susShake .14s steps(2) infinite}
+/* nightmare at full strength: the gauge burns */
+body.nmMax #sus .sus-g{border-color:#2A0A4A;box-shadow:0 0 10px 3px rgba(176,92,255,.85),0 0 22px 6px rgba(122,47,208,.55),0 2px 0 rgba(0,0,0,.25);animation:nmBurn .22s steps(2) infinite}
+body.nmMax #sus .sus-g i{background:linear-gradient(90deg,#4A0E8F,#9C4DFF 40%,#E3C2FF 60%,#9C4DFF 80%,#4A0E8F);background-size:200% 100%;animation:nmFire .6s linear infinite}
+body.nmMax #sus .sus-g::after{content:"";position:absolute;left:-4px;right:-4px;bottom:100%;height:18px;pointer-events:none;
+  background:radial-gradient(8px 14px at 12% 100%,#C38BFF,transparent 70%),radial-gradient(7px 12px at 34% 100%,#9C4DFF,transparent 70%),radial-gradient(9px 16px at 58% 100%,#D9B0FF,transparent 70%),radial-gradient(7px 12px at 80% 100%,#9C4DFF,transparent 70%),radial-gradient(6px 10px at 95% 100%,#C38BFF,transparent 70%);
+  filter:blur(.5px);transform-origin:50% 100%;animation:nmFlame .18s steps(3) infinite}
+body.nmMax #sus .sus-g{position:relative;overflow:visible}
+body.nmMax #sus .sus-g i{border-radius:999px}
+@keyframes nmFire{to{background-position:-200% 0}}
+@keyframes nmBurn{0%{box-shadow:0 0 10px 3px rgba(176,92,255,.85),0 0 22px 6px rgba(122,47,208,.55),0 2px 0 rgba(0,0,0,.25)}100%{box-shadow:0 0 14px 5px rgba(196,120,255,.95),0 0 30px 9px rgba(122,47,208,.65),0 2px 0 rgba(0,0,0,.25)}}
+@keyframes nmFlame{0%{transform:scaleY(.8) translateX(-1px)}50%{transform:scaleY(1.15) translateX(1px)}100%{transform:scaleY(.95)}}
+@media (prefers-reduced-motion: reduce){ body.nmMax #sus .sus-g,body.nmMax #sus .sus-g i,body.nmMax #sus .sus-g::after{animation:none} }
 #sus.kick{animation:susKick .35s cubic-bezier(.2,1.8,.4,1)}
 @keyframes susKick{0%{transform:translateX(-50%) scale(1.25)}100%{transform:translateX(-50%) scale(1)}}
 @keyframes susShake{0%{transform:translateX(-1px)}100%{transform:translateX(1px)}}
@@ -3140,8 +3152,8 @@ function patrolSet(phase){
     patrol.kind=patrol.pendingRecheck?'recheck':(!first&&rnd()<0.05)?'cat'   // a passing dog: 5%, footsteps only, nothing overrides it
       :(rage&&rnd()<(nightmare?Math.min(0.5,0.3+0.05*NM_STEP()):0.2))?'silent':'steps';   // silent: 20% in rage, 30% in nightmare +5% every 30 s, up to 50%
     patrol.pendingRecheck=false; patrol.linger=false; patrol.leave=null;
-    patrol.warnT=patrol.kind==='recheck'?(nightmare?Math.max(0.6,1-0.1*NM_STEP()):1.2)   // recheck: rage 1.2 s; nightmare 1 s, -0.1 s every 30 s, down to 0.6 s
-      :nightmare?Math.max(1,1.2-0.1*NM_STEP()):rage?1.4:lerpN(3,2,m)/HARD_K;   // hard 3 s -> 2 s (/1.2), rage 1.4 s, nightmare 1.2 s, -0.1 s every 30 s, down to 1 s
+    patrol.warnT=patrol.kind==='recheck'?(nightmare?Math.max(0.5,0.8-0.1*NM_STEP()):1)   // recheck: rage 1 s; nightmare 0.8 s, -0.1 s every 30 s, down to 0.5 s
+      :nightmare?Math.max(0.8,1-0.1*NM_STEP()):rage?1.4:lerpN(3,2,m)/HARD_K;   // hard 3 s -> 2 s (/1.2), rage 1.4 s, nightmare 1.2 s, -0.1 s every 30 s, down to 1 s
     if(patrol.kind==='silent') patrol.warnT*=1.25;   // no footsteps to warn you, so a touch longer
     patrol.t=patrol.warnT; patrol.steps=0; patrol.coverK=null;
     patrol.fake=patrol.kind!=='recheck'&&patrol.kind!=='cat'&&!first&&rnd()<(nightmare?0.05:rage?0.1:0.2);   // he turns back: hard 20%, rage 10%, nightmare 5%
@@ -3197,15 +3209,28 @@ function patrolTick(dt){
 // ---- nightmare feint: he turns to go, the box starts creeping back up... then he slams back in. Moving before he's really gone gets you caught
 function feintStart(){
   patrol.feinted=true; patrol.feint=0.6; const el=$('patrol'); el.classList.remove('slam'); el.classList.add('feint'); bgm.duck(0.6);
-  const b=cur; if(b&&b.covered&&b.homePos){ const g=b.group, s0=g.position.clone(), r0=g.rotation.x; g.visible=true; b.feintFrom={p:s0,r:r0};
-    tween(0.5,k=>{ const e=k*k*(3-2*k)*0.45; g.position.lerpVectors(s0,b.homePos,e); g.rotation.x=r0*(1-e); }); }   // the box peeks back up, almost halfway
+  whoosh(900,300,0.5,0.06);   // he turns away...
+  const b=cur; if(b&&b.covered&&b.homePos){ const g=b.group, s0=g.position.clone(), r0=g.rotation.x, tok=b.mv; g.visible=true; b.feintFrom={p:s0,r:r0};
+    tween(0.55,k=>{ if(b.mv!==tok) return; const e=k*k*(3-2*k)*0.5; g.position.lerpVectors(s0,b.homePos,e); g.rotation.x=r0*(1-e); }); }   // the pino box creeps halfway back
+  const d=DECOY; if(d&&d.visible){ const tok=d.userData.mv, y0=d.position.y; d.userData.feintY=y0;
+    tween(0.55,k=>{ if(d.userData.mv!==tok) return; const e=k*k*(3-2*k)*0.5; d.position.y=y0+3.4*e; d.position.z=-1.5*e; d.rotation.x=-0.25*e; }); }   // the daifuku lifts halfway off
 }
 function feintSlam(){
   const el=$('patrol'); el.classList.remove('feint'); void el.offsetWidth; el.classList.add('slam'); bgm.duck(0.25);
-  thump(42,0.9,{dur:0.5}); thump(80,0.5,{dur:0.2}); sNoise(500,0.7,0.5,0.25,'lowpass'); buzz([60,30,90]); shake=Math.max(shake,0.45); flash('#FF1E1E',0.25,0.35);
+  // BANG: a hard hit, a red flash, speed lines from his side, the screen kicks
+  thump(38,1,{dur:0.55}); thump(85,0.6,{dur:0.2}); sNoise(420,0.6,0.6,0.3,'lowpass'); sNoise(2600,0.9,0.25,0.06,'bandpass'); buzz([70,30,110]);
+  shake=Math.max(shake,0.55); impact(0.08,0.04); flash('#FF1E1E',0.3,0.4);
+  fx.lines(innerWidth*0.86,innerHeight*0.62,{n:26,inner:70,len:150,life:0.38,color:'#FFFFFF',width:5});
+  { const e2=document.createElement('img'); e2.className='pop sprite thud step'; e2.alt=''; e2.style.setProperty('--r','-8deg'); setArt(e2,'thud',58,'thud',LANG==='ja'?'ドスッ':'쿵');
+    e2.style.left=(innerWidth*0.62)+'px'; e2.style.top=(innerHeight*0.42)+'px'; $('pops').appendChild(e2); later(()=>e2.remove(),900); }
   popCenter(say('recheck'),'warn'); patrol.t=1.3; patrol.hb=0;
   const b=cur; if(b&&b.covered&&b.feintFrom){ const g=b.group, s0=g.position.clone(), r0=g.rotation.x, f=b.feintFrom; b.feintFrom=null;
-    tween(0.14,k=>{ g.position.lerpVectors(s0,f.p,k); g.rotation.x=r0+(f.r-r0)*k; },()=>{ g.visible=false; }); }   // whisked back out of sight
+    const tok=b.mv; tween(0.12,k=>{ if(b.mv!==tok) return; g.position.lerpVectors(s0,f.p,k*k); g.rotation.x=r0+(f.r-r0)*k; },()=>{ if(b.mv===tok) g.visible=false; }); }   // the box whisked back out of sight
+  const d=DECOY; if(d&&d.visible&&d.userData.feintY!=null){ const tok=d.userData.mv, y1=d.position.y, z1=d.position.z, x1=d.rotation.x, y0=d.userData.feintY; d.userData.feintY=null;
+    tween(0.1,k=>{ if(d.userData.mv!==tok) return; const e=k*k; d.position.y=y1+(y0-y1)*e; d.position.z=z1*(1-e); d.rotation.x=x1*(1-e); },()=>{ if(d.userData.mv!==tok) return;   // the daifuku slammed back down
+      d.position.set(0,y0,0); d.rotation.x=0; const q=toScreen(new V3(0,0,0.9));
+      fx.burst(q.x,q.y,{n:7,dir:-Math.PI/2,spread:3,speed:260,gravity:-40,drag:4,size:16,life:0.5,shape:'puff',colors:['#fff']});
+      tween(0.3,k=>{ if(d.userData.mv!==tok) return; const w=(1-k)*Math.cos(k*Math.PI*2.6); d.scale.set(1+0.12*w,1-0.22*w,1+0.12*w); },()=>d.scale.set(1,1,1)); }); }
 }
 // is anything on show? a closed or still-sealed box is fine, an open one has to be covered
 function boxShowing(){   // any pino box on the table gives you away, open or not
@@ -3259,28 +3284,29 @@ function makeDecoy(){
   inkify(g); g.visible=false; scene.add(g); return g;
 }
 function decoyIn(){
-  if(!DECOY) DECOY=makeDecoy(); const g=DECOY; g.visible=true; g.position.set(0,3.2,0); g.rotation.set(0,(rnd()-0.5)*0.18,0); g.scale.set(1,1,1); g.userData.out=false;
-  tween(0.26,k=>{ g.position.y=3.2*(1-k*k); },()=>{ g.position.y=0; thump(90,0.3,{dur:0.18}); pop(500,240,0.12,0.1);
+  if(!DECOY) DECOY=makeDecoy(); const g=DECOY, tok=g.userData.mv=(g.userData.mv||0)+1; g.visible=true; g.position.set(0,3.2,0); g.rotation.set(0,(rnd()-0.5)*0.18,0); g.scale.set(1,1,1); g.userData.out=false;
+  g.position.z=0; tween(0.26,k=>{ if(g.userData.mv!==tok) return; g.position.y=3.2*(1-k*k); },()=>{ if(g.userData.mv!==tok) return; g.position.y=0; thump(90,0.3,{dur:0.18}); pop(500,240,0.12,0.1);
     tween(0.28,k=>{ const w=(1-k)*Math.cos(k*Math.PI*2.4); g.scale.set(1+0.06*w,1-0.14*w,1+0.06*w); },()=>g.scale.set(1,1,1)); });
 }
 function decoyAway(instant){
-  const g=DECOY; if(!g||!g.visible) return; if(instant){ g.visible=false; return; }
-  const y0=g.position.y; tween(0.24,k=>{ const e=k*k; g.position.y=y0+3.4*e; g.position.z=-1.5*e; },()=>{ g.visible=false; g.position.z=0; });
+  const g=DECOY; if(!g||!g.visible) return; const tok=g.userData.mv=(g.userData.mv||0)+1; if(instant){ g.visible=false; return; }
+  const y0=g.position.y; tween(0.24,k=>{ if(g.userData.mv!==tok) return; const e=k*k; g.position.y=y0+3.4*e; g.position.z=-1.5*e; },()=>{ if(g.userData.mv!==tok) return; g.visible=false; g.position.z=0; });
 }
 function coverBox(){   // HIDE: box whisked down out of shot, decoy plops in
-  const b=cur; if(!b||b.covered) return; b.covered=true;
+  const b=cur; if(!b||b.covered) return; b.covered=true; const tok=b.mv=(b.mv||0)+1;   // tok: a newer cover/uncover cancels this one's motion
   if(patrol.phase==='warn') patrol.coverK=1-patrol.t/patrol.warnT;
-  const g=b.group, p0=b.homePos=g.position.clone(), r0=g.rotation.x;
+  const g=b.group; b.homePos=new V3(0,0,0); const p0=b.homePos, r0=0;   // always back to the table spot, even if hidden mid-way through coming back
   if(b.pick&&b.pick.parent!==b.group) b.pick.visible=false;   // the pick in your hand goes too
-  tween(0.2,k=>{ const e=k*k; g.position.set(p0.x,p0.y-0.5*e,p0.z+4.6*e); g.rotation.x=r0+0.35*e; },()=>{ g.visible=false; });
+  const s0=g.position.clone(), q0=g.rotation.x;
+  tween(0.2,k=>{ if(b.mv!==tok) return; const e=k*k; g.position.lerpVectors(s0,new V3(p0.x,p0.y-0.5,p0.z+4.6),e); g.rotation.x=q0+(r0+0.35-q0)*e; },()=>{ if(b.mv===tok) g.visible=false; });
   whoosh(2600,300,0.22,0.2); buzz(25); later(()=>{ if(cur===b&&b.covered) decoyIn(); },120);
   $('hideBtn').hidden=true; $('pops').querySelectorAll('.coverhint').forEach(e=>e.remove());
 }
 function uncoverBox(){   // the coast is clear: decoy away, box back up from below
-  const b=cur; if(!b||!b.covered) return; b.covered=false; decoyAway();
-  const g=b.group, p0=b.homePos||new V3(), s0=g.position.clone(), r0=g.rotation.x;
-  later(()=>{ if(cur!==b) return; g.visible=true;
-    tween(0.26,k=>{ const e=easeOut(k); g.position.lerpVectors(s0,p0,e); g.rotation.x=r0*(1-e); },()=>{ g.position.copy(p0); g.rotation.x=0; if(b.pick) b.pick.visible=true; }); whoosh(300,2400,0.24,0.15); },140);
+  const b=cur; if(!b||!b.covered) return; b.covered=false; decoyAway(); const tok=b.mv=(b.mv||0)+1; b.feintFrom=null;
+  const g=b.group, p0=b.homePos||new V3();
+  later(()=>{ if(cur!==b||b.mv!==tok) return; g.visible=true; const s0=g.position.clone(), r0=g.rotation.x;   // hidden again meanwhile: stay hidden
+    tween(0.26,k=>{ if(b.mv!==tok) return; const e=easeOut(k); g.position.lerpVectors(s0,p0,e); g.rotation.x=r0*(1-e); },()=>{ if(b.mv!==tok) return; g.position.copy(p0); g.rotation.x=0; if(b.pick) b.pick.visible=true; }); whoosh(300,2400,0.24,0.15); },140);
 }
 let coverHintAt=-9;
 function showCoverHint(){
@@ -3398,7 +3424,7 @@ function enterRage(){
   clearInterval(rageTimer); rageTimer=setInterval(floatAnger,700);
 }
 let rageT=0, nmT=0;   // seconds survived in rage / in nightmare
-function rageOff(){ rageT=0; nmT=0; rage=false; nightmare=false; fury=0; document.body.classList.remove('rage','nightmare'); $('shout').hidden=true; clearInterval(rageTimer); rageTimer=0; document.querySelectorAll('.angerFloat').forEach(e=>e.remove()); }
+function rageOff(){ rageT=0; nmT=0; document.body.classList.remove('nmMax'); rage=false; nightmare=false; fury=0; document.body.classList.remove('rage','nightmare'); $('shout').hidden=true; clearInterval(rageTimer); rageTimer=0; document.querySelectorAll('.angerFloat').forEach(e=>e.remove()); }
 function floatAnger(){   // 💢 drifting up round the edges
   if(paused||state==='idle'||state==='over'||reduceMotion) return;
   const el=document.createElement('div'); el.className='angerFloat'; { const a=artOf('vein'); if(a){ const im=artImgEl(a,1); im.style.width='1.5em'; im.style.height='auto'; el.appendChild(im); } else el.textContent='💢'; }
@@ -3833,7 +3859,7 @@ function loop(t){
       cur.meltT-=dt; meltLook(cur); if(cur.meltT<=0){ meltEnd(); }
     }
     if(HARD&&!rage&&mood>=100&&state!=='swat') enterRage();
-    if(state!=='swat'&&!held){ if(HARD){ elapsed+=dt; if(rage) rageT+=dt; if(nightmare) nmT+=dt; mood=Math.min(100,mood+(rage?0.175:0.175*HARD_K)*dt); if(rage&&!nightmare){ fury=Math.min(100,fury+0.0875*dt); if(fury>=100) enterNightmare(); } } else if(!TUT){ timeLeft-=dt; if(timeLeft<=0){ timeLeft=0; startSwat(); }
+    if(state!=='swat'&&!held){ if(HARD){ elapsed+=dt; if(rage) rageT+=dt; if(nightmare){ nmT+=dt; if(NM_STEP()>=4&&!document.body.classList.contains('nmMax')){ document.body.classList.add('nmMax'); thump(38,0.6,{dur:0.8}); sNoise(700,0.6,0.35,0.6,'lowpass'); buzz([40,30,40]); } } mood=Math.min(100,mood+(rage?0.175:0.175*HARD_K)*dt); if(rage&&!nightmare){ fury=Math.min(100,fury+0.0875*dt); if(fury>=100) enterNightmare(); } } else if(!TUT){ timeLeft-=dt; if(timeLeft<=0){ timeLeft=0; startSwat(); }
       else { const sc=Math.ceil(timeLeft); if(sc<=3&&sc!==lastCount){ lastCount=sc; pop(say(String(sc)),innerWidth/2,innerHeight*0.3,'count'); woodblock(sc===1?84:79,{vol:0.2}); if(sc===1) bell(96,{vol:0.05}); } } } }
     patrolTick(dt);
     const comboHold=held||((HARD||lateOn)&&(patrol.phase!=='none'||patrol.pendingRecheck||(cur&&cur.covered)));   // hands tied by Kouga: the combo waits
