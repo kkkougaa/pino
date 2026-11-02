@@ -128,36 +128,13 @@
     for (let i = 0; i < n; i++) { g.save(); g.translate(x + rnd() * w, y + rnd() * h); g.rotate(rnd() * Math.PI); rr(g, -u * 0.18, -u * 0.06, u * 0.36, u * 0.12, u * 0.06); g.fillStyle = cols[i % cols.length]; g.fill(); g.lineWidth = u * 0.03; g.strokeStyle = 'rgba(58,36,22,.5)'; g.stroke(); g.restore(); }
   }
 
-  // a little pixel-art pino box (open, two pinos peeking out) as a sticker
-  // the box front in pixels, after the real package: red, a white oval with the pino wordmark, white dots, pinos around
-  const PINO_BOX = [
-    'KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK',
-    'KRRRRRRRRRCCRRRWWRRRRRRRCcCCRRRK',
-    'KRRRRRRRRCcCRRRWWRRRRRRRCcCCRRRK',
-    'KRWRRRRRRCcCCRRRRRRRRRRCcCCCRRRK',
-    'KWWWRRRRRRRWWWWWWWWWWRRCcCCCRRRK',
-    'KRWRRRRRWWWWWWWWWWWWWWWVVVVVVRRK',
-    'KRRRRRWWWWWRRWWWWWWWWWWVVVVVVRRK',
-    'KRRRRWWWWWWWWWWWWWWWWWWWWWWRRRRK',
-    'KRRRWRRRRWWRRWRRRRWWWRRRWWWWRRRK',
-    'KRRWWRRWRRWRRWRRWRRWRRWRRWWWWRRK',
-    'KRRWWRRWRRWRRWRRWRRWRRWRRWWWWRRK',
-    'KRRWWRRRRWWWWWRRWRRWWRRRWWWWWRRK',
-    'KRRRWRRWWWWWWWWWWWWWWWWWWWWWRWRK',
-    'KRRRRWWWWWWWWWWWWWWWWWWWWWWRWWWK',
-    'KRCcCRWWWWWWWWWWWWWWWWWWWWRRRWRK',
-    'KCcCCRRRWWWWWWWWWWWWWWWWRRRRRRRK',
-    'KCcCCRRRRRRWWWWWWWWWWRRRRRCCRRRK',
-    'KCcCCCRRRRRWWWRRRRRRCRRRRCcCRRRK',
-    'KRRRRRRRRRRRWRRRRRRCcCRRRCcCCRRK',
-    'KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK'];
-  const PIX = { K: INK, R: '#E2332B', r: '#B21E1B', W: '#FFFFFF', C: '#5A3020', c: '#96603F', V: '#F3E6D0' };
+  // the pino box sprite from pixel.js, scaled by a whole number: square cells, a one-cell cream rim and ink edge
   function pixelBox(px) {
-    const rows = PINO_BOX, w = rows[0].length * px, h = rows.length * px, m = Math.round(px * 2.2),   // whole-pixel offsets: no seams between cells
-      c = cv(w + m * 2, h + m * 2), g = c.getContext('2d');
-    const cells = gg => { gg.beginPath(); rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== '.') gg.rect(m + x * px, m + y * px, px + 0.5, px + 0.5); })); };
-    sticker(g, cells, INK, px * 4, { box: [m, m, w, h], gloss: false, paper: px * 0.9 });
-    rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== '.') { g.fillStyle = PIX[ch]; g.fillRect(m + x * px, m + y * px, px, px); } }));
+    const k = Math.max(2, Math.round(px * 0.62)), src = PixelArt.boxCanvas(), w = src.width + 4, h = src.height + 4, c = cv(w * k, h * k), g = c.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    g.fillStyle = INK; g.fillRect(0, 0, w * k, (h - 1) * k);
+    g.fillStyle = '#FFFBEF'; g.fillRect(k, k, (w - 2) * k, (h - 3) * k);
+    g.drawImage(src, 2 * k, 2 * k, src.width * k, src.height * k);
     return c;
   }
   // each plate gets the rendered letters (t) and returns the finished canvas
@@ -200,7 +177,7 @@
       g.drawImage(F.c, x0 + (W - F.c.width) / 2, fy);
       g.drawImage(T.c, x0 + (W - T.c.width) / 2, fy + F.c.height - T.c.height * 0.4);
       // the pixel pino box leans in at the right of FEVER
-      g.save(); g.translate(x0 + W + side * 0.4, fy + F.c.height * 0.5); g.rotate(0.14); g.drawImage(PB, -PB.width / 2, -PB.height / 2); g.restore();
+      g.save(); g.translate(x0 + W + side * 0.4, fy + F.c.height * 0.5); g.drawImage(PB, Math.round(-PB.width / 2), Math.round(-PB.height / 2)); g.restore();
       return c;
     },
     rage(t, rnd) { return PLATES._torn(t, rnd, ['#FF5D4A', '#B5121B'], '#E0261B', false); },

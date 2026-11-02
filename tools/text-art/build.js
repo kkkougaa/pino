@@ -26,7 +26,9 @@ async function draw() {
       const r = TextArt.renderItem(it, lang === 'x' ? 'ko' : lang); words.push({ lang, key: it.key, s: r.s, p: r.p, u: url(r.c) });
     }
     for (const set of C.digits.sets) TextArt.renderDigits(set, C.digits.chars, C.digits.size).forEach(d => nums.push({ set, ch: d.ch, s: d.s, p: d.p, o: d.o, u: url(d.c) }));
-    return { R: TextArt.R, words, nums };
+    const big = (c, k) => { const o = document.createElement('canvas'); o.width = c.width * k; o.height = c.height * k; const g = o.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(c, 0, 0, o.width, o.height); return o.toDataURL('image/png'); };
+    const pix = { logo: PixelArt.logoCanvas(), box: PixelArt.boxCanvas() };
+    return { R: TextArt.R, words, nums, pix: Object.fromEntries(Object.entries(pix).map(([k, c]) => [k, { u: big(c, 1), w: c.width, h: c.height }])) };
   });
   await b.close();
   fs.rmSync(OUT, { recursive: true, force: true });
@@ -34,6 +36,7 @@ async function draw() {
   const save = (rel, u) => { const f = path.join(OUT, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, Buffer.from(u.split(',')[1], 'base64')); };
   for (const w of res.words) { save(`${w.lang}/${w.key}.webp`, w.u); (man.words[w.lang] = man.words[w.lang] || {})[w.key] = { s: w.s, p: +w.p.toFixed(2) }; }
   for (const n of res.nums) { save(`num/${n.set}/${fileOfChar(n.ch)}.webp`, n.u); const m = man.nums[n.set] = man.nums[n.set] || { s: n.s, p: +n.p.toFixed(2), o: +n.o.toFixed(2), chars: '' }; m.chars += n.ch; }
+  for (const k in res.pix) save(`pixel/${k}.png`, res.pix[k].u);   // 1 cell = 1 pixel; the page scales them up
   fs.writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify(man, null, 1));
   console.log(`drew ${res.words.length} word images and ${res.nums.length} digits into ${path.relative(ROOT, OUT)}/`);
 }
@@ -60,7 +63,14 @@ function embed() {
   const line = 'const TEXT_ART=' + JSON.stringify(out) + ';';
   let html = fs.readFileSync(GAME, 'utf8'); const re = /^const TEXT_ART=.*;$/m;
   if (!re.test(html)) throw new Error('pino.html has no "const TEXT_ART=" line to replace');
-  html = html.replace(re, () => line); fs.writeFileSync(GAME, html);
+  html = html.replace(re, () => line);
+  // the loading screen's pixel art: <img id="bootLogo|bootBox" ... src="..."> with its cell size as width/height
+  for (const [id, name, k] of [['bootLogo', 'logo', 3], ['bootBox', 'box', 3]]) {   // k: CSS px per cell
+    const f = path.join(OUT, 'pixel', name + '.png'), buf = fs.readFileSync(f), [w, h] = sizeOf(buf), url = 'data:image/png;base64,' + buf.toString('base64');
+    const tag = new RegExp(`<img id="${id}"[^>]*>`); if (!tag.test(html)) throw new Error(`pino.html has no <img id="${id}">`);
+    html = html.replace(tag, () => `<img id="${id}" width="${w * k}" height="${h * k}" alt="" src="${url}">`);
+  }
+  fs.writeFileSync(GAME, html);
   console.log(`embedded text art into pino.html (${(line.length / 1024).toFixed(0)} KB)`);
 }
 
