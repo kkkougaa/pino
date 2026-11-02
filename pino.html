@@ -373,6 +373,11 @@ body.hard .hardtag{display:inline-block}
 #patrol .pk{position:absolute;right:0;bottom:22%;width:min(46vw,230px);height:auto;transform:translateX(105%);transition:transform .5s cubic-bezier(.3,1.2,.5,1),filter .3s}
 #patrol.warn .pk{transform:translateX(105%)}
 #patrol.watch .pk{transform:translateX(42%) rotate(-6deg);filter:none}
+/* nightmare feint: he starts to leave (half out, the hush fades)... then slams back in */
+#patrol.watch.feint .pk{transform:translateX(74%) rotate(3deg);transition:transform .5s cubic-bezier(.4,0,.8,.6)}
+#patrol.watch.feint .pt{opacity:0;transition:opacity .3s}
+#patrol.watch.slam .pk{animation:pkSlam .32s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pkSlam{0%{transform:translateX(74%) rotate(3deg)}55%{transform:translateX(30%) rotate(-10deg) scale(1.08)}100%{transform:translateX(42%) rotate(-6deg)}}
 #patrol .pt{position:absolute;left:50%;top:calc(var(--midY,240px) - 25px);transform:translateX(-50%);animation:ptBob .5s ease-in-out infinite alternate}
 @keyframes ptBob{to{transform:translateX(-50%) translateY(-6px) scale(1.04)}}
 @media (prefers-reduced-motion: reduce){#patrol .pk{transition:none}#patrol .pt{animation:none}}
@@ -1124,7 +1129,7 @@ var I18N={
     introOk:'알았어!',
     intro_hard_t:'하드 모드 규칙', intro_hard:['코우가가 더 열심히 순찰해요. 발소리가 들리면 상자를 숨기고, 쳐다보는 동안엔 화면을 만지지 마세요','의심 게이지가 오를수록 순찰이 잦아지고 예고가 짧아져요','상자를 열면 피노가 녹기 시작해요. 다 녹으면 끝!','포장 띠를 너무 빨리 당기면 끊어질 수도 있어요','피자 상자를 열면 냄새로 들켜요','미스하면 점수가 깎여요. 콤보가 높을수록 더 많이','시간제한은 없지만, 들키면 끝!'],
     intro_super_t:'코우가가 화났다!', intro_super:['처음부터 코우가가 화나 있어요','순찰이 더 잦고, 예고도 훨씬 짧아요','발소리 없이 몰래 오기도 해요','돌아간 줄 알았는데… 다시 돌아볼 때가 있어요','분노가 끝까지 차오르면… 코우가가 폭주해요'],
-    intro_nm_t:'코우가 폭주!', intro_nm:['순찰이 더 잦아지고, 예고는 눈 깜짝할 새예요','버틸수록 점점 더 심해져요','발소리 없이 오는 일이 늘어나요','피노가 더 빨리 녹아요'],
+    intro_nm_t:'코우가 폭주!', intro_nm:['순찰이 더 잦아지고, 예고는 눈 깜짝할 새예요','버틸수록 점점 더 심해져요','발소리 없이 오는 일이 늘어나요','가는 척하다가… 갑자기 다시 돌아오기도 해요','피노가 더 빨리 녹아요'],
     nogl:'이 브라우저는 3D(WebGL)를 지원하지 않아요. 최신 크롬이나 사파리로 열어 주세요.'
   },
   ja:{
@@ -1182,7 +1187,7 @@ var I18N={
     introOk:'わかった！',
     intro_hard_t:'ハードモードのルール', intro_hard:['コウガがもっと見回りに来る。足音がしたら箱をかくして、見ている間は画面にさわらないで','あやしさゲージが上がるほど、見回りが増えて予告も短くなる','箱をあけるとピノが溶けはじめる。溶けきったら終わり！','帯をいきおいよく引っぱると切れちゃうかも','ピザの箱をあけるとにおいでバレる','ミスすると減点。コンボが高いほど大きく減る','時間制限はないけど、バレたら終わり！'],
     intro_super_t:'コウガが怒った！', intro_super:['最初からコウガが怒ってる','見回りがもっと多く、予告もずっと短い','足音なしでこっそり来ることも','帰ったと思ったら…また振り返ることがある','怒りが限界まで達すると…コウガが暴走する'],
-    intro_nm_t:'コウガ暴走！', intro_nm:['見回りがさらに増えて、予告は一瞬','ねばるほど、どんどん激しくなる','足音なしで来ることが増える','ピノがもっと早く溶ける'],
+    intro_nm_t:'コウガ暴走！', intro_nm:['見回りがさらに増えて、予告は一瞬','ねばるほど、どんどん激しくなる','足音なしで来ることが増える','帰るふりをして…いきなり戻ってくることも','ピノがもっと早く溶ける'],
     nogl:'このブラウザは3D（WebGL）に対応していません。最新のChromeかSafariで開いてください。'
   }
 };
@@ -3142,7 +3147,7 @@ function patrolSet(phase){
     patrol.fake=patrol.kind!=='recheck'&&patrol.kind!=='cat'&&!first&&rnd()<(nightmare?0.05:rage?0.1:0.2);   // he turns back: hard 20%, rage 10%, nightmare 5%
     patrol.count=(patrol.count||0)+1;
     if(patrol.kind==='recheck'){ popCenter(say('recheck'),'warn'); voice(300,{vol:0.07,dur:0.14,bend:1.4}); woodblock(61,{vol:0.1,delay:0.1}); buzz(30); } }
-  if(phase==='watch'){ $('patrolTxt').style.visibility=''; setArt($('patrolTxt'),'patrol_watch',24,'hush'); patrol.t=lerpN(1.8,2.6,mood/100); buzz(40); bell(61,{vol:0.05,dur:1.6}); bell(62,{vol:0.04,dur:1.6}); thump(45,0.2,{dur:0.4}); }
+  if(phase==='watch'){ patrol.feinted=false; patrol.feint=0; el.classList.remove('feint','slam'); $('patrolTxt').style.visibility=''; setArt($('patrolTxt'),'patrol_watch',24,'hush'); patrol.t=lerpN(1.8,2.6,mood/100); buzz(40); bell(61,{vol:0.05,dur:1.6}); bell(62,{vol:0.04,dur:1.6}); thump(45,0.2,{dur:0.4}); }
   if(phase==='none'&&kougaShade&&patrol.leave==null&&patrol.kind!=='cat') patrol.leave=1;   // the dog: no shadow at all
 }
 const PATROL_STEPS=6;
@@ -3173,8 +3178,10 @@ function patrolTick(dt){
     if(patrol.kind!=='cat') shadePos(patrol.kind==='recheck'?Math.min(1,0.55+0.45*k*1.4):Math.min(1,k*1.05));
     if(patrol.t<=0){ if(patrol.kind==='cat'){ catPass(); return; } if(boxShowing()){ patrolCaught(); return; } patrolSet('watch'); } }
   else if(patrol.phase==='watch'){
+    if(patrol.feint>0){ patrol.feint-=dt; shadePos(1-0.5*Math.min(1,1-patrol.feint/0.6)); if(patrol.feint<=0) feintSlam(); return; }   // still 'watch': a touch now is caught
     shadePos(1); patrol.hb-=dt; if(patrol.hb<=0){ heartbeat(1.25); patrol.hb=0.46; }   // heartbeat, pounding
     if(patrol.t>0) return;
+    if(nightmare&&!patrol.feinted&&rnd()<0.1){ feintStart(); return; }   // nightmare: 10% he only pretends to leave
     patrol.streak=(patrol.streak||0)+1;
     const sb=500; addScore(sb); sfx.speed();   // a flat bonus: getting caught ends the run anyway, so no streak
     popCenter(say('w_safe','+'+Math.round(sb*SM())),'good');
@@ -3186,6 +3193,19 @@ function patrolTick(dt){
         setArt(el,'q',22,'bad','…?'); el.style.left=(innerWidth*0.84)+'px'; el.style.top=(innerHeight*0.36)+'px'; $('pops').appendChild(el); later(()=>el.remove(),1200); },250);
     } else { patrol.linger=false; patrol.next=patrolGap(); }
   }
+}
+// ---- nightmare feint: he turns to go, the box starts creeping back up... then he slams back in. Moving before he's really gone gets you caught
+function feintStart(){
+  patrol.feinted=true; patrol.feint=0.6; const el=$('patrol'); el.classList.remove('slam'); el.classList.add('feint'); bgm.duck(0.6);
+  const b=cur; if(b&&b.covered&&b.homePos){ const g=b.group, s0=g.position.clone(), r0=g.rotation.x; g.visible=true; b.feintFrom={p:s0,r:r0};
+    tween(0.5,k=>{ const e=k*k*(3-2*k)*0.45; g.position.lerpVectors(s0,b.homePos,e); g.rotation.x=r0*(1-e); }); }   // the box peeks back up, almost halfway
+}
+function feintSlam(){
+  const el=$('patrol'); el.classList.remove('feint'); void el.offsetWidth; el.classList.add('slam'); bgm.duck(0.25);
+  thump(42,0.9,{dur:0.5}); thump(80,0.5,{dur:0.2}); sNoise(500,0.7,0.5,0.25,'lowpass'); buzz([60,30,90]); shake=Math.max(shake,0.45); flash('#FF1E1E',0.25,0.35);
+  popCenter(say('recheck'),'warn'); patrol.t=1.3; patrol.hb=0;
+  const b=cur; if(b&&b.covered&&b.feintFrom){ const g=b.group, s0=g.position.clone(), r0=g.rotation.x, f=b.feintFrom; b.feintFrom=null;
+    tween(0.14,k=>{ g.position.lerpVectors(s0,f.p,k); g.rotation.x=r0+(f.r-r0)*k; },()=>{ g.visible=false; }); }   // whisked back out of sight
 }
 // is anything on show? a closed or still-sealed box is fine, an open one has to be covered
 function boxShowing(){   // any pino box on the table gives you away, open or not
