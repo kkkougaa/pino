@@ -3112,10 +3112,10 @@ function footstep(i,n){
   const pan=i%2?0.45:-0.45;
   // a heavy heel on wooden flooring, built in the range a phone speaker actually plays (very low thuds vanish on it):
   // the plank's hollow body (~110 Hz), its woody knock (~350 Hz band), the board ringing briefly, a bit of grit
-  const v=0.35+0.65*(i/n);
-  thump(110,0.55*v,{dur:0.22,pan,send:0.15}); thump(70,0.4*v,{dur:0.3,delay:0.008,pan,send:0.1});
-  sNoise(360,2.2,0.7*v,0.07,'bandpass',0,{pan,send:0.2}); sNoise(900,1.6,0.18*v,0.03,'bandpass',0.004,{pan,send:0.1});
-  sTone('sine',185,150,0.22*v,0.16,0.01); sTone('triangle',262,230,0.08*v,0.1,0.012);
+  const v=0.55+0.45*(i/n);   // loud from the first step: you must hear someone coming
+  thump(95,1.1*v,{dur:0.3,pan,send:0.2}); thump(62,0.9*v,{dur:0.42,delay:0.006,pan,send:0.15}); thump(130,0.5*v,{dur:0.16,delay:0.002,pan,send:0.1});   // the weight landing
+  sNoise(300,1.8,1.1*v,0.09,'bandpass',0,{pan,send:0.25}); sNoise(160,1.2,0.8*v,0.16,'lowpass',0.004,{pan,send:0.2}); sNoise(800,1.4,0.22*v,0.035,'bandpass',0.003,{pan,send:0.1});   // the board's hollow knock
+  sTone('sine',150,118,0.32*v,0.24,0.01); sTone('triangle',220,190,0.12*v,0.14,0.012);   // the floor ringing under him
   buzz(18+Math.round(30*i/n)); shake=Math.max(shake,0.04+0.08*i/n);
   const el=document.createElement('img'); el.className='pop sprite thud step'; el.style.setProperty('--r',((i%2?1:-1)*(6+rnd()*8)).toFixed(1)+'deg'); el.alt='';
   setArt(el,'thud',26+Math.round(22*i/n),'thud',LANG==='ja'?'ドスッ':'쿵');
