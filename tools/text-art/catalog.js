@@ -24,7 +24,7 @@ window.CATALOG = {
     { key: 'w_streak',    ko: '연속!',          ja: '連続！',           style: 'good',  size: 20 },
     { key: 'w_calm',      ko: '침착!',          ja: '冷静！',           style: 'lucky', size: 24 },
     { key: 'w_close',     ko: '간발의 차!',     ja: 'ギリギリセーフ！', style: 'lucky', size: 24 },
-    { key: 'patrol_fake', ko: '…기분 탓인가?',  ja: '…気のせいか？',    style: 'hush',  size: 22 },
+    { key: 'patrol_fake', ko: '…기분 탓인가?',  ja: '…気のせいか？',    style: 'lucky', size: 22 },   // same look as the dog line: one let-down, two captions
     { key: 'w_pizzaOpen', ko: '앗, 피자잖아!',  ja: 'あっ、ピザだ！',   style: 'alert', size: 29 },
     { key: 'pizza_away',  ko: '휙!',            ja: 'ポイッ！',         style: 'good',  size: 20 },
     { key: 'recheck',     ko: '…응?!',          ja: '…ん？！',          style: 'warn',  size: 26 },
