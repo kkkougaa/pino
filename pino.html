@@ -3196,7 +3196,7 @@ function patrolTick(dt){
     if(patrol.feint>0){ patrol.feint-=dt; shadePos(1-0.5*Math.min(1,1-patrol.feint/0.6)); if(patrol.feint<=0) feintSlam(); return; }   // still 'watch': a touch now is caught
     shadePos(1); patrol.hb-=dt; if(patrol.hb<=0){ heartbeat(1.25); patrol.hb=0.46; }   // heartbeat, pounding
     if(patrol.t>0) return;
-    if(nightmare&&!patrol.feinted&&rnd()<0.1){ feintStart(); return; }   // nightmare: 10% he only pretends to leave
+    if(nightmare&&!patrol.feinted&&(patrol.nmFeintDue||rnd()<0.1)){ patrol.nmFeintDue=false; feintStart(); return; }   // nightmare: his first look always ends in the feint, then 10%
     patrol.streak=(patrol.streak||0)+1;
     const sb=500; addScore(sb); sfx.speed();   // a flat bonus: getting caught ends the run anyway, so no streak
     popCenter(say('w_safe','+'+Math.round(sb*SM())),'good');
@@ -3413,6 +3413,7 @@ function cutIn(nm,lineKey){   // Kouga's face, the banner and his line on one st
     cutIn.ty=later(()=>typeText(ln,TX(lineKey),32,nm?300:380),560); }   // the bubble pops in, then he talks
   cancelLater(cutIn.t); cutIn.t=later(()=>{ el.hidden=true; el.classList.remove('go'); },2900); }
 function enterNightmare(){
+  patrol.nmFeintDue=true;
   if(nightmare||!rage) return; queueIntro('nm'); nightmare=true; nightmareReached=true; bgm.nightmare(); fury=100; document.body.classList.add('nightmare'); moodBadge();
   cutIn(true,'shout_nm');
   thump(34,0.6,{dur:1.2,send:0.5}); [37,38,43,44].forEach((n,i)=>bell(n,{vol:0.06,delay:i*0.015,dur:2.4})); whoosh(200,3000,0.6,0.12); sNoise(600,0.6,0.25,1,'lowpass',0,{send:0.6});
@@ -3427,7 +3428,7 @@ function enterRage(){
   clearInterval(rageTimer); rageTimer=setInterval(floatAnger,700);
 }
 let rageT=0, nmT=0;   // seconds survived in rage / in nightmare
-function rageOff(){ rageT=0; nmT=0; document.body.classList.remove('nmMax'); rage=false; nightmare=false; fury=0; document.body.classList.remove('rage','nightmare'); $('shout').hidden=true; clearInterval(rageTimer); rageTimer=0; document.querySelectorAll('.angerFloat').forEach(e=>e.remove()); }
+function rageOff(){ rageT=0; nmT=0; patrol.nmFeintDue=false; document.body.classList.remove('nmMax'); rage=false; nightmare=false; fury=0; document.body.classList.remove('rage','nightmare'); $('shout').hidden=true; clearInterval(rageTimer); rageTimer=0; document.querySelectorAll('.angerFloat').forEach(e=>e.remove()); }
 function floatAnger(){   // 💢 drifting up round the edges
   if(paused||state==='idle'||state==='over'||reduceMotion) return;
   const el=document.createElement('div'); el.className='angerFloat'; { const a=artOf('vein'); if(a){ const im=artImgEl(a,1); im.style.width='1.5em'; im.style.height='auto'; el.appendChild(im); } else el.textContent='💢'; }
