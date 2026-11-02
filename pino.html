@@ -1314,16 +1314,14 @@ function pop(f0,f1,vol,dur,o){ if(!(o&&o.bus)){ const k=SFXP(); f0*=k; f1*=k; } 
   osc.connect(g); out(g,Object.assign({send:0.25},o)); osc.start(t); osc.stop(t+dur+0.03);
   sNoise(3800,1.2,vol*0.35,0.012,'bandpass',o.delay||0,o);
 }
-function alarm(n){   // a rotating warning beacon: a slow, heavy wail rising and falling, swelling as the light sweeps past
-  const a=audio(); if(!a) return; const t=a.currentTime+0.03, cyc=1.15, dur=cyc*n;
-  const g=a.createGain(), lp=a.createBiquadFilter(), am=a.createGain(), rot=a.createOscillator(), rotG=a.createGain();
-  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.13,t+0.25); g.gain.setValueAtTime(0.13,t+dur-0.35); g.gain.linearRampToValueAtTime(0.0001,t+dur);
-  lp.type='lowpass'; lp.frequency.value=1400; lp.Q.value=0.7;
-  am.gain.value=0.6; rot.frequency.value=2.6; rotG.gain.value=0.4; rot.connect(rotG); rotG.connect(am.gain);   // the beacon turning: louder, softer, louder
-  [[1,'sawtooth',0.5],[1.005,'triangle',0.6],[0.5,'sine',0.5]].forEach(([k,ty,v])=>{ const o=a.createOscillator(), og=a.createGain(); o.type=ty; og.gain.value=v;
-    for(let c=0;c<n;c++){ const c0=t+c*cyc; o.frequency.setValueAtTime(330*k,c0); o.frequency.linearRampToValueAtTime(560*k,c0+cyc*0.55); o.frequency.linearRampToValueAtTime(330*k,c0+cyc); }
-    o.connect(og); og.connect(lp); o.start(t); o.stop(t+dur+0.05); });
-  lp.connect(am); am.connect(g); rot.start(t); rot.stop(t+dur+0.05); out(g,{send:0.35}); }
+function alarm(n){   // a warning-beacon buzzer: flat, dull electric "buuu- buuu- buuu-" pulses, the beacon's sweep nudging the level
+  const a=audio(); if(!a) return; const t0=a.currentTime+0.03, on=0.42, step=0.62, pulses=n*2;
+  for(let i=0;i<pulses;i++){ const t=t0+i*step, g=a.createGain(), lp=a.createBiquadFilter();
+    g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.12,t+0.012); g.gain.setValueAtTime(0.12,t+on-0.03); g.gain.linearRampToValueAtTime(0.0001,t+on);
+    lp.type='lowpass'; lp.frequency.value=1500; lp.Q.value=0.8;
+    [[196,'square',0.55],[198,'square',0.45],[98,'sine',0.6]].forEach(([f,ty,v])=>{ const o=a.createOscillator(), og=a.createGain(); o.type=ty; o.frequency.value=f; og.gain.value=v; o.connect(og); og.connect(lp); o.start(t); o.stop(t+on+0.02); });
+    const tr=a.createOscillator(), tg=a.createGain(), am=a.createGain(); tr.frequency.value=1.6; tg.gain.value=0.25; am.gain.value=0.85; tr.connect(tg); tg.connect(am.gain); tr.start(t); tr.stop(t+on+0.02);
+    lp.connect(am); am.connect(g); out(g,{send:0.2}); } }
 function thump(f,vol,o){ if(!(o&&o.bus)) f*=SFXP();   // kick-style: pitch drops, short click; for landings, steps, stamps
   const a=audio(); if(!a) return; o=o||{}; const t=a.currentTime+(o.delay||0), dur=o.dur||0.22;
   const osc=a.createOscillator(); osc.type='sine'; osc.frequency.setValueAtTime(f*2.6,t); osc.frequency.exponentialRampToValueAtTime(f,t+0.05); osc.frequency.exponentialRampToValueAtTime(f*0.6,t+dur);
@@ -1757,7 +1755,7 @@ function setNight(on){
   NIGHT=on;
   hemi.intensity=on?0.3:1.05; hemi.color.copy(on?col('#9AA9CF'):new THREE.Color(0xffffff)); hemi.groundColor.copy(col(on?'#4A3A30':'#B49A7C'));   // night: cool spill from the open fridge, never pitch black
   sun.intensity=on?0.12:0.62; sun.castShadow=!on;
-  fillL.intensity=on?0.3:0.35; fillL.color.copy(col(on?'#C2CCEA':'#F2E6D6')); fillL.position.set(on?1:-4,on?5:3,on?7:-2);   // night: a dim room light from the player's side, so the pinos' fronts read as chocolate
+  fillL.intensity=on?0.42:0.5; fillL.color.copy(col(on?'#C2CCEA':'#F2E6D6')); fillL.position.set(on?1:0.5,on?5:5,on?7:8);   // a light from the player's side, so the pinos' fronts read against the tray   // night: a dim room light from the player's side, so the pinos' fronts read as chocolate
   fridgeLight.intensity=on?1.25:0; fridgeLight.castShadow=on;
   FLOOR_U.uAO.value=on?0:1;
   scene.traverse(o=>{ if(o.material&&!Array.isArray(o.material)) o.material.needsUpdate=true; });
@@ -2005,13 +2003,6 @@ function glitterTex(rep){
   for(let i=0;i<70;i++){ g.fillStyle='rgba(255,255,255,'+(0.25+rnd()*0.6).toFixed(2)+')'; g.fillRect(rnd()*128,rnd()*128,1+rnd()*1.4,1+rnd()*1.4); }
   const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(rep,rep); return t;
 }
-// the tray inside a pino box is hammered metallic foil: grey-brown with little embossed dents catching the light
-function foilTex(){
-  const N=256, c=cv(N,N), g=c.getContext('2d'); g.fillStyle='#6B625B'; g.fillRect(0,0,N,N);
-  for(let i=0;i<420;i++){ const x=rnd()*N, y=rnd()*N, r=4+rnd()*7, a=rnd()*Math.PI;
-    for(const [dx,dy,col] of [[-1.2,-1.2,'rgba(235,228,220,.55)'],[1.2,1.2,'rgba(28,22,18,.5)'],[0,0,'rgba(120,110,102,.9)']]){   // lit rim, shadowed rim, the dent itself
-      for(const ox of [-N,0,N]) for(const oy of [-N,0,N]){ g.fillStyle=col; g.beginPath(); g.ellipse(x+dx+ox,y+dy+oy,r,r*0.55,a,0,7); g.fill(); } } }
-  const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.wrapS=t.wrapT=THREE.RepeatWrapping; return t; }
 // chocolate coating: dark and matte, with the pale frost bloom a frozen pino has, strongest where the surface turns away (its silhouette)
 function frostRim(m,amt){ m.onBeforeCompile=sh=>{ sh.fragmentShader=sh.fragmentShader.replace('#include <dithering_fragment>',
   'float fr=pow(1.0-abs(dot(normalize(normal),normalize(vViewPosition))),2.2);\n gl_FragColor.rgb=mix(gl_FragColor.rgb,vec3(0.62,0.57,0.55),fr*'+amt.toFixed(2)+');\n#include <dithering_fragment>'); }; return m; }
@@ -2031,11 +2022,11 @@ function buildMaterials(){
     filmGloss:new THREE.MeshBasicMaterial({map:tx(sheenCanvas()),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:0.6}),
     filmEdge:new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.5,depthWrite:false}),
     tape:std('#FBFBF8',0.28),
-    tray:std('#FFFFFF',0.3,{map:(()=>{ const t=foilTex(); t.repeat.set(4,2.6); return t; })()}),   // hammered foil
+    tray:std('#4A2C1E',0.3),
     inner:std('#D6D8D4',0.9,{side:THREE.DoubleSide}),
-    dimple:std('#8E857D',0.3),
-    cup:std('#FFFFFF',0.3,{side:THREE.DoubleSide,map:(()=>{ const t=foilTex(); t.repeat.set(3,0.6); return t; })()}),
-    choco:frostRim(std('#3F2519',0.36,{metalness:0.05,gradientMap:CHOCO_RAMP}),0.6),   // dark chocolate, frosted at the edges, on grey foil
+    dimple:std('#55331F',0.3),
+    cup:std('#4A2C1E',0.3,{side:THREE.DoubleSide}),
+    choco:frostRim(std('#5B3420',0.36,{metalness:0.05,gradientMap:CHOCO_RAMP}),0.5),   // milk-chocolate brown, frosted at the edges
     bitten:new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.5,metalness:0.03}),
     pickR:std('#E52A35',0.3,{metalness:0.05,emissive:0xffffff,emissiveMap:glitterTex(8),emissiveIntensity:0.5}),
     pickRp:std('#F06A78',0.38,{metalness:0.05,emissive:0xffffff,emissiveMap:glitterTex(14),emissiveIntensity:0.8}),
@@ -3120,8 +3111,8 @@ function creak(){   // a floorboard giving under his weight
 function footstep(i,n){
   const g=0.18+0.5*(i/n);   // louder as he gets closer
   const pan=i%2?0.45:-0.45;   // a heavy heel: a deep body thump, a low floor boom under it, a dull knock on top
-  thump(25,0.3+g*0.66,{dur:0.5,pan}); thump(16,0.18+g*0.44,{dur:0.65,delay:0.012,pan:pan*0.5}); thump(52,0.05+g*0.12,{dur:0.09,pan});   // pitched well under the heartbeat
-  sNoise(80,0.8,g*0.6,0.24,'lowpass'); sNoise(300,1.4,g*0.1,0.05,'bandpass'); buzz(18+Math.round(30*i/n)); shake=Math.max(shake,0.04+0.08*i/n);
+  thump(25,0.45+g*0.95,{dur:0.5,pan}); thump(16,0.27+g*0.62,{dur:0.65,delay:0.012,pan:pan*0.5}); thump(52,0.05+g*0.12,{dur:0.09,pan});   // pitched well under the heartbeat
+  sNoise(80,0.8,0.15+g*0.85,0.24,'lowpass'); sNoise(300,1.4,g*0.1,0.05,'bandpass'); buzz(18+Math.round(30*i/n)); shake=Math.max(shake,0.04+0.08*i/n);
   const el=document.createElement('img'); el.className='pop sprite thud step'; el.style.setProperty('--r',((i%2?1:-1)*(6+rnd()*8)).toFixed(1)+'deg'); el.alt='';
   setArt(el,'thud',26+Math.round(22*i/n),'thud',LANG==='ja'?'ドスッ':'쿵');
   el.style.left=(innerWidth*(i%2?0.82:0.18))+'px'; el.style.top=(innerHeight*(0.24+0.06*((i*7)%4)))+'px'; $('pops').appendChild(el); later(()=>el.remove(),900);
