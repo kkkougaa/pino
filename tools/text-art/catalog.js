@@ -12,6 +12,7 @@ window.CATALOG = {
     { key: 'w_perfect',   x: 'PERFECT!',                                style: 'good',  size: 20 },   // shared English
     { key: 'fx_nice',     x: 'NICE!',                                   style: 'good',  size: 20 },
     { key: 'fx_miss',     ko: 'MISS −1초',      ja: 'MISS −1秒',        style: 'bad',   size: 19 },
+    { key: 'late_pen',    ko: 'MISS −5초',      ja: 'MISS −5秒',        style: 'bad',   size: 22 },   // caught in normal mode's last 30 s
     { key: 'w_miss',      x: 'MISS',                                    style: 'bad',   size: 19 },
     { key: 'w_speed',     ko: '스피드 보너스',  ja: 'スピードボーナス', style: 'good',  size: 20 },
     { key: 'fx_heart',    ko: '하트',           ja: 'ハート',           style: 'lucky', size: 24, icon: 'heart' },
@@ -50,6 +51,7 @@ window.CATALOG = {
     { key: 'rage_on',       ko: '코우가가 화났다!', ja: 'コウガが怒った！',    style: 'rage',  size: 31, plate: 'rage' },
     { key: 'nm_on',         ko: '코우가가 폭주합니다!!!!', ja: 'コウガが暴走します!!!!', style: 'nm', size: 26, plate: 'nm' },
     { key: 'superUnlock',   ko: '초하드 모드 해금!', ja: '超ハードモード解放！', style: 'unlock', size: 22, plate: 'ribbon' },
+    { key: 'late_wake',     ko: '코우가가 깨어났다…!', ja: 'コウガが起きた…！',     style: 'warn',  size: 27 },   // normal mode, last 30 s
     { key: 'patrol_warn',   ko: '코우가가 온다!',   ja: 'コウガが来る！',      style: 'warn',  size: 29 },
     { key: 'patrol_watch',  ko: '쉿…',              ja: 'しーっ…',             style: 'hush',  size: 24, plate: 'cloud' },
     { key: 'patrol_caught', ko: '들켰다!',          ja: 'バレた！',            style: 'alert', size: 36, plate: 'caught' },
