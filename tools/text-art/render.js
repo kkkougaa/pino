@@ -5,7 +5,7 @@
   const R = 3;                                   // drawn 3x for sharp phones
   const INK = '#3A2416', PAPER = '#FFFBEF', SHADOW = 'rgba(58,36,22,.30)';
   const FACE = {
-    display: { ko: '"Bagel Fat One"', ja: '"Mochiy Pop One"', x: '"Titan One","Bagel Fat One"' },
+    display: { ko: '"Do Hyeon"', ja: '"Mochiy Pop One"', x: '"Titan One","Do Hyeon"' },
     hand:    { ko: '700 1px "Gaegu"', ja: '"Hachi Maru Pop"', x: '700 1px "Gaegu"' },
     num:     { ko: '"Titan One"', ja: '"Titan One"', x: '"Titan One"' },
   };
@@ -24,7 +24,7 @@
     ring:   { fill: ['#FFFFFF', '#FFEFCC'], paper: 0.0, ink: 0.11 },
     ringOn: { fill: ['#FFF27A', '#FFB300'], paper: 0.0, ink: 0.11 },
     go:     { fill: ['#FFFFFF', '#FFE6D2'] },
-    fever:  { fill: ['#8B5634', '#3A1E10'], sp: 0 },          // chocolate letters on the gold drip
+    fever:  { fill: ['#FFFFFF', '#FFF07A'], sp: 2 },          // white-gold letters on the hot band
     rage:   { fill: ['#FFFFFF', '#FFD9CF'] },
     nm:     { fill: ['#FFFFFF', '#EBD9FF'] },
     unlock: { fill: ['#FFFFFF', '#FFE7A8'], sp: 2 },
@@ -46,7 +46,7 @@
     const sk = SKINS[skinName], fs = size * R, face = sk.face || (opts.num ? 'num' : 'display');
     const font = fontOf(face, lang, fs), rnd = rngOf(skinName + text);
     // Hangul syllables are dense: thinner borders keep them readable, more so at small sizes
-    const dense = lang === 'ko' && face === 'display' && /[가-힣]/.test(text) ? (size < 30 ? 0.68 : 0.82) : 1;
+    const dense = lang === 'ko' && face === 'display' && /[가-힣]/.test(text) ? (size < 30 ? 0.8 : 0.9) : 1;
     const inkW = fs * (sk.ink != null ? sk.ink : 0.075) * dense, paperW = fs * (sk.paper != null ? sk.paper : 0.13) * dense;
     const edge = inkW + paperW, shOff = fs * 0.07, pad = edge + fs * 0.04;
     const m = cv(4, 4).getContext('2d'); m.font = font;
@@ -79,7 +79,7 @@
     fg.fillStyle = 'rgba(58,36,22,.16)'; fg.fillRect(0, base - fs * 0.08, W, fs * 0.3);          // a little weight at the foot
     g.drawImage(f, 0, 0);
     // sparkles on the top edge of a letter or two
-    for (let i = 0; i < (sk.sp || 0); i++) { const L = lay[Math.floor((i + 0.5) / (sk.sp) * lay.length)] || lay[0]; spark(g, L.x + fs * 0.3, base + L.dy - fs * 0.86, fs * 0.17); }
+    for (let i = 0; i < (opts.num ? 0 : sk.sp || 0); i++) { const L = lay[Math.floor((i + 0.5) / (sk.sp) * lay.length)] || lay[0]; spark(g, L.x + fs * 0.3, base + L.dy - fs * 0.86, fs * 0.17); }
     return { c, pad, edge, fs };
   }
   function spark(g, x, y, s) {
@@ -144,16 +144,23 @@
       spark(g, cx + W * 0.36, cy - H * 0.3, u * 0.22); spark(g, cx - W * 0.4, cy + H * 0.26, u * 0.15);
       g.drawImage(t.c, cx - t.c.width / 2, cy - t.c.height / 2); return c;
     },
-    fever(t, rnd) {   // a gold ice-cream band melting at the bottom, with sprinkles
-      const u = t.fs, W = t.c.width + u * 1.2, Hb = t.c.height + u * 0.4, drip = u * 0.85, c = cv(W + u, Hb + drip + u), g = c.getContext('2d');
-      const x0 = u / 2, y0 = u / 2, box = [x0, y0, W, Hb + drip];
-      const path = gg => { gg.beginPath(); gg.moveTo(x0 + u * 0.4, y0); gg.lineTo(x0 + W - u * 0.4, y0); gg.quadraticCurveTo(x0 + W, y0, x0 + W, y0 + u * 0.4); gg.lineTo(x0 + W, y0 + Hb);
-        const n = 7; for (let i = n; i > 0; i--) { const xa = x0 + W * i / n, xb = x0 + W * (i - 1) / n, xm = (xa + xb) / 2, d = (i % 2 ? 1 : 0.45) * drip * (0.7 + rnd() * 0.3), r = (xa - xb) * 0.22;
-          gg.lineTo(xm + r, y0 + Hb); gg.lineTo(xm + r, y0 + Hb + d - r); gg.arc(xm, y0 + Hb + d - r, r, 0, Math.PI); gg.lineTo(xm - r, y0 + Hb); gg.lineTo(xb, y0 + Hb); }
-        gg.lineTo(x0, y0 + u * 0.4); gg.quadraticCurveTo(x0, y0, x0 + u * 0.4, y0); gg.closePath(); };
-      sticker(g, path, lin(y0, y0 + Hb, '#FFE466', '#FF9A1F'), u, { box });
-      g.save(); path(g); g.clip(); sprinkles(g, x0, y0, W, Hb, 26, rnd, u); g.restore();
-      g.drawImage(t.c, x0 + (W - t.c.width) / 2, y0 + (Hb - t.c.height) / 2 + u * 0.05); return c;
+    fever(t, rnd) {   // arcade jackpot: a gold sunburst, a slanted hot-pink band, speed lines either side
+      const u = t.fs, W = t.c.width + u * 1.3, H = t.c.height + u * 0.35, sk = u * 0.45;
+      const c = cv(W + sk * 2 + u * 3.2, H + u * 3), g = c.getContext('2d'), cx = c.width / 2, cy = c.height / 2;
+      const rx = W * 0.5 + u * 0.9, ry = H * 0.5 + u * 1.15, br = rngOf('fever' + W);
+      const sun = gg => burst(gg, cx, cy, rx, ry, 16, 0.74, rngOf('fever' + W));
+      sticker(g, sun, lin(cy - ry, cy + ry, '#FFEB6B', '#FFAE00'), u, { box: [cx - rx, cy - ry, rx * 2, ry * 2], gloss: false });
+      g.save(); sun(g); g.clip(); for (let i = 0; i < 16; i++) { const a0 = i / 16 * Math.PI * 2, a1 = a0 + Math.PI / 16; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(a0) * rx * 2, cy + Math.sin(a0) * ry * 2); g.lineTo(cx + Math.cos(a1) * rx * 2, cy + Math.sin(a1) * ry * 2); g.closePath(); g.fillStyle = 'rgba(255,120,0,.28)'; g.fill(); } g.restore();
+      // speed lines
+      g.lineCap = 'round';
+      [-1, 1].forEach(sd => [[-0.28, 1.0], [0, 1.25], [0.28, 0.85]].forEach(([fy, len]) => { const y = cy + fy * H, x0 = cx + sd * (W / 2 + sk + u * 0.25), x1 = x0 + sd * u * len;
+        g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.lineWidth = u * 0.3; g.strokeStyle = INK; g.stroke(); g.lineWidth = u * 0.16; g.strokeStyle = '#FFFFFF'; g.stroke(); }));
+      const x0 = cx - W / 2, y0 = cy - H / 2, box = [x0 - sk, y0, W + sk * 2, H];
+      const band = gg => { gg.beginPath(); gg.moveTo(x0 + sk, y0); gg.lineTo(x0 + W + sk, y0); gg.lineTo(x0 + W - sk, y0 + H); gg.lineTo(x0 - sk, y0 + H); gg.closePath(); };
+      sticker(g, band, lin(y0, y0 + H, '#FF5C9A', '#E0261B'), u, { box });
+      g.save(); band(g); g.clip(); g.fillStyle = 'rgba(255,255,255,.14)'; for (let i = -2; i < 9; i++) { const x = x0 + i * u * 1.1; g.beginPath(); g.moveTo(x, y0 + H); g.lineTo(x + u * 0.45, y0 + H); g.lineTo(x + u * 0.95, y0); g.lineTo(x + u * 0.5, y0); g.closePath(); g.fill(); } g.restore();
+      spark(g, cx + W * 0.5 + sk * 0.3, y0 - u * 0.1, u * 0.26); spark(g, cx - W * 0.46, y0 + H + u * 0.12, u * 0.2); spark(g, cx - W * 0.22, y0 - u * 0.45, u * 0.14);
+      g.drawImage(t.c, cx - t.c.width / 2, cy - t.c.height / 2); return c;
     },
     rage(t, rnd) { return PLATES._torn(t, rnd, ['#FF5D4A', '#B5121B'], '#E0261B', false); },
     nm(t, rnd) { return PLATES._torn(t, rnd, ['#A66BFF', '#4B1690'], '#8A2BE2', true); },
@@ -215,8 +222,8 @@
   }
   function renderDigits(set, chars, size) {
     const m = cv(4, 4).getContext('2d'); m.font = size * R + 'px "Titan One"';
-    const tab = Math.max(...'0123456789'.split('').map(d => m.measureText(d).width)) / (size * R) * 0.98;
-    return Array.from(chars).map(ch => { const t = letters(ch, set, size, 'x', { num: true, tab }); return { set, ch, c: t.c, s: size, p: t.pad / R, e: t.edge / R }; });
+    const tab = Math.max(...'0123456789'.split('').map(d => m.measureText(d).width)) / (size * R) * 0.95;
+    return Array.from(chars).map(ch => { const t = letters(ch, set, size, 'x', { num: true, tab }); return { set, ch, c: t.c, s: size, p: t.pad / R, e: t.edge / R, o: (2 * (t.pad - t.edge) + t.edge) / R }; });   // o: how far the next glyph tucks in: the paper borders merge, the ink lines stay apart
   }
   async function fontsReady(cat) {
     const all = [...cat.feedback, ...cat.grades, ...cat.banners];
