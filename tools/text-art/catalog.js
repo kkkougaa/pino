@@ -46,7 +46,7 @@ window.CATALOG = {
   // ---- state-change banners ----
   banners: [
     { key: 'ready',         ko: '준비~',            ja: 'よーい…',             style: 'score', size: 34, plate: 'tag' },
-    { key: 'go_',           x: 'START!',                                  style: 'go',    size: 42, plate: 'stamp' },
+    { key: 'go_',           x: 'START!',                                  style: 'go',    size: 46 },   // clean white letters, no plate (draft A)
     { key: 'fx_fever',      x: 'FEVER TIME!',                             style: 'fever', size: 50, plate: 'fever' },
     { key: 'rage_on',       ko: '코우가가 화났다!', ja: 'コウガが怒った！',    style: 'rage',  size: 31, plate: 'rage' },
     { key: 'nm_on',         ko: '코우가가 폭주한다!', ja: 'コウガが暴走した！',  style: 'nm',    size: 31, plate: 'nm' },
