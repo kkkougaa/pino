@@ -33,6 +33,7 @@ window.CATALOG = {
     { key: 'hint_cover',  ko: '↓ 쓸어서 상자 덮기!', ja: '↓ スワイプで箱をとじる！', style: 'warn', size: 22 },
     { key: 'thud',        ko: '쿵',             ja: 'ドスッ',           style: 'thud',  size: 58 },
     { key: 'q',           x: '…?',                                      style: 'bad',   size: 26 },
+    { key: 'vein',        x: ' ', style: 'alert', size: 34, icon: 'vein', iconOnly: true },   // anger mark (replaces the emoji)
     { key: 'pino',        x: 'PINO!',                                   style: 'combo', size: 28 },
     // labels inside the combo / fever rings
     { key: 'comboWord',   x: 'COMBO',                                   style: 'ring',  size: 11 },

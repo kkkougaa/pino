@@ -222,6 +222,7 @@
     const heart = gg => { gg.beginPath(); gg.moveTo(cx, cy + s * 0.42); gg.bezierCurveTo(cx - s * 0.62, cy, cx - s * 0.5, cy - s * 0.52, cx, cy - s * 0.2); gg.bezierCurveTo(cx + s * 0.5, cy - s * 0.52, cx + s * 0.62, cy, cx, cy + s * 0.42); gg.closePath(); };
     const star = gg => { gg.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? s * 0.25 : s * 0.52, a = -Math.PI / 2 + i * Math.PI / 5; gg.lineTo(cx + Math.cos(a) * r, cy + s * 0.04 + Math.sin(a) * r); } gg.closePath(); };
     const box = [cx - s / 2, cy - s / 2, s, s];
+    if (kind === 'vein') { vein(g, cx, cy, s * 0.42, '#E0261B'); return c; }   // the anger mark, in place of the emoji
     g.translate(cx, cy); g.rotate(kind === 'heart' ? -0.18 : 0.12); g.translate(-cx, -cy);
     sticker(g, kind === 'heart' ? heart : star, kind === 'heart' ? lin(box[1], box[1] + s, '#FF9BC2', '#EC3F86') : lin(box[1], box[1] + s, '#FFF07A', '#F2A400'), u * 0.75, { box });
     return c;
@@ -234,7 +235,7 @@
   function renderItem(it, lang) {
     const text = it.x != null ? it.x : it[lang];
     const t = letters(text, it.style, it.size, lang);
-    const c = it.plate ? PLATES[it.plate](t, rngOf(it.key + lang)) : it.icon ? withIcon(t, it.icon, it.size) : t.c;
+    const c = it.iconOnly ? icon(it.icon, it.size) : it.plate ? PLATES[it.plate](t, rngOf(it.key + lang)) : it.icon ? withIcon(t, it.icon, it.size) : t.c;
     return { key: it.key, lang: it.x != null ? 'x' : lang, c, s: it.size, p: t.pad / R };
   }
   function renderDigits(set, chars, size) {
