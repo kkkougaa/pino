@@ -46,7 +46,7 @@ window.CATALOG = {
   banners: [
     { key: 'ready',         ko: '준비~',            ja: 'よーい…',             style: 'score', size: 34, plate: 'tag' },
     { key: 'go_',           x: 'START!',                                  style: 'go',    size: 42, plate: 'stamp' },
-    { key: 'fx_fever',      x: 'FEVER TIME!',                             style: 'fever', size: 39, plate: 'fever' },
+    { key: 'fx_fever',      x: 'FEVER TIME!',                             style: 'fever', size: 50, plate: 'fever' },
     { key: 'rage_on',       ko: '코우가가 화났다!', ja: 'コウガが怒った！',    style: 'rage',  size: 31, plate: 'rage' },
     { key: 'nm_on',         ko: '코우가가 폭주합니다!!!!', ja: 'コウガが暴走します!!!!', style: 'nm', size: 26, plate: 'nm' },
     { key: 'superUnlock',   ko: '초하드 모드 해금!', ja: '超ハードモード解放！', style: 'unlock', size: 22, plate: 'ribbon' },

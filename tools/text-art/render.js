@@ -24,7 +24,8 @@
     ring:   { fill: ['#FFFFFF', '#FFEFCC'], paper: 0.0, ink: 0.11 },
     ringOn: { fill: ['#FFF27A', '#FFB300'], paper: 0.0, ink: 0.11 },
     go:     { fill: ['#FFFFFF', '#FFE6D2'] },
-    fever:  { fill: ['#FFFFFF', '#FFF07A'] },          // white-gold letters on the hot band
+    fever:  { fill: ['#FFFFFF', '#FFE98A'] },          // cream letters in front of the flames
+    feverTab: { fill: ['#FFFFFF', '#FFE7A8'], paper: 0, ink: 0.001 },   // TIME! printed on its ink tab
     rage:   { fill: ['#FFFFFF', '#FFD9CF'] },
     nm:     { fill: ['#FFFFFF', '#EBD9FF'] },
     unlock: { fill: ['#FFFFFF', '#FFE7A8'] },
@@ -146,23 +147,26 @@
       g.restore();
       g.drawImage(t.c, cx - t.c.width / 2, cy - t.c.height / 2); return c;
     },
-    fever(t, rnd) {   // arcade jackpot: a gold sunburst, a slanted hot-pink band, speed lines either side
-      const u = t.fs, W = t.c.width + u * 1.3, H = t.c.height + u * 0.35, sk = u * 0.45;
-      const c = cv(W + sk * 2 + u * 3.2, H + u * 3), g = c.getContext('2d'), cx = c.width / 2, cy = c.height / 2;
-      const rx = W * 0.5 + u * 0.9, ry = H * 0.5 + u * 1.15, br = rngOf('fever' + W);
-      const sun = gg => burst(gg, cx, cy, rx, ry, 16, 0.74, rngOf('fever' + W));
-      sticker(g, sun, lin(cy - ry, cy + ry, '#FFEB6B', '#FFAE00'), u, { box: [cx - rx, cy - ry, rx * 2, ry * 2], gloss: false });
-      g.save(); sun(g); g.clip(); for (let i = 0; i < 16; i++) { const a0 = i / 16 * Math.PI * 2, a1 = a0 + Math.PI / 16; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(a0) * rx * 2, cy + Math.sin(a0) * ry * 2); g.lineTo(cx + Math.cos(a1) * rx * 2, cy + Math.sin(a1) * ry * 2); g.closePath(); g.fillStyle = 'rgba(255,120,0,.28)'; g.fill(); } g.restore();
-      // speed lines
-      g.lineCap = 'round';
-      [-1, 1].forEach(sd => [[-0.28, 1.0], [0, 1.25], [0.28, 0.85]].forEach(([fy, len]) => { const y = cy + fy * H, x0 = cx + sd * (W / 2 + sk + u * 0.25), x1 = x0 + sd * u * len;
-        g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.lineWidth = u * 0.3; g.strokeStyle = INK; g.stroke(); g.lineWidth = u * 0.16; g.strokeStyle = '#FFFFFF'; g.stroke(); }));
-      const x0 = cx - W / 2, y0 = cy - H / 2, box = [x0 - sk, y0, W + sk * 2, H];
-      const band = gg => { gg.beginPath(); gg.moveTo(x0 + sk, y0); gg.lineTo(x0 + W + sk, y0); gg.lineTo(x0 + W - sk, y0 + H); gg.lineTo(x0 - sk, y0 + H); gg.closePath(); };
-      sticker(g, band, lin(y0, y0 + H, '#FF5C9A', '#E0261B'), u, { box });
-      g.save(); band(g); g.clip(); g.fillStyle = 'rgba(255,255,255,.14)'; for (let i = -2; i < 9; i++) { const x = x0 + i * u * 1.1; g.beginPath(); g.moveTo(x, y0 + H); g.lineTo(x + u * 0.45, y0 + H); g.lineTo(x + u * 0.95, y0); g.lineTo(x + u * 0.5, y0); g.closePath(); g.fill(); } g.restore();
-      
-      g.drawImage(t.c, cx - t.c.width / 2, cy - t.c.height / 2); return c;
+    fever(t, rnd) {   // a two-line lockup: big FEVER over pixel flames, a small ink tab saying TIME!
+      const size = t.fs / R, F = letters('FEVER', 'fever', size, 'x'), T = letters('TIME!', 'feverTab', size * 0.42, 'x');
+      const u = t.fs, gp = Math.max(2, Math.round(u * 0.12)), flameH = u * 1.75;
+      const W = F.c.width + u * 0.3, top = u * 1.2, fy = top, H = top + F.c.height + T.c.height * 0.7 + u * 0.3;
+      const c = cv(W + u * 0.6, H + u * 0.5), g = c.getContext('2d'), x0 = (c.width - W) / 2, baseY = fy + F.c.height * 0.5;
+      g.translate(c.width / 2, c.height / 2); g.rotate(-0.05); g.translate(-c.width / 2, -c.height / 2);
+      // pixel flames: columns on a grid, three nested layers (red, orange, yellow)
+      const cols = Math.floor((W - u * 0.6) / gp), cx0 = x0 + (W - cols * gp) / 2, ph = rnd() * 6;
+      const height = i => { const k = i / cols, tongue = 0.35 + 0.45 * Math.abs(Math.sin(k * Math.PI * 3.1 + ph)) + 0.2 * Math.abs(Math.sin(k * Math.PI * 7.3 + ph * 2)), edge = Math.min(1, 0.35 + k * 3, 0.35 + (1 - k) * 3); return Math.round(flameH * tongue * edge / gp) * gp; };
+      const layer = (scale, inset) => gg => { gg.beginPath(); for (let i = inset; i < cols - inset; i++) { const h = Math.round(height(i) * scale / gp) * gp; if (h > 0) gg.rect(cx0 + i * gp, baseY - h, gp + 0.5, h + u * 0.25); } };
+      const box = [cx0, baseY - flameH, cols * gp, flameH];
+      sticker(g, layer(1, 0), lin(baseY - flameH, baseY, '#FF6A3D', '#D62A1E'), u * 0.8, { box, gloss: false });
+      g.fillStyle = '#FF9A1F'; layer(0.68, 2)(g); g.fill();
+      g.fillStyle = '#FFE45C'; layer(0.36, 4)(g); g.fill();
+      g.drawImage(F.c, x0 + (W - F.c.width) / 2, fy);
+      // the TIME! tab, tucked under the right half of FEVER
+      const tw = T.c.width + u * 0.25, th = T.c.height * 0.82, tx = x0 + W - tw - u * 0.35, ty = fy + F.c.height - u * 0.42;
+      sticker(g, gg => rr(gg, tx, ty, tw, th, th * 0.45), INK, u * 0.6, { box: [tx, ty, tw, th], gloss: false });
+      g.drawImage(T.c, tx + (tw - T.c.width) / 2, ty + (th - T.c.height) / 2);
+      return c;
     },
     rage(t, rnd) { return PLATES._torn(t, rnd, ['#FF5D4A', '#B5121B'], '#E0261B', false); },
     nm(t, rnd) { return PLATES._torn(t, rnd, ['#A66BFF', '#4B1690'], '#8A2BE2', true); },
