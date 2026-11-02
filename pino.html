@@ -1314,13 +1314,16 @@ function pop(f0,f1,vol,dur,o){ if(!(o&&o.bus)){ const k=SFXP(); f0*=k; f1*=k; } 
   osc.connect(g); out(g,Object.assign({send:0.25},o)); osc.start(t); osc.stop(t+dur+0.03);
   sNoise(3800,1.2,vol*0.35,0.012,'bandpass',o.delay||0,o);
 }
-function alarm(n){   // a danger-zone warning: buzzy two-oscillator tones with a fast wobble, "beeeeng ... beeeeng"
-  const a=audio(); if(!a) return; const t0=a.currentTime+0.03;
-  for(let i=0;i<n;i++){ const t=t0+i*0.62, d=0.46, g=a.createGain(), lp=a.createBiquadFilter(), lfo=a.createOscillator(), lg=a.createGain();
-    g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.11,t+0.02); g.gain.setValueAtTime(0.11,t+d-0.06); g.gain.linearRampToValueAtTime(0.0001,t+d);
-    lp.type='lowpass'; lp.frequency.value=2600; lp.Q.value=2; lfo.frequency.value=9; lg.gain.value=14; lfo.connect(lg);
-    [[880,'sawtooth'],[886,'sawtooth'],[440,'square']].forEach(([f,ty])=>{ const o=a.createOscillator(); o.type=ty; o.frequency.setValueAtTime(f*0.94,t); o.frequency.linearRampToValueAtTime(f,t+0.08); lg.connect(o.frequency); o.connect(lp); o.start(t); o.stop(t+d+0.05); });
-    lfo.start(t); lfo.stop(t+d+0.05); lp.connect(g); out(g,{send:0.25}); } }
+function alarm(n){   // a rotating warning beacon: a slow, heavy wail rising and falling, swelling as the light sweeps past
+  const a=audio(); if(!a) return; const t=a.currentTime+0.03, cyc=1.15, dur=cyc*n;
+  const g=a.createGain(), lp=a.createBiquadFilter(), am=a.createGain(), rot=a.createOscillator(), rotG=a.createGain();
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.13,t+0.25); g.gain.setValueAtTime(0.13,t+dur-0.35); g.gain.linearRampToValueAtTime(0.0001,t+dur);
+  lp.type='lowpass'; lp.frequency.value=1400; lp.Q.value=0.7;
+  am.gain.value=0.6; rot.frequency.value=2.6; rotG.gain.value=0.4; rot.connect(rotG); rotG.connect(am.gain);   // the beacon turning: louder, softer, louder
+  [[1,'sawtooth',0.5],[1.005,'triangle',0.6],[0.5,'sine',0.5]].forEach(([k,ty,v])=>{ const o=a.createOscillator(), og=a.createGain(); o.type=ty; og.gain.value=v;
+    for(let c=0;c<n;c++){ const c0=t+c*cyc; o.frequency.setValueAtTime(330*k,c0); o.frequency.linearRampToValueAtTime(560*k,c0+cyc*0.55); o.frequency.linearRampToValueAtTime(330*k,c0+cyc); }
+    o.connect(og); og.connect(lp); o.start(t); o.stop(t+dur+0.05); });
+  lp.connect(am); am.connect(g); rot.start(t); rot.stop(t+dur+0.05); out(g,{send:0.35}); }
 function thump(f,vol,o){ if(!(o&&o.bus)) f*=SFXP();   // kick-style: pitch drops, short click; for landings, steps, stamps
   const a=audio(); if(!a) return; o=o||{}; const t=a.currentTime+(o.delay||0), dur=o.dur||0.22;
   const osc=a.createOscillator(); osc.type='sine'; osc.frequency.setValueAtTime(f*2.6,t); osc.frequency.exponentialRampToValueAtTime(f,t+0.05); osc.frequency.exponentialRampToValueAtTime(f*0.6,t+dur);
@@ -3351,7 +3354,7 @@ function enterNightmare(){
 function enterRage(){
   rage=true; rageReached=true; document.body.classList.add('rage'); decodeCBGM(['rage','nightmare']); bgm.setMode('rage');
   if(!superOpen&&!SUPER){ superOpen=true; try{ localStorage.setItem('kouga-super','1'); }catch(e){} later(()=>popUnderShout('superUnlock','lucky',1),900); }
-  fury=0; const announce=()=>{ alarm(3); cutIn(false,'shout_rage'); };   // the alarm goes off with the "코우가가 화났다!" cut-in (super-hard: after READY / START)
+  fury=0; const announce=()=>{ alarm(2); cutIn(false,'shout_rage'); };   // the alarm goes off with the "코우가가 화났다!" cut-in (super-hard: after READY / START)
   if(readyT>0) later(()=>{ if(rage&&state!=='over'&&state!=='idle') announce(); },(readyT+0.9)*1000); else announce();
   thump(40,0.45,{dur:0.7}); [49,48,47].forEach((n,i)=>bell(n,{vol:0.07,delay:i*0.02,dur:2})); whoosh(2000,200,0.8,0.12); buzz([60,40,60,40,120]); shake=0.3;
   clearInterval(rageTimer); rageTimer=setInterval(floatAnger,700);
