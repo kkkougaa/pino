@@ -2706,7 +2706,7 @@ function grab(perfect,x,y){
 }
 function eat(p){
   const b=cur; p.userData.eaten=true; b.eaten++; totalEaten++;
-  if(HARD) mood=Math.min(100,mood+0.7); if(rage&&!nightmare) fury=Math.min(100,fury+0.35);
+  if(HARD) mood=Math.min(100,mood+0.7*HARD_K); if(rage&&!nightmare) fury=Math.min(100,fury+0.35);
   combo++; maxCombo=Math.max(maxCombo,combo); keepCombo();
   addCharge(0.06);
   const t=tier()*(isFever()?2:1);
@@ -2765,7 +2765,7 @@ function dropPick(){
   tween(0.26,k=>{const e=easeOut(k);pk.position.lerpVectors(p0,p1,e);pk.quaternion.copy(q0).slerp(q1,e);});
   state='toss'; setGuide('toss');
 }
-const PILE_MAX=30;
+const PILE_MAX=24;
 let pileCount=0;
 // towers of 10; the 11th box starts a new tower beside the first (sideways on tall screens, front/back on wide ones)
 const PILE_PER=10;
@@ -2779,6 +2779,12 @@ function pileSlot(i){   // boxes lying flat on top of each other, a little askew
   return {pos:new V3(col.x+(rnd()-0.5)*0.18,lv*(H+T+0.012),col.z+(rnd()-0.5)*0.14),
           rot:new THREE.Euler(0,(rnd()<0.5?0:Math.PI)+(rnd()-0.5)*0.16,0)};
 }
+// a box that has landed on the pile becomes a plain closed carton: one box with the package faces and one ink outline
+// (about 7 draw calls and 24 triangles instead of the full open box's ~40 calls and ~20k triangles: long runs stay smooth)
+function pileProxy(){
+  if(!G.pileBox){ G.pileBox=new THREE.BoxGeometry(W,H,D); G.pileBox.translate(0,H/2,0); inkNormals(G.pileBox); }
+  const m=new THREE.Mesh(G.pileBox,[FM.side,FM.side,FM.top,FM.bottom,FM.front,FM.back]);
+  const k=new THREE.Mesh(G.pileBox,INK_MAT); k.userData.ink=true; k.raycast=()=>{}; m.add(k); return m; }
 function slimForPile(g){   // drop the small bits nobody will see from far away
   const drop=[];
   g.traverse(o=>{ if(o.isMesh){ o.castShadow=false; o.receiveShadow=false;
@@ -2801,7 +2807,7 @@ function tossBox(){
     const c=Math.min(1,Math.max(0,(k-0.2)/0.6)); lid.rotation.x=a0*(1-c);   // lid shuts on the way
     if(k>0.2&&pk.parent) pk.parent.remove(pk);
   },()=>{
-    if(keep){ pile.attach(g); g.position.copy(slot.pos); g.rotation.copy(slot.rot); g.scale.setScalar(1); lid.rotation.x=0; sfx.thud();
+    if(keep){ scene.remove(g); const pr=pileProxy(); pr.position.copy(slot.pos); pr.rotation.copy(slot.rot); pile.add(pr); sfx.thud();
       const q=toScreen(g.getWorldPosition(new V3())); fx.burst(q.x,q.y,{n:3,even:true,dir:-Math.PI,speed:60,gravity:-20,drag:4,size:6,life:0.35,shape:'puff',colors:['#fff']}); }   // a puff as it lands on the pile
     else scene.remove(g);
     boxesThrown++; nextBox();
@@ -3132,7 +3138,7 @@ function patrolSet(phase){
     patrol.pendingRecheck=false; patrol.linger=false; patrol.leave=null;
     if(patrol.kind!=='recheck'&&!first){ const r=rnd(); if(r<0.15) patrol.kind='cat'; }   // footsteps that turn out to be a passing dog
     patrol.warnT=patrol.kind==='recheck'?Math.max(0.6,0.8-0.1*RAGE_MIN())   // recheck 0.8 s, -0.1 s a minute, down to 0.6 s
-      :nightmare?Math.max(0.8,1-0.1*NM_MIN()):rage?1.8:lerpN(3,2,m);   // hard 3 s -> 2 s, rage 1.8 s, nightmare 1 s -> 0.8 s
+      :nightmare?Math.max(0.8,1-0.1*NM_MIN()):rage?1.8:lerpN(3,2,m)/HARD_K;   // hard 3 s -> 2 s, rage 1.8 s, nightmare 1 s -> 0.8 s
     if(patrol.kind==='silent') patrol.warnT*=1.25;   // no footsteps to warn you, so a touch longer
     patrol.t=patrol.warnT; patrol.steps=0; patrol.coverK=null;
     patrol.fake=patrol.kind!=='recheck'&&patrol.kind!=='cat'&&!first&&rnd()<lerpN(0.35,0.2,m);
@@ -3151,7 +3157,7 @@ function patrolGap(){
     patrol.nmLeft=(patrol.nmLeft||(2+Math.floor(rnd()*2)))-1; if(patrol.nmLeft<=0){ g*=2; patrol.nmLeft=2+Math.floor(rnd()*2); }   // a breather now and then
     return g; }
   if(rage) return 8+rnd()*4;                                   // 8~12 s
-  const m=mood/100; return lerpN(13,10,m)+rnd()*4; }           // hard: 13~17 s -> 10~14 s
+  const m=mood/100; return (lerpN(13,10,m)+rnd()*4)/HARD_K; }  // hard: 13~17 s -> 10~14 s, then / 1.2
 function patrolTick(dt){
   if(!(HARD||lateOn)||state==='swat'||state==='over'||state==='idle') return;
   if(patrol.phase==='none'){
@@ -3383,7 +3389,8 @@ function floatAnger(){   // 💢 drifting up round the edges
   document.body.appendChild(el); later(()=>el.remove(),3400);
 }
 const MELT_TIME=5;
-const meltTime=()=>nightmare?4:MELT_TIME;   // 5 s, nightmare 4 s
+const HARD_K=1.2;   // hard mode before Kouga loses his temper: patrols, warnings, melting all 1.2x tighter, suspicion 1.2x quicker
+const meltTime=()=>nightmare?4:rage?MELT_TIME:MELT_TIME/HARD_K;   // hard 5 s / 1.2, rage 5 s, nightmare 4 s
 // hard: once the box is open the pinos start to soften; sag them as the clock runs down
 function meltLook(b){
   const p=Math.max(0,1-b.meltT/MELT_TIME), q=Math.max(0,Math.min(1,(p-0.35)/0.65)), e=q*q*(3-2*q);
@@ -3808,7 +3815,7 @@ function loop(t){
       cur.meltT-=dt; meltLook(cur); if(cur.meltT<=0){ meltEnd(); }
     }
     if(HARD&&!rage&&mood>=100&&state!=='swat') enterRage();
-    if(state!=='swat'&&!held){ if(HARD){ elapsed+=dt; if(rage) rageT+=dt; if(nightmare) nmT+=dt; mood=Math.min(100,mood+0.175*dt); if(rage&&!nightmare){ fury=Math.min(100,fury+0.0875*dt); if(fury>=100) enterNightmare(); } } else if(!TUT){ timeLeft-=dt; if(timeLeft<=0){ timeLeft=0; startSwat(); }
+    if(state!=='swat'&&!held){ if(HARD){ elapsed+=dt; if(rage) rageT+=dt; if(nightmare) nmT+=dt; mood=Math.min(100,mood+(rage?0.175:0.175*HARD_K)*dt); if(rage&&!nightmare){ fury=Math.min(100,fury+0.0875*dt); if(fury>=100) enterNightmare(); } } else if(!TUT){ timeLeft-=dt; if(timeLeft<=0){ timeLeft=0; startSwat(); }
       else { const sc=Math.ceil(timeLeft); if(sc<=3&&sc!==lastCount){ lastCount=sc; pop(say(String(sc)),innerWidth/2,innerHeight*0.3,'count'); woodblock(sc===1?84:79,{vol:0.2}); if(sc===1) bell(96,{vol:0.05}); } } } }
     patrolTick(dt);
     const comboHold=held||((HARD||lateOn)&&(patrol.phase!=='none'||patrol.pendingRecheck||(cur&&cur.covered)));   // hands tied by Kouga: the combo waits
