@@ -2284,7 +2284,7 @@ function nextBox(){
   state='arrive'; setGuide(null);
   tween(0.38,k=>{const e=easeOut(k);b.group.position.x=6*(1-e);b.group.rotation.y=-0.4*(1-e);},
     ()=>{ if(state!=='arrive') return; state='film'; setGuide('film');
-      [-1,1].forEach(sx=>{ const q=toScreen(b.group.localToWorld(new V3(sx*W/2,0,D/2))); fx.burst(q.x,q.y,{n:2,dir:sx>0?-0.25:Math.PI+0.25,spread:0.6,speed:110,gravity:-30,drag:4,size:9,life:0.45,shape:'puff',colors:['#fff']}); });
+      [-1,1].forEach(sx=>{ const q=toScreen(b.group.localToWorld(new V3(sx*W/2,0,D/2))); fx.burst(q.x,q.y,{n:3,dir:sx>0?-0.2:Math.PI+0.2,spread:0.7,speed:150,gravity:-40,drag:4.5,size:15,life:0.5,shape:'puff',colors:['#fff']}); });
       tween(0.3,k=>{ const w=(1-k)*Math.cos(k*Math.PI*2.4); b.group.scale.set(1+0.05*w,1-0.11*w,1+0.05*w); },()=>b.group.scale.set(1,1,1)); });
 }
 function addFilm(amount){ amount/=NM();
@@ -2629,14 +2629,16 @@ const fx=(()=>{
   function star5(x,y,s,rot,fill){ const u=Math.max(2,Math.round(s*0.42)), X=Math.round(x), Y=Math.round(y);   // a pixel plus with an ink edge
     g.fillStyle='#3A2416'; PLUS.forEach(([i,j])=>g.fillRect(X+i*u-u/2-1.5,Y+j*u-u/2-1.5,u+3,u+3));
     g.fillStyle=fill; PLUS.forEach(([i,j])=>g.fillRect(X+i*u-u/2,Y+j*u-u/2,u,u)); }
-  function star5Old(x,y,s,rot,fill){ g.save(); g.translate(x,y); g.rotate(rot); g.beginPath();
-    for(let i=0;i<10;i++){ const r=i%2?s*0.46:s, a=-Math.PI/2+i*Math.PI/5; g.lineTo(Math.cos(a)*r,Math.sin(a)*r); }
-    g.closePath(); g.lineJoin='round'; g.lineWidth=Math.max(1.6,s*0.22); g.strokeStyle='#3A2416'; g.stroke(); g.fillStyle=fill; g.fill();
-    g.beginPath(); g.arc(-s*0.18,-s*0.22,s*0.14,0,7); g.fillStyle='rgba(255,255,255,.75)'; g.fill(); g.restore(); }
-  function puff(x,y,s,q){ const z=Math.round(s*1.3), X=Math.round(x-z/2), Y=Math.round(y-z/2);   // a square puff of air
-    g.fillStyle='rgba(58,36,22,.4)'; g.fillRect(X-2,Y-2,z+4,z+4); g.fillStyle='#FFFFFF'; g.fillRect(X,Y,z,z); }
-  function puffOld(x,y,s,q){ g.beginPath(); g.arc(x,y,s,0,7); g.fillStyle='#FFFFFF'; g.fill(); g.lineWidth=2; g.strokeStyle='rgba(58,36,22,.35)'; g.stroke();
-    g.beginPath(); g.arc(x+s*0.25,y+s*0.25,s*0.55,0,7); g.fillStyle='rgba(200,215,230,.5)'; g.fill(); }
+  // a cartoon dust puff: three round lumps with one ink outline and a shaded underside; it pops up, swells, then shrinks away
+  const PUFF=[[-0.48,0.12,0.62],[0.44,0.16,0.66],[0,-0.22,0.8],[0.05,0.3,0.6]];
+  function puff(x,y,s,q,rot){
+    const k=q<0.25?0.55+q/0.25*0.55:q<0.65?1.1+(q-0.25)*0.25:1.2*Math.max(0,1-(q-0.65)/0.35), r=s*k; if(r<0.6) return;
+    g.save(); g.translate(x,y); g.rotate(rot*0.15);
+    const lumps=(dx,dy,sc)=>{ g.beginPath(); PUFF.forEach(([a,b,c])=>{ g.moveTo(a*r+dx+c*r*sc,b*r+dy); g.arc(a*r+dx,b*r+dy,c*r*sc,0,Math.PI*2); }); };
+    lumps(0,0,1); g.lineWidth=Math.max(2,r*0.22); g.lineJoin='round'; g.strokeStyle='#3A2416'; g.stroke();
+    g.fillStyle='#E9DCCB'; g.fill();                                   // shade colour fills the whole cloud
+    lumps(-r*0.1,-r*0.12,0.9); g.fillStyle='#FFFBF2'; g.fill();          // the lit part leaves a crescent of shade at the lower right
+    g.restore(); }
   function star(x,y,s,rot){ g.save(); g.translate(x,y); g.rotate(rot); g.beginPath();
     for(let i=0;i<4;i++){ const a=i*Math.PI/2; g.lineTo(Math.cos(a)*s,Math.sin(a)*s); g.lineTo(Math.cos(a+Math.PI/4)*s*0.28,Math.sin(a+Math.PI/4)*s*0.28); }
     g.closePath(); g.fill(); g.restore(); }
@@ -2650,10 +2652,10 @@ const fx=(()=>{
       g.setLineDash([7,6]); g.beginPath(); g.arc(r.x,r.y,r.r0+(r.r1-r.r0)*e,0,Math.PI*2); g.stroke(); g.setLineDash([]); }
     for(let i=P.length-1;i>=0;i--){ const p=P[i]; p.t+=dt; if(p.t>=p.life){ P.splice(i,1); continue; }
       const q=p.t/p.life, dr=Math.exp(-p.drag*dt); p.vx*=dr; p.vy=p.vy*dr+p.g*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.rot+=p.vr*dt;
-      g.globalAlpha=q<0.7?1:(1-q)/0.3; g.fillStyle=p.c;
+      g.globalAlpha=p.shape==='puff'?1:q<0.7?1:(1-q)/0.3; g.fillStyle=p.c;
       if(p.shape==='star') star(p.x,p.y,p.s*(1-q*0.4),p.rot);
       else if(p.shape==='star5') star5(p.x,p.y,p.s*(q<0.15?0.6+q/0.15*0.5:1.1-q*0.5),p.rot,p.c);
-      else if(p.shape==='puff') puff(p.x,p.y,p.s*(0.7+q*0.9),q);
+      else if(p.shape==='puff') puff(p.x,p.y,p.s,q,p.rot);
       else if(p.shape==='rect'){ g.save(); g.translate(p.x,p.y); g.rotate(p.rot); g.fillRect(-p.s,-p.s*0.45,p.s*2,p.s*0.9); g.restore(); }
       else { const z=Math.max(2,Math.round(p.s*(1-q*0.4))); g.fillRect(Math.round(p.x-z/2),Math.round(p.y-z/2),z,z); } }
     g.globalAlpha=1;
