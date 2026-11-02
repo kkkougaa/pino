@@ -316,18 +316,18 @@ html[lang="ko"] .card{word-break:keep-all}
 .say p{margin:0;flex:1;background:#fff;border:2px solid #3A2E28;border-radius:16px 16px 16px 4px;padding:8px 12px;font-size:calc(var(--k,1)*(18px));line-height:1.3}
 #bg{position:fixed;inset:0;z-index:-1;background:#C79A6A;pointer-events:none}
 /* white fridge, bottom part: two drawer fronts with recessed pull handles, dark plinth */
-#bg .fridge{--kick:clamp(14px,2.4vh,22px);--dh:clamp(76px,12vh,112px);
-  position:absolute;left:0;right:0;top:0;height:calc(var(--horizon,22vh) + 1px);overflow:hidden;
-  background:linear-gradient(90deg,rgba(0,0,0,.05),rgba(255,255,255,0) 18%,rgba(255,255,255,.95) 36%,rgba(255,255,255,0) 54%,rgba(0,0,0,.04) 100%),linear-gradient(#FFFFFF,#F1F1EF)}
+#bg .fridge{--kick:clamp(14px,2.4vh,22px);--dh:clamp(76px,12vh,112px);   /* 40% wider each side and 60vh taller than the screen shows, so it can follow the camera */
+  position:absolute;left:-40%;right:-40%;top:-60vh;height:calc(var(--horizon,22vh) + 60vh + 1px);overflow:hidden;transform-origin:50% 100%;will-change:transform;
+  background:linear-gradient(90deg,rgba(0,0,0,.05) 22.2%,rgba(255,255,255,0) 32.2%,rgba(255,255,255,.95) 42.2%,rgba(255,255,255,0) 52.2%,rgba(0,0,0,.04) 77.8%),linear-gradient(#FFFFFF,#F1F1EF)}
 #bg .drawer{position:absolute;left:0;right:0;height:var(--dh);
-  background:linear-gradient(90deg,rgba(0,0,0,.04),rgba(255,255,255,0) 18%,rgba(255,255,255,.9) 37%,rgba(255,255,255,0) 55%,rgba(0,0,0,.035) 100%),linear-gradient(#FFFFFF 0,#F7F7F5 70%,#ECEBE8 100%);
+  background:linear-gradient(90deg,rgba(0,0,0,.04) 22.2%,rgba(255,255,255,0) 32.2%,rgba(255,255,255,.9) 42.8%,rgba(255,255,255,0) 52.8%,rgba(0,0,0,.035) 77.8%),linear-gradient(#FFFFFF 0,#F7F7F5 70%,#ECEBE8 100%);
   border-top:3px solid #C9C7C2;box-shadow:inset 0 2px 0 #FFFFFF,0 -1px 0 rgba(0,0,0,.18)}
 #bg .d1{bottom:var(--kick)}
 #bg .d2{bottom:calc(var(--kick) + var(--dh))}
-#bg .drawer b{position:absolute;left:12%;right:12%;top:9px;height:14px;border-radius:0 0 7px 7px;
+#bg .drawer b{position:absolute;left:28.9%;right:28.9%;top:9px;height:14px;border-radius:0 0 7px 7px;
   background:linear-gradient(#8D8B87,#C9C7C3 55%,#E9E8E5);box-shadow:inset 0 3px 3px rgba(0,0,0,.35),0 1px 0 #FFFFFF}
 #bg .kick{position:absolute;left:0;right:0;bottom:0;height:var(--kick);background:linear-gradient(#3A3A3C,#232325);box-shadow:0 -2px 3px rgba(0,0,0,.25)}
-#bg .kick::after{content:"";position:absolute;left:30%;right:30%;top:35%;height:30%;background:repeating-linear-gradient(90deg,#141415 0 3px,transparent 3px 7px)}
+#bg .kick::after{content:"";position:absolute;left:38.9%;right:38.9%;top:35%;height:30%;background:repeating-linear-gradient(90deg,#141415 0 3px,transparent 3px 7px)}
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]) #bg{background:#6E5238}
   :root:not([data-theme="light"]) #bg .fridge,:root:not([data-theme="light"]) #bg .drawer{filter:brightness(.82)}
@@ -370,7 +370,7 @@ body.hard .hardtag{display:inline-block}
 #patrol .pk{position:absolute;right:0;bottom:22%;width:min(46vw,230px);height:auto;transform:translateX(105%);transition:transform .5s cubic-bezier(.3,1.2,.5,1),filter .3s}
 #patrol.warn .pk{transform:translateX(105%)}
 #patrol.watch .pk{transform:translateX(42%) rotate(-6deg);filter:none}
-#patrol .pt{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 214px);transform:translateX(-50%);animation:ptBob .5s ease-in-out infinite alternate}
+#patrol .pt{position:absolute;left:50%;top:calc(var(--midY,240px) - 25px);transform:translateX(-50%);animation:ptBob .5s ease-in-out infinite alternate}
 @keyframes ptBob{to{transform:translateX(-50%) translateY(-6px) scale(1.04)}}
 @media (prefers-reduced-motion: reduce){#patrol .pk{transition:none}#patrol .pt{animation:none}}
 #cele .cele-yell{display:none;width:min(48vw,230px);height:auto}
@@ -532,7 +532,7 @@ html[lang="ja"]{--ui:var(--sys)}
 @keyframes hushIn{0%{opacity:0;transform:translate(-50%,-40%) scale(.96)}25%{opacity:1;transform:translate(-50%,-50%)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-64%)}}
 .pop.pizza{animation:pizzaIn 1.2s cubic-bezier(.2,1.6,.4,1) forwards}
 @keyframes pizzaIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(-14deg) scale(.4)}20%{opacity:1;transform:translate(-50%,-50%) rotate(4deg) scale(1.08)}32%{transform:translate(-50%,-50%) rotate(-2deg) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(-2deg) scale(1)}}
-#patrol .tape{position:absolute;left:-10%;right:-10%;top:calc(env(safe-area-inset-top,0px) + 204px);height:58px;opacity:0;transform:rotate(-3deg) scaleX(.2);
+#patrol .tape{position:absolute;left:-10%;right:-10%;top:calc(var(--midY,240px) - 29px);height:58px;opacity:0;transform:rotate(-3deg) scaleX(.2);
   background:repeating-linear-gradient(-45deg,#FFD23A 0 18px,#1A1A1A 18px 36px);box-shadow:0 4px 0 rgba(0,0,0,.25);transition:none}
 #patrol.warn .tape{opacity:.95;transform:rotate(-3deg) scaleX(1);transition:transform .22s cubic-bezier(.2,1.4,.4,1),opacity .1s;animation:tapeRun 0.6s linear infinite}
 @keyframes tapeRun{to{background-position:51px 0}}
@@ -540,7 +540,7 @@ html[lang="ja"]{--ui:var(--sys)}
 @keyframes ptShake{0%{transform:translateX(calc(-50% - 2px)) rotate(-3deg)}100%{transform:translateX(calc(-50% + 2px)) rotate(-3deg)}}
 #patrol.watch .pt{animation:hushBreathe 1.6s ease-in-out infinite alternate}
 @keyframes hushBreathe{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.04)}}
-#patrol .pt{top:calc(env(safe-area-inset-top,0px) + 208px)}
+#patrol .pt{top:calc(var(--midY,240px) - 25px)}
 /* ===== small screens: nothing may run off the edge ===== */
 .pop.sprite,#patrolTxt,.openhint img{max-width:calc(100vw - 24px);height:auto!important}
 #feverLab,#moodLab{max-width:42vw;height:auto!important}
@@ -813,7 +813,7 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 @keyframes susShake{0%{transform:translateX(-1px)}100%{transform:translateX(1px)}}
 .dbgbtn{top:calc(env(safe-area-inset-top,0px) + 100px)!important}
 /* ===== hands off while he looks ===== */
-#patrol .nohand{display:none;position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 300px);width:68px;height:68px;margin-left:-34px;filter:drop-shadow(0 4px 0 rgba(58,36,22,.35))}
+#patrol .nohand{display:none;position:absolute;left:50%;top:calc(var(--midY,240px) + 62px);width:68px;height:68px;margin-left:-34px;filter:drop-shadow(0 4px 0 rgba(58,36,22,.35))}
 #patrol .nohand svg{width:100%;height:100%}
 #patrol.watch .nohand{display:block;animation:noHand .5s ease-in-out infinite alternate}
 @keyframes noHand{from{transform:scale(1) rotate(-6deg)}to{transform:scale(1.1) rotate(6deg)}}
@@ -822,17 +822,18 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 #glLost[hidden]{display:none}
 #glLost .btn{width:auto;padding:10px 18px}
 /* ===== cut-in strip (torn paper) ===== */
-#cutin{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 12vh);height:168px;z-index:10;pointer-events:none}
+#cutin{--ciH:min(max(168px,16vw),30vh,280px);   /* strip height: 168px on phones, taller on big screens, shorter on short landscape ones */
+  position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 12vh);height:var(--ciH);z-index:10;pointer-events:none}
 #cutin[hidden]{display:none}
 #cutin .ci-wrap{position:absolute;left:-10%;right:-10%;top:0;bottom:0;transform:translateX(-130%) rotate(-5deg);filter:drop-shadow(0 3px 0 #3A2416) drop-shadow(0 -2px 0 #3A2416) drop-shadow(0 10px 0 rgba(58,36,22,.28))}
 #cutin .ci-paper{position:absolute;inset:0;background:#FFFBEF}
 #cutin .ci-band{position:absolute;inset:0;background:linear-gradient(#EF3A2A,#A3121B);overflow:hidden}
 #cutin.nm .ci-band{background:linear-gradient(#9C5CF0,#4B1690)}
 #cutin .ci-stripes{position:absolute;inset:0;background:repeating-linear-gradient(110deg,transparent 0 22px,rgba(255,255,255,.13) 22px 30px);animation:ciRun .45s linear infinite}
-#cutin .ci-bg{position:absolute;left:calc(7% + 196px);right:11%;top:50%;margin:0;transform:translateY(-58%) skewX(-10deg);text-align:right;white-space:pre;
+#cutin .ci-bg{position:absolute;left:calc(7% + var(--ciH) * 1.17);right:11%;top:50%;margin:0;transform:translateY(-58%) skewX(-10deg);text-align:right;white-space:pre;
   font:800 44px/.98 var(--sys);letter-spacing:-.03em;color:#FFFBEF;opacity:.9;text-shadow:3px 3px 0 rgba(90,8,14,.35)}
 #cutin.nm .ci-bg{color:#FBF6FF;text-shadow:3px 3px 0 rgba(40,6,80,.4)}
-#cutin .ci-face{position:absolute;left:7%;top:-74px;height:252px;width:auto;transform:rotate(5deg);transform-origin:40% 70%;filter:drop-shadow(4px 0 0 rgba(58,36,22,.35))}
+#cutin .ci-face{position:absolute;left:7%;top:calc(var(--ciH) * -.44);height:calc(var(--ciH) * 1.5);width:auto;transform:rotate(5deg);transform-origin:40% 70%;filter:drop-shadow(4px 0 0 rgba(58,36,22,.35))}
 /* the entrance: the room dims, the strip slams in with a white flash, his face punches in, the banner slides under it,
    the whole strip jolts on impact and again when he shouts; he keeps trembling with anger while it holds */
 #cutin .ci-dim{position:fixed;inset:0;z-index:-1;opacity:0;background:radial-gradient(ellipse 90% 70% at 50% 30%,rgba(40,6,8,.08) 30%,rgba(40,6,8,.55))}
@@ -855,13 +856,13 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 @keyframes ciJoltNm{0%,6.5%{transform:none}7%{transform:translate(0,11px)}8%{transform:translate(-8px,-5px)}9.5%{transform:translate(6px,4px)}11%{transform:translate(-4px,-2px)}12.5%{transform:translate(2px,1px)}14%,19%{transform:none}20%{transform:translate(4px,3px)}21%{transform:translate(-3px,-2px)}22%{transform:translate(2px,1px)}23.5%,100%{transform:none}}
 @media (prefers-reduced-motion: reduce){#cutin.go,#cutin.go .ci-face{animation:none}}
 /* his line: a clean speech bubble at the strip's lower right, tail pointing back at him */
-#cutin .ci-bub{position:absolute;right:4%;top:146px;max-width:min(78%,300px);transform:scale(0) rotate(-3deg);transform-origin:20% 0}
+#cutin .ci-bub{position:absolute;right:4%;top:calc(var(--ciH) * .87);max-width:min(78%,calc(var(--ciH) * 1.8));transform:scale(0) rotate(-3deg);transform-origin:20% 0}
 #cutin .ci-burst{position:absolute;left:0;top:0;overflow:visible;filter:drop-shadow(0 4px 0 rgba(58,36,22,.3))}
 #cutin .ci-burst path{fill:#FFFBEF;stroke:#3A2416;stroke-width:3;stroke-linejoin:miter;stroke-miterlimit:8}
 #cutin .ci-bub p{position:relative;margin:0;min-height:1.2em;padding:16px 26px 15px;box-sizing:border-box;
-  font-family:var(--hand);font-size:clamp(17px,4.6vw,20px);line-height:1.2;color:#C0141C;word-break:keep-all;white-space:pre-line}
+  font-family:var(--hand);font-size:clamp(15px,calc(var(--ciH) * .112),30px);line-height:1.2;color:#C0141C;word-break:keep-all;white-space:pre-line}
 #cutin.nm .ci-bub p{color:#6A12B8}
-html[lang="ja"] #cutin .ci-bub p{font-size:clamp(14px,3.9vw,17px);word-break:normal}
+html[lang="ja"] #cutin .ci-bub p{font-size:clamp(13px,calc(var(--ciH) * .098),26px);word-break:normal}
 #cutin.go .ci-bub{animation:bubIn 2.9s cubic-bezier(.2,1.5,.4,1) forwards}
 @keyframes bubIn{0%,15%{transform:scale(0) rotate(-3deg)}21%{transform:scale(1.06) rotate(-3deg)}25%{transform:scale(1) rotate(-3deg)}90%{opacity:1;transform:scale(1) rotate(-3deg)}100%{opacity:0;transform:scale(.9) rotate(-3deg)}}
 #cutin.go .ci-wrap{animation:ciIn 2.9s cubic-bezier(.2,.9,.3,1) forwards}
@@ -1580,7 +1581,8 @@ function inkify(root){
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(24,1,0.1,100);   // narrow lens: flatter, more like a drawing
 const camBase=new V3(), lookAt=new V3(0,0.25,0.05);
-let shake=0, camLean=0, camIntro=0; const Y_AXIS=new V3(0,1,0);
+let shake=0, camLean=0, camIntro=0;
+const FRIDGE={z:-2,x0:0,y0:0,len0:1,last:''}; let camRest=null;   // the 2D fridge follows the 3D camera: where its foot sits at rest
 function fit(){
   const w=innerWidth,h=innerHeight; renderer.setSize(w,h,false); camera.aspect=w/h;
   const t=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
@@ -1596,7 +1598,8 @@ function fit(){
   const fz=Math.min(-1.85,onFloor(0,camera.aspect<1?0.56:0.74).z);
   FLOOR_U.uFar.value=fz; FLOOR_U.uNear.value=fz+0.3;
   fridgeLight.position.set(0,15,fz+0.8); fridgeLight.target.position.set(0,0,0.4);   // high and far: near-parallel light, so each shadow keeps its object's shape and sits at its foot
-  const hp=new V3(0,0,fz).project(c);
+  const hp=new V3(0,0,fz).project(c), hq=new V3(1,0,fz).project(c);
+  FRIDGE.z=fz; FRIDGE.x0=(hp.x+1)/2*w; FRIDGE.y0=(1-hp.y)/2*h; FRIDGE.len0=Math.hypot((hq.x-hp.x)*w/2,(hq.y-hp.y)*h/2); FRIDGE.last=''; camRest=c;
   document.documentElement.style.setProperty('--horizon',((1-hp.y)/2*h).toFixed(1)+'px');
   // eaten boxes get stacked into a tower against the fridge, off to the right
   const px=onFloor(0.74,camera.aspect<1?0.56:0.74).x;
@@ -1671,6 +1674,7 @@ function setNight(on){
   fogColor();
 }
 fogColor(); if(darkQ.addEventListener) darkQ.addEventListener('change',fogColor);
+const FRIDGE_EL=document.querySelector('#bg .fridge');
 fit(); addEventListener('resize',fit);
 // the GPU can drop the context (an app switch on a phone): pause, wait for it to come back, then re-upload everything
 let glLost=false, glLostT=0;
@@ -2209,10 +2213,24 @@ function pop(text,x,y,cls){
 }
 // centre call-outs take the next free row, so "fever" and "speed bonus" landing together stack neatly
 const centreRows=[0,0,0];
+// the middle of the empty band between the HUD (and the suspicion gauge) and the top of the box; on short wide screens,
+// where the box sits right under the HUD, the middle of the play area instead
+function midY(){
+  const hud=document.querySelector('.hud'), su=$('sus'); let top=hud?hud.getBoundingClientRect().bottom:80;
+  if(su&&!su.hidden) top=Math.max(top,su.getBoundingClientRect().bottom); top+=6;
+  let bt=innerHeight; if(camRest) for(const x of [-W/2,W/2]) for(const z of [-D/2,D/2]){ const p=new V3(x,H,z).project(camRest); bt=Math.min(bt,(1-p.y)/2*innerHeight); }
+  const gap=bt-6-top, y=gap>=110? top+gap/2 : (top+innerHeight-90)/2;
+  document.documentElement.style.setProperty('--midY',y.toFixed(0)+'px'); return y; }
+function followFridge(){   // keep the 2D fridge glued to the floor's far edge whatever the camera does (intro crane, lean, shake, the held-breath roll)
+  if(!camRest) return; camera.updateMatrixWorld();
+  const a=new V3(0,0,FRIDGE.z).project(camera), b=new V3(1,0,FRIDGE.z).project(camera), w=innerWidth, h=innerHeight;
+  const x=(a.x+1)/2*w, y=(1-a.y)/2*h, dx=(b.x-a.x)*w/2, dy=-(b.y-a.y)*h/2, s=Math.hypot(dx,dy)/FRIDGE.len0, r=Math.atan2(dy,dx);
+  const t=Math.abs(x-FRIDGE.x0)<0.05&&Math.abs(y-FRIDGE.y0)<0.05&&Math.abs(s-1)<0.0005&&Math.abs(r)<0.0005? '' : `translate(${(x-FRIDGE.x0).toFixed(2)}px,${(y-FRIDGE.y0).toFixed(2)}px) rotate(${r.toFixed(4)}rad) scale(${s.toFixed(4)})`;
+  if(t!==FRIDGE.last){ FRIDGE.last=t; FRIDGE_EL.style.transform=t; $('fridgeGlow').style.transform=t?`translateY(${(y-FRIDGE.y0).toFixed(2)}px)`:''; } }
 function popCenter(text,cls){
   const t=performance.now(); let row=centreRows.findIndex(u=>u<t); if(row<0) row=centreRows.indexOf(Math.min(...centreRows));
   centreRows[row]=t+900;
-  const big=cls==='big'||cls==='fever', y=innerHeight*0.34+row*(big?78:66);
+  const big=cls==='big'||cls==='fever', y=midY()+row*(big?78:66);
   if(row) later(()=>pop(text,innerWidth/2,y,cls),110*row); else pop(text,innerWidth/2,y,cls);
 }
 function addShake(a){ if(!reduceMotion) shake=Math.max(shake,a); }
@@ -2924,6 +2942,7 @@ function footstep(i,n){
   el.style.left=(innerWidth*(i%2?0.82:0.18))+'px'; el.style.top=(innerHeight*(0.24+0.06*((i*7)%4)))+'px'; $('pops').appendChild(el); later(()=>el.remove(),900);
 }
 function patrolSet(phase){
+  if(phase==='warn') midY();
   const el=$('patrol'); patrol.phase=phase; bgm.duck(phase==='watch'?0.25:phase==='warn'?0.25:1); patrol.hb=0; el.hidden=phase==='none'; el.className=phase==='none'?'':'on '+phase;
   if(phase==='warn'){ const m=mood/100; $('patrolKouga').src=YELL_IMG;
     // super-hard (rage) only: no "he's coming" caption, shadow-only visits, double checks, 0.8 s warning
@@ -3091,11 +3110,14 @@ function tornClip(depth,inset){ const pts=[], n=26, j=()=>(inset+rnd()*depth).to
   for(let i=0;i<=n;i++) pts.push((i/n*100).toFixed(1)+'% '+j()+'px');
   for(let i=n;i>=0;i--) pts.push((i/n*100).toFixed(1)+'% calc(100% - '+j()+'px)');
   return 'polygon('+pts.join(',')+')'; }
-function fitBg(e,t){   // two lines beside his face; both banners share one size (the one that fits the longer), so rage and nightmare match
-  const br=x=>x.replace(/ |(が)/,(m,g)=>(g||'')+'\n'), h=$('cutin').hidden; $('cutin').hidden=false; let f=44;
-  for(const x of [TX('rage_on'),TX('nm_on')]){ e.textContent=br(x); e.style.fontSize=f+'px'; while(f>22&&e.scrollWidth>e.clientWidth+1){ f-=2; e.style.fontSize=f+'px'; } }
-  e.textContent=br(t); $('cutin').hidden=h; }
-function burstPath(w,h){   // a shouting bubble: spikes round a squarish oval, one long spike back toward Kouga (upper left)
+function fitBg(e,t){   // as big as the strip allows: two lines beside his face, or one line when the screen is wide enough to carry it big.
+  // Rage and nightmare share one size (fitted to the longer of the two), so the two banners always match.
+  const br=x=>x.replace(/ |(が)/,(m,g)=>(g||'')+'\n'), both=[TX('rage_on'),TX('nm_on')], hid=$('cutin').hidden; $('cutin').hidden=false;
+  const fitAt=(txt,max)=>{ e.textContent=txt; let f=max; e.style.fontSize=f+'px'; while(f>20&&e.scrollWidth>e.clientWidth+1){ f-=2; e.style.fontSize=f+'px'; } return f; };
+  const H=$('cutin').offsetHeight||168, m1=Math.round(H*0.45), m2=Math.round(H*0.357);   // 168px strip: one line up to 76px, two lines up to 60px
+  const one=Math.min(...both.map(x=>fitAt(x,m1))), two=Math.min(...both.map(x=>fitAt(br(x),m2))), single=one>=Math.min(two,Math.round(H*0.31));
+  e.textContent=single?t:br(t); e.style.fontSize=(single?one:two)+'px'; $('cutin').hidden=hid; }
+function bubPath(w,h){   // a shouting bubble: spikes round a squarish oval, one long spike back toward Kouga (upper left)
   const cx=w/2, cy=h/2, n=Math.max(14,Math.round((w+h)/15)), pts=[], tail=Math.round(n*0.62);
   for(let i=0;i<n*2;i++){ const a=(i/(n*2))*Math.PI*2+0.1, c=Math.cos(a), sn=Math.sin(a), q=Math.pow(Math.pow(Math.abs(c),4)+Math.pow(Math.abs(sn),4),-0.25);
     const r=i%2? 0.97 : 1.1+rnd()*0.1, out=i===tail*2? 30 : 0;   // the tail sticks out a fixed 30px however wide the line is
@@ -3107,10 +3129,10 @@ function cutIn(nm,lineKey){   // Kouga's face, the banner and his line on one st
   $('ciLine').textContent=''; el.classList.toggle('nm',!!nm); el.hidden=false; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
   whoosh(300,3200,0.28,0.2); thump(46,0.35,{delay:0.18,dur:0.4}); later(()=>{ addShake(nm?0.32:0.22); buzz([30,20,30]); },200);
   later(()=>{ addShake(nm?0.14:0.09); buzz(18); },580);   // a second, smaller jolt when he shouts
-  const ln=$('ciLine'); ln.style.width=ln.style.height=''; $('ciBurst').style.display='none';
+  const ln=$('ciLine'); if(ln._tw){ cancelLater(ln._tw); ln._tw=0; } cancelLater(cutIn.ty); ln.style.width=ln.style.height=''; $('ciBurst').style.display='none';   // a new cut-in drops any line still being typed
   if(lineKey){ ln.textContent=TX(lineKey); const w=ln.offsetWidth+2, h=ln.offsetHeight; ln.style.width=w+'px'; ln.style.height=h+'px'; ln.textContent='';   // size the bubble for the whole line before he types it
-    const sv=$('ciBurst'); sv.setAttribute('width',w); sv.setAttribute('height',h); sv.firstChild.setAttribute('d',burstPath(w,h)); sv.style.display='';
-    later(()=>typeText(ln,TX(lineKey),32,nm?300:380),560); }   // the bubble pops in, then he talks
+    const sv=$('ciBurst'); sv.setAttribute('width',w); sv.setAttribute('height',h); sv.firstChild.setAttribute('d',bubPath(w,h)); sv.style.display='';
+    cutIn.ty=later(()=>typeText(ln,TX(lineKey),32,nm?300:380),560); }   // the bubble pops in, then he talks
   cancelLater(cutIn.t); cutIn.t=later(()=>{ el.hidden=true; el.classList.remove('go'); },2900); }
 function enterNightmare(){
   if(nightmare||!rage) return; queueIntro('nm'); nightmare=true; nightmareReached=true; bgm.nightmare(); fury=100; document.body.classList.add('nightmare'); moodBadge();
@@ -3590,11 +3612,12 @@ function loop(t){
     const want=patrol.phase==='warn'?0.04+0.05*Math.min(1,1-patrol.t/patrol.warnT):patrol.phase==='watch'?0.1:0;
     camLean+=(want-camLean)*Math.min(1,rdt*(want>camLean?2:3.5));
     if(camIntro>0) camIntro=Math.max(0,camIntro-rdt/1.5);
-    if(camIntro>0){ const e=camIntro*camIntro*(3-2*camIntro); camera.position.sub(lookAt).applyAxisAngle(Y_AXIS,0.6*e).multiplyScalar(1+0.4*e).add(lookAt); camera.position.y+=1.4*e; }
+    if(camIntro>0){ const e=camIntro*camIntro*(3-2*camIntro); camera.position.sub(lookAt).multiplyScalar(1+0.38*e).add(lookAt); camera.position.y+=1.2*e; camera.position.x+=0.35*e; }   // crane down from high and back
     if(camLean>0.0005) camera.position.lerp(lookAt,camLean); }
   if(shake>0.001){ camera.position.x+=(rnd()-.5)*shake; camera.position.y+=(rnd()-.5)*shake; shake*=Math.exp(-dt*10); }
   if(kick>0.0005){ camera.position.lerp(lookAt,kick); kick*=Math.exp(-rdt*14); }
   camera.lookAt(lookAt); if(patrol.phase==='watch'&&!reduceMotion) camera.rotateZ(Math.sin(now*1.3)*0.012);   // holding your breath
+  followFridge();
   if(!glLost) renderer.render(scene,camera);
   // rolling score
   if(shownScore!==score){ if(score===0) shownScore=0; else { shownScore+=(score-shownScore)*Math.min(1,rdt*11); if(Math.abs(score-shownScore)<1) shownScore=score; }
