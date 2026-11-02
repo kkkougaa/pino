@@ -2933,16 +2933,19 @@ function shout(key,purple){   // Kouga bellowing, just above the caption
   setTimeout(()=>typeText($('shoutTxt'),TX(key),30,purple?300:380),120);
   shoutT=setTimeout(()=>{ el.classList.add('out'); shoutT=setTimeout(()=>{ el.hidden=true; el.classList.remove('go','out'); },240); },3000);
 }
+// Kouga's shout sits at the top; the banner that goes with it lines up underneath, never on top of it (slot 1 = one more row down)
+function popUnderShout(key,cls,slot){ const el=$('shout'), bottom=el.hidden?innerHeight*0.24:el.offsetTop+el.offsetHeight, a=artOf(key), h=a?Math.min(a[2],a[2]*(innerWidth-24)/a[1]):60;
+  const y=Math.min(innerHeight*0.66,bottom+14+h/2+slot*(h+10)); pop(say(key),innerWidth/2,y,cls); }   // centred one banner-height below the bubble (scaled like pop() scales it)
 function enterNightmare(){
   if(nightmare||!rage) return; queueIntro('nm'); nightmare=true; nightmareReached=true; bgm.nightmare(); fury=100; document.body.classList.add('nightmare'); moodBadge();
-  popCenter(say('nm_on'),'alert'); shout('shout_nm',true);
+  shout('shout_nm',true); popUnderShout('nm_on','alert',0);
   thump(34,0.6,{dur:1.2,send:0.5}); [37,38,43,44].forEach((n,i)=>bell(n,{vol:0.06,delay:i*0.015,dur:2.4})); whoosh(200,3000,0.6,0.12); sNoise(600,0.6,0.25,1,'lowpass',0,{send:0.6});
   buzz([80,40,80,40,200]); shake=0.45;
 }
 function enterRage(){
   rage=true; rageReached=true; document.body.classList.add('rage'); decodeCBGM(['rage','nightmare']); bgm.setMode('rage');
-  if(!superOpen&&!SUPER){ superOpen=true; try{ localStorage.setItem('kouga-super','1'); }catch(e){} setTimeout(()=>popCenter(say('superUnlock'),'lucky'),900); }
-  fury=0; const announce=()=>{ popCenter(say('rage_on'),'alert'); shout('shout_rage'); };
+  if(!superOpen&&!SUPER){ superOpen=true; try{ localStorage.setItem('kouga-super','1'); }catch(e){} setTimeout(()=>popUnderShout('superUnlock','lucky',1),900); }
+  fury=0; const announce=()=>{ shout('shout_rage'); popUnderShout('rage_on','alert',0); };
   if(readyT>0) setTimeout(()=>{ if(rage&&state!=='over'&&state!=='idle') announce(); },(readyT+0.9)*1000); else announce();
   thump(40,0.45,{dur:0.7}); [49,48,47].forEach((n,i)=>bell(n,{vol:0.07,delay:i*0.02,dur:2})); whoosh(2000,200,0.8,0.12); buzz([60,40,60,40,120]); shake=0.3;
   clearInterval(rageTimer); rageTimer=setInterval(floatAnger,700);
