@@ -3135,10 +3135,10 @@ function patrolSet(phase){
     $('patrolTxt').style.visibility=''; setArt($('patrolTxt'),'patrol_warn',29,'warn');
     const first=!patrol.count;
     patrol.kind=patrol.pendingRecheck?'recheck':(!first&&rnd()<0.05)?'cat'   // a passing dog: 5%, footsteps only, nothing overrides it
-      :(rage&&rnd()<(nightmare?Math.min(1,0.3+0.05*NM_STEP()):0.2))?'silent':'steps';   // silent: 20% in rage, 30% in nightmare +5% every 30 s
+      :(rage&&rnd()<(nightmare?Math.min(0.5,0.3+0.05*NM_STEP()):0.2))?'silent':'steps';   // silent: 20% in rage, 30% in nightmare +5% every 30 s, up to 50%
     patrol.pendingRecheck=false; patrol.linger=false; patrol.leave=null;
     patrol.warnT=patrol.kind==='recheck'?Math.max(0.6,0.8-0.1*RAGE_MIN())   // recheck 0.8 s, -0.1 s a minute, down to 0.6 s
-      :nightmare?Math.max(0.6,0.8-0.1*NM_STEP()):rage?1.3:lerpN(3,2,m)/HARD_K;   // hard 3 s -> 2 s (/1.2), rage 1.3 s, nightmare 0.8 s, -0.1 s every 30 s, down to 0.6 s
+      :nightmare?Math.max(1,1.2-0.1*NM_STEP()):rage?1.4:lerpN(3,2,m)/HARD_K;   // hard 3 s -> 2 s (/1.2), rage 1.4 s, nightmare 1.2 s, -0.1 s every 30 s, down to 1 s
     if(patrol.kind==='silent') patrol.warnT*=1.25;   // no footsteps to warn you, so a touch longer
     patrol.t=patrol.warnT; patrol.steps=0; patrol.coverK=null;
     patrol.fake=patrol.kind!=='recheck'&&patrol.kind!=='cat'&&!first&&rnd()<(nightmare?0.05:rage?0.1:0.2);   // he turns back: hard 20%, rage 10%, nightmare 5%
@@ -3182,7 +3182,7 @@ function patrolTick(dt){
     popCenter(say('w_safe','+'+Math.round(sb*SM())),'good');
     patrolSet('none'); uncoverBox();
     // double check: when he's suspicious enough he may spin straight back round
-    const again=rage&&patrol.kind!=='recheck'&&rnd()<(nightmare?Math.min(1,0.3+0.05*NM_STEP()):0.2);   // recheck: rage 20%, nightmare 30% +5% every 30 s
+    const again=rage&&patrol.kind!=='recheck'&&rnd()<(nightmare?Math.min(0.5,0.3+0.05*NM_STEP()):0.2);   // recheck: rage 20%, nightmare 30% +5% every 30 s, up to 50%
     if(again){ patrol.pendingRecheck=true; patrol.linger=true; patrol.next=1.0+rnd()*0.4;
       later(()=>{ if(!patrol.pendingRecheck) return; creak(); const el=document.createElement('img'); el.className='pop sprite bad'; el.alt='';
         setArt(el,'q',22,'bad','…?'); el.style.left=(innerWidth*0.84)+'px'; el.style.top=(innerHeight*0.36)+'px'; $('pops').appendChild(el); later(()=>el.remove(),1200); },250);
