@@ -1646,7 +1646,7 @@ function applyTitleCam(){   // blend the play framing toward the start screen's:
   const w=innerWidth, h=innerHeight, tall=camera.aspect<1, k=titleK;
   const oy=(tall?-Math.round(h*0.15):0)+Math.round(k*(tall?h*0.30:-h*0.1)),   // wide screens: box a little lower, clear of the logo
     ox=Math.round(k*(tall?0:w*0.2));
-  camera.zoom=1+0.02*k; if(ox||oy) camera.setViewOffset(w,h,ox,oy,w,h); else camera.clearViewOffset(); camera.updateProjectionMatrix(); }
+  camera.zoom=1-0.286*k; if(ox||oy) camera.setViewOffset(w,h,ox,oy,w,h); else camera.clearViewOffset(); camera.updateProjectionMatrix(); }
 
 const hemi=new THREE.HemisphereLight(0xffffff,col('#B49A7C'),1.05);   // flat, even light suits the cel look scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffffff,0.62); sun.position.set(3,9,5);
@@ -2827,7 +2827,7 @@ function flyPostit(a){   // flicked off the lid the way the finger went (screen 
   tween(0.55,k=>{ const e=k*(2-k); p.position.set(p0.x+Math.cos(a)*dist*e, p0.y+1.6*Math.sin(Math.PI*k*0.8)+0.6*e, p0.z+Math.sin(a)*dist*0.7*e); p.rotation.y=ry0+spin*k; p.rotation.x=tilt*k; },
     ()=>{ scene.remove(p); p.userData.pa.material.map.dispose(); }); }
 function titleOn(){ document.body.classList.add('title'); titleTo=1; if(cur) attachPostit(cur);
-  const lg=$('tlogo'), src=$('bootLogo'); if(lg&&src){ if(!lg.src) lg.src=src.src; const cells=src.naturalWidth||src.width/3; lg.style.width=(cells*(innerWidth<420||innerHeight<500?2:3))+'px'; } }   // the loading screen's pixel logo, at 2 or 3 px per cell
+  const lg=$('tlogo'), src=$('bootLogo'); if(lg&&src){ if(!lg.src) lg.src=src.src; const cells=src.naturalWidth||src.width/3; const d=devicePixelRatio||1, per=Math.max(1,Math.round((innerWidth<420||innerHeight<500?2:3)*0.6*d))/d; lg.style.width=(cells*per)+'px'; } }   // the loading screen's pixel logo at 60%, rounded to whole device pixels per cell so the dots stay square
 function awaitFlick(done){   // Start: the in-game UI comes on and the camera settles, but the run only begins when the player flicks the post-it away
   $('start').hidden=true; document.body.classList.remove('title'); titleTo=0; flickWait=done; later(showFlickHint,700); }
 function showFlickHint(){   // a nudge beside the note until it's gone
