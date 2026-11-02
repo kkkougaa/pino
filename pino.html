@@ -3347,7 +3347,7 @@ function enterNightmare(){
   buzz([80,40,80,40,200]); shake=0.45;
 }
 function enterRage(){
-  if(!SUPER) alarm(3);   // hard mode tipping over into the furious stage: the alarm goes off (super-hard starts there)
+  alarm(3);   // the furious stage begins (hard mode tipping over, or a super-hard run starting): the alarm goes off
   rage=true; rageReached=true; document.body.classList.add('rage'); decodeCBGM(['rage','nightmare']); bgm.setMode('rage');
   if(!superOpen&&!SUPER){ superOpen=true; try{ localStorage.setItem('kouga-super','1'); }catch(e){} later(()=>popUnderShout('superUnlock','lucky',1),900); }
   fury=0; const announce=()=>cutIn(false,'shout_rage');
