@@ -837,6 +837,37 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 @keyframes coIn{from{opacity:0;transform:translateX(-50%) translateY(10px) scale(.9)}to{opacity:1;transform:translateX(-50%)}}
 @keyframes coFade{from{opacity:0}to{opacity:1}}
 @keyframes coBlink{50%{opacity:.35}}
+.evcard{width:min(100%,340px);margin:0 0 2px;padding:8px 12px;border-radius:12px;background:rgba(255,251,239,.1);border:1.5px dashed rgba(255,228,92,.6);color:#FFF3DE;text-align:center}
+.evcard p{margin:0;font:600 12.5px/1.5 var(--sys)}
+.evcard .evline b{color:#FFE45C}
+.evcard .evme{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;align-items:center;margin-top:3px}
+.evlink{appearance:none;border:0;background:none;padding:2px 2px;font:700 12.5px/1.4 var(--sys);color:#FFE45C;text-decoration:underline;cursor:pointer}
+.rankrow{display:flex;align-items:center;gap:10px;margin:6px 0 2px;flex-wrap:wrap}
+.rankrow .btn{margin:0;flex:none;padding:7px 12px;font-size:15px}
+.rankrow p{margin:0;flex:1;min-width:0;font:700 14px/1.3 var(--sys);color:#C0141C}
+#rankOv,#boardOv{z-index:55}
+.rankcard .rkf{display:block;margin:10px 0 0;font:700 13px/1.3 var(--sys);color:#7A5A40}
+.rankcard input{width:100%;box-sizing:border-box;font:700 18px/1.2 var(--sys);padding:9px 11px;margin-top:4px;border:2.5px solid #3A2E28;border-radius:10px;background:#FFFBEF;color:#3A2E28}
+.rankcard .at{display:flex;align-items:center;gap:4px}.rankcard .at b{font:800 18px/1 var(--sys);color:#3A2E28;margin-top:4px}
+.rknote{margin:6px 0 0;font:500 12px/1.4 var(--sys);color:#9A7A60}.rkerr{margin:4px 0 8px;min-height:1em;font:700 13px/1.3 var(--sys);color:#C0141C}
+.boardcard{position:relative}
+.bdlive{position:absolute;right:16px;top:14px;margin:0;display:flex;align-items:center;gap:5px;font:700 11px/1 var(--sys);color:#C0141C}
+.bdlive i{width:8px;height:8px;border-radius:50%;background:#E0261B;animation:liveDot 1.2s ease-in-out infinite}
+@keyframes liveDot{50%{opacity:.25}}
+.bdper{margin:2px 0 0;font:600 13px/1.4 var(--sys);color:#7A5A40}.bdleft{margin:0 0 8px;font:800 15px/1.4 var(--sys);color:#C0141C}
+#boardList{list-style:none;margin:6px 0 8px;padding:0}
+#boardList li,.bdme .row{display:flex;gap:8px;align-items:center;padding:7px 6px;border-bottom:1px dashed rgba(58,36,22,.2);font:600 15px/1.2 var(--sys)}
+.rk{min-width:1.7em;text-align:center;font-weight:800;color:#9A7A60}
+#boardList li:nth-child(1) .rk,#boardList li:nth-child(2) .rk,#boardList li:nth-child(3) .rk{font-size:18px}
+.nk{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc{flex:none;font:700 11px/1 var(--sys);padding:4px 7px;border-radius:999px;background:#3A2E28;color:#FFFBEF}
+.mc.hard{background:#E0412F}.mc.super{background:#5A0D16;color:#FFE3E3}.mc.nightmare{background:#6A12B8}
+.sc{flex:none;min-width:5.5em;text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+#boardList li.msg{justify-content:center;color:#9A7A60}
+.bdme{margin:2px 0 8px}.bdme .lab{margin:0 0 3px;font:700 12px/1 var(--sys);color:#7A5A40}
+.bdme .row{border:2.5px solid #3A2E28;border-radius:12px;background:#FFE9A8}
+.bdme .none{margin:0;font:600 13px/1.4 var(--sys);color:#9A7A60}
+.bdcount{margin:0 0 10px;text-align:center;font:600 12px/1.3 var(--sys);color:#9A7A60}
 #result .rt{min-width:0}
 #rCause{margin:2px 0 0;font:700 15px/1.3 var(--sys);color:#C0141C;transform:rotate(-1.5deg)}
 #susLab{white-space:nowrap;font:700 12px/1 var(--sys);color:#FFF6E4;background:rgba(43,26,16,.7);padding:4px 8px 3px;border-radius:999px}
@@ -1034,6 +1065,7 @@ bootStep(0.1);</script>
     <p class="hardnote" id="hardNote" data-i18n="hardNote"></p>
     <button class="btn" id="go" data-i18n="start">시작!</button>
     <button class="btn ghost tutbtn" id="tutBtn" type="button" data-i18n="tutAgain"></button>
+    <div class="evcard" id="evCard" hidden><p class="evline"><b>🏆</b> <span id="evPeriod"></span> · <span id="evLeft"></span></p><p class="evme"><span id="evWho"></span><button type="button" class="evlink" id="evJoin"></button><button type="button" class="evlink" id="boardBtn" data-i18n="rankView"></button></p></div>
     <button class="btn ghost bgmset" id="bgmSetBtn" type="button" data-i18n="bgmSet" hidden></button>
     <p class="legal" data-i18n="legal"></p>
   </div>
@@ -1046,6 +1078,28 @@ bootStep(0.1);</script>
     <div class="setrow"><span data-i18n="setSfx"></span><button class="tog" type="button" data-set="sfx"></button></div>
     <div class="setrow"><span data-i18n="setVib"></span><button class="tog" type="button" data-set="vib"></button></div>
     <button class="btn" id="setClose" type="button" data-i18n="close" style="margin-top:18px"></button>
+  </div>
+</div>
+
+<div class="overlay" id="rankOv" hidden>
+  <div class="card rankcard">
+    <h2 data-i18n="rankJoin"></h2>
+    <label class="rkf"><span data-i18n="rankNick"></span><input id="rankNick" type="text" maxlength="12" autocomplete="nickname"></label>
+    <label class="rkf"><span data-i18n="rankXid"></span><span class="at"><b>@</b><input id="rankXid" type="text" maxlength="16" autocomplete="username" autocapitalize="off" spellcheck="false" inputmode="email"></span></label>
+    <p class="rknote" data-i18n="rankXidNote"></p><p class="rkerr" id="rankErr"></p>
+    <button class="btn" id="rankSave" type="button"></button>
+    <button class="btn ghost" id="rankSkip" type="button"></button>
+  </div>
+</div>
+<div class="overlay" id="boardOv" hidden>
+  <div class="card boardcard">
+    <p class="bdlive"><i></i><span data-i18n="rankLive"></span></p>
+    <h2 data-i18n="rankTitle"></h2>
+    <p class="bdper" id="bdPeriod"></p><p class="bdleft" id="bdLeft"></p>
+    <ol id="boardList"></ol>
+    <div class="bdme" id="bdMe"></div>
+    <p class="bdcount" id="bdCount"></p>
+    <button class="btn" id="boardClose" type="button" data-i18n="close"></button>
   </div>
 </div>
 
@@ -1089,6 +1143,7 @@ bootStep(0.1);</script>
     </dl>
     <p class="res best" id="rBest"></p>
     <p class="res small" id="shareMsg" role="status"></p>
+    <div class="rankrow" id="rankRow" hidden><p id="rankMsg" role="status"></p><button class="btn ghost" id="rankOpen" type="button" data-i18n="rankView"></button></div>
     <div class="resbtns">
       <button class="btn" id="again" data-i18n="again"></button>
       <button class="btn ghost ico" id="homeBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.5 12 4.5l8.5 7M6.2 9.6V19.5h4.3v-5h3v5h4.3V9.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vh" data-i18n="home"></span></button>
@@ -1135,7 +1190,7 @@ var I18N={
     fx_perfect:'퍼펙트! +{n}', fx_nice:'NICE!', fx_miss:'MISS −1초', fx_missHard:'미스 −{n}', fx_speed:'스피드 보너스 +{n}',
     ready:'준비~', go_:'START!', modeNormal:'보통', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
-    cause_moved:'쳐다보는 중에 움직였어!', cause_late:'제때 못 숨겼어!', cause_silent:'발소리 없이 왔어!', cause_recheck:'…다시 돌아봤어!', cause_feint:'가는 척이었어!', cause_melt:'피노가 다 녹아버렸어…', cause_pizza:'피자 냄새로 들켰어!', co_sus:'의심 게이지예요. 시간이 지나고 피노를 먹을수록 차올라요. 꽉 차면… 코우가가 화내요!', co_warn:'발소리! 코우가가 와요. 「숨기기」를 눌러 상자를 숨겨요!', co_watch:'코우가가 보고 있어요. 떠날 때까지 아무것도 만지지 마요!', co_melt:'상자를 열면 피노가 녹기 시작해요. 다 녹기 전에 6알 다 먹어요!', co_snap:'띠를 너무 빨리 당기면 끊어져요. 다시 톡 잡고 천천히!', co_pizza:'피자 상자예요! 옆으로 쓸어서 치워요. 열면 냄새로 들켜요', co_fake:'…오다가 그냥 가버렸어요. 이런 일도 있지만, 방심은 금물!', co_rage:'코우가가 화났어요! 순찰이 잦아지고 예고가 짧아져요. 게이지가 다 차면… 폭주!', co_silent:'발소리 없이 왔어요! 「코우가가 온다!」 글자를 보면 바로 숨겨요', co_recheck:'…다시 돌아봤어요! 바로 다시 숨겨요', co_feint:'가는 척이었어요! 완전히 떠날 때까지 기다려요', rc_lines:['어디서 피노 냄새가 나는데?!','네 녀석, 피노 먹고 있던 거 아니지?!','부스럭 소리가 난 것 같은데?!','뭔가 수상한데!','다시 와서 확인할 테니까, 가만히 있어!'], fe_lines:['진짜 안 먹는 거 맞아?!','이 몸이 다 보고 있다고!','네 녀석…! 지켜보고 있을 거야!','수상하다니까 네 녀석!!!!'], coTap:'탭해서 계속', x5:'×5', timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_open:'앗, 피자잖아! −{n}', pizza_away:'휙!', yell_pizza:'이 피자 냄새는 뭐야?! 피자녀석?!', pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:'이 몸의 피노가 없어졌잖아!?!\n누구야!!!', nm_on:'코우가가 폭주한다!', shout_nm:'피노 돌려줘!!!!!!!!!!', dbgNm:'나이트메어', autoOn:'자동 플레이: 켜짐', autoOff:'자동 플레이: 꺼짐', legal:'본 게임은 비상업적이며 모든 리소스의 권리는 원 저작권자에게 있습니다.', bgmSet:'🎵 음악 바꾸기', bgmTitle:'내 음악 넣기', bgmLead:'내 기기에 있는 음악 파일을 고르면 그 모드에서 대신 나와요. 이 기기에만 저장되고, 직접 가진 음원만 넣어 주세요.', bgmRage:'초하드 BGM', bgmNm:'나이트메어 BGM', bgmHintRage:'코우가가 화났을 때', bgmHintNm:'폭주했을 때 (자연스럽게 넘어가요)', bgmPick:'파일 고르기', bgmChange:'바꾸기', bgmClear:'지우기', bgmBad:'이 파일은 재생할 수 없어요. mp3나 m4a 파일인지 확인해 주세요.', recheck:'…응?!', streak:'{s}연속!', cover_calm:'침착! +{n}', cover_close:'간발의 차! +{n}', quit:'그만하기',
+    cause_moved:'쳐다보는 중에 움직였어!', cause_late:'제때 못 숨겼어!', cause_silent:'발소리 없이 왔어!', cause_recheck:'…다시 돌아봤어!', cause_feint:'가는 척이었어!', cause_melt:'피노가 다 녹아버렸어…', cause_pizza:'피자 냄새로 들켰어!', co_sus:'의심 게이지예요. 시간이 지나고 피노를 먹을수록 차올라요. 꽉 차면… 코우가가 화내요!', co_warn:'발소리! 코우가가 와요. 「숨기기」를 눌러 상자를 숨겨요!', co_watch:'코우가가 보고 있어요. 떠날 때까지 아무것도 만지지 마요!', co_melt:'상자를 열면 피노가 녹기 시작해요. 다 녹기 전에 6알 다 먹어요!', co_snap:'띠를 너무 빨리 당기면 끊어져요. 다시 톡 잡고 천천히!', co_pizza:'피자 상자예요! 옆으로 쓸어서 치워요. 열면 냄새로 들켜요', co_fake:'…오다가 그냥 가버렸어요. 이런 일도 있지만, 방심은 금물!', co_rage:'코우가가 화났어요! 순찰이 잦아지고 예고가 짧아져요. 게이지가 다 차면… 폭주!', co_silent:'발소리 없이 왔어요! 「코우가가 온다!」 글자를 보면 바로 숨겨요', co_recheck:'…다시 돌아봤어요! 바로 다시 숨겨요', co_feint:'가는 척이었어요! 완전히 떠날 때까지 기다려요', rc_lines:['어디서 피노 냄새가 나는데?!','네 녀석, 피노 먹고 있던 거 아니지?!','부스럭 소리가 난 것 같은데?!','뭔가 수상한데!','다시 와서 확인할 테니까, 가만히 있어!'], fe_lines:['진짜 안 먹는 거 맞아?!','이 몸이 다 보고 있다고!','네 녀석…! 지켜보고 있을 거야!','수상하다니까 네 녀석!!!!'], rankBtn:'🏆 랭킹', rankJoin:'랭킹 참가하기', rankEdit:'수정', rankTitle:'코우가 챌린지 랭킹', rankNick:'닉네임 (12자까지)', rankXid:'X 아이디 (@없이)', rankXidNote:'X 아이디는 운영자만 볼 수 있어요. 순위 확인과 연락에 쓰여요.', rankSave:'참가하고 시작', rankSkip:'그냥 시작', rankSaveOnly:'저장', rankCancel:'취소', rankNeed:'닉네임과 X 아이디를 넣어 주세요', rankPeriod:'{a} ~ {b}', rankLeft:'남은 시간 {t}', rankSoon:'{t} 뒤 시작', rankOver:'종료 · 최종 순위', rankPlayers:'{n}명 참가 중', rankMe:'내 순위', rankMeNone:'아직 기록이 없어요', rankLive:'실시간', rankResultOk:'랭킹 {n}위 · 최고 {s}점', rankHeld:'기록을 확인한 뒤 반영돼요', rankFail:'랭킹에 보내지 못했어요', rankView:'🏆 랭킹 보기', rankEmpty:'아직 기록이 없어요', rankLoading:'불러오는 중…', rankDay:'{n}일 ', rankHour:'{n}시간 ', rankMin:'{n}분', coTap:'탭해서 계속', x5:'×5', timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_open:'앗, 피자잖아! −{n}', pizza_away:'휙!', yell_pizza:'이 피자 냄새는 뭐야?! 피자녀석?!', pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:'이 몸의 피노가 없어졌잖아!?!\n누구야!!!', nm_on:'코우가가 폭주한다!', shout_nm:'피노 돌려줘!!!!!!!!!!', dbgNm:'나이트메어', autoOn:'자동 플레이: 켜짐', autoOff:'자동 플레이: 꺼짐', legal:'본 게임은 비상업적이며 모든 리소스의 권리는 원 저작권자에게 있습니다.', bgmSet:'🎵 음악 바꾸기', bgmTitle:'내 음악 넣기', bgmLead:'내 기기에 있는 음악 파일을 고르면 그 모드에서 대신 나와요. 이 기기에만 저장되고, 직접 가진 음원만 넣어 주세요.', bgmRage:'초하드 BGM', bgmNm:'나이트메어 BGM', bgmHintRage:'코우가가 화났을 때', bgmHintNm:'폭주했을 때 (자연스럽게 넘어가요)', bgmPick:'파일 고르기', bgmChange:'바꾸기', bgmClear:'지우기', bgmBad:'이 파일은 재생할 수 없어요. mp3나 m4a 파일인지 확인해 주세요.', recheck:'…응?!', streak:'{s}연속!', cover_calm:'침착! +{n}', cover_close:'간발의 차! +{n}', quit:'그만하기',
     patrol_warn:'코우가가 온다!', patrol_watch:'쉿…', hint_cover:'↓ 쓸어서 상자 덮기!', hideBtn:'숨기기!', unhideBtn:'꺼내기', patrol_caught:'들켰다!', patrol_safe:'안 들켰다! +{n}', hardTag:'하드',
     fx_snap:'띠 끊김!', fx_regrab:'다시 잡았다!', hint_snap:'다시 잡기', yell:'네 녀석!!!!!', fx_heart:'하트', fx_star:'별',
     fx_combo:'COMBO', fx_comboUp:'×{t} COMBO!', fx_break:'콤보 끊김…', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
@@ -1193,7 +1248,7 @@ var I18N={
     fx_perfect:'パーフェクト！+{n}', fx_nice:'NICE!', fx_miss:'MISS −1秒', fx_missHard:'ミス −{n}', fx_speed:'スピードボーナス +{n}',
     ready:'よーい…', go_:'START!', modeNormal:'ふつう', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
-    cause_moved:'見られてる時に動いた！', cause_late:'かくすのが間に合わなかった！', cause_silent:'足音なしで来た！', cause_recheck:'…また振り返った！', cause_feint:'帰るふりだった！', cause_melt:'ピノが溶けちゃった…', cause_pizza:'ピザのにおいでバレた！', co_sus:'あやしさゲージ。時間がたつほど、ピノを食べるほどたまっていく。満タンになると…コウガが怒る！', co_warn:'足音！コウガが来る。「かくす！」を押して箱をかくそう！', co_watch:'コウガが見てる。いなくなるまで何もさわらないで！', co_melt:'箱をあけるとピノが溶けはじめる。溶ける前に6粒食べよう！', co_snap:'帯をいきおいよく引くと切れちゃう。つかみ直してゆっくり！', co_pizza:'ピザの箱！横にスワイプしてどかそう。あけるとにおいでバレる', co_fake:'…来る途中で帰っちゃった。こんなこともあるけど、油断は禁物！', co_rage:'コウガが怒った！見回りが増えて予告も短くなる。ゲージが満タンになると…暴走！', co_silent:'足音なしで来た！「コウガが来る！」の文字を見たらすぐかくそう', co_recheck:'…また振り返った！すぐかくし直そう', co_feint:'帰るふりだった！完全にいなくなるまで待とう', rc_lines:['どっかからピノのにおいがするぜ？！','お前、ピノ食ってたんじゃねぇだろうな？！','ガサッて音がした気がするぜ？！','なんか怪しいぜ！','また見に来るからな、おとなしくしてんだぜ！'], fe_lines:['ほんとに食ってねぇんだな？！','俺様が全部見てるんだからな！','てめぇ…！見張ってるからな！','怪しいって言ってんだろ、お前！！！！'], coTap:'タップでつづける', x5:'×5', timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_open:'あっ、ピザだ！−{n}', pizza_away:'ポイッ！', yell_pizza:'このピザのにおいはなんなんだ？！ピザ野郎？！', pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:'俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!', nm_on:'コウガが暴走した！', shout_nm:'ピノ返せ!!!!!!!!!!', dbgNm:'ナイトメア', autoOn:'オートプレイ：オン', autoOff:'オートプレイ：オフ', legal:'本ゲームは非営利であり、すべての素材の権利は原著作者に帰属します。', bgmSet:'🎵 音楽を変える', bgmTitle:'自分の音楽を入れる', bgmLead:'端末にある音楽ファイルを選ぶと、そのモードで代わりに流れます。この端末にだけ保存されます。自分で持っている音源だけを入れてください。', bgmRage:'超ハードBGM', bgmNm:'ナイトメアBGM', bgmHintRage:'コウガが怒ったとき', bgmHintNm:'暴走したとき（自然に切り替わります）', bgmPick:'ファイルを選ぶ', bgmChange:'変える', bgmClear:'消す', bgmBad:'このファイルは再生できません。mp3かm4aか確認してください。', recheck:'…ん？！', streak:'{s}連続！', cover_calm:'冷静！+{n}', cover_close:'ギリギリセーフ！+{n}', quit:'やめる',
+    cause_moved:'見られてる時に動いた！', cause_late:'かくすのが間に合わなかった！', cause_silent:'足音なしで来た！', cause_recheck:'…また振り返った！', cause_feint:'帰るふりだった！', cause_melt:'ピノが溶けちゃった…', cause_pizza:'ピザのにおいでバレた！', co_sus:'あやしさゲージ。時間がたつほど、ピノを食べるほどたまっていく。満タンになると…コウガが怒る！', co_warn:'足音！コウガが来る。「かくす！」を押して箱をかくそう！', co_watch:'コウガが見てる。いなくなるまで何もさわらないで！', co_melt:'箱をあけるとピノが溶けはじめる。溶ける前に6粒食べよう！', co_snap:'帯をいきおいよく引くと切れちゃう。つかみ直してゆっくり！', co_pizza:'ピザの箱！横にスワイプしてどかそう。あけるとにおいでバレる', co_fake:'…来る途中で帰っちゃった。こんなこともあるけど、油断は禁物！', co_rage:'コウガが怒った！見回りが増えて予告も短くなる。ゲージが満タンになると…暴走！', co_silent:'足音なしで来た！「コウガが来る！」の文字を見たらすぐかくそう', co_recheck:'…また振り返った！すぐかくし直そう', co_feint:'帰るふりだった！完全にいなくなるまで待とう', rc_lines:['どっかからピノのにおいがするぜ？！','お前、ピノ食ってたんじゃねぇだろうな？！','ガサッて音がした気がするぜ？！','なんか怪しいぜ！','また見に来るからな、おとなしくしてんだぜ！'], fe_lines:['ほんとに食ってねぇんだな？！','俺様が全部見てるんだからな！','てめぇ…！見張ってるからな！','怪しいって言ってんだろ、お前！！！！'], rankBtn:'🏆 ランキング', rankJoin:'ランキングに参加', rankEdit:'変更', rankTitle:'コウガチャレンジ ランキング', rankNick:'ニックネーム（12文字まで）', rankXid:'Xのユーザー名（@なし）', rankXidNote:'Xのユーザー名は運営だけが見られます。順位の確認と連絡に使います。', rankSave:'参加してスタート', rankSkip:'参加せずにスタート', rankSaveOnly:'保存', rankCancel:'キャンセル', rankNeed:'ニックネームとXのユーザー名を入れてください', rankPeriod:'{a} ～ {b}', rankLeft:'残り {t}', rankSoon:'開始まで {t}', rankOver:'終了・最終順位', rankPlayers:'{n}人が参加中', rankMe:'あなたの順位', rankMeNone:'まだ記録がありません', rankLive:'リアルタイム', rankResultOk:'ランキング {n}位・ベスト {s}点', rankHeld:'記録を確認してから反映されます', rankFail:'ランキングに送れませんでした', rankView:'🏆 ランキングを見る', rankEmpty:'まだ記録がありません', rankLoading:'読み込み中…', rankDay:'{n}日', rankHour:'{n}時間', rankMin:'{n}分', coTap:'タップでつづける', x5:'×5', timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_open:'あっ、ピザだ！−{n}', pizza_away:'ポイッ！', yell_pizza:'このピザのにおいはなんなんだ？！ピザ野郎？！', pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:'俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!', nm_on:'コウガが暴走した！', shout_nm:'ピノ返せ!!!!!!!!!!', dbgNm:'ナイトメア', autoOn:'オートプレイ：オン', autoOff:'オートプレイ：オフ', legal:'本ゲームは非営利であり、すべての素材の権利は原著作者に帰属します。', bgmSet:'🎵 音楽を変える', bgmTitle:'自分の音楽を入れる', bgmLead:'端末にある音楽ファイルを選ぶと、そのモードで代わりに流れます。この端末にだけ保存されます。自分で持っている音源だけを入れてください。', bgmRage:'超ハードBGM', bgmNm:'ナイトメアBGM', bgmHintRage:'コウガが怒ったとき', bgmHintNm:'暴走したとき（自然に切り替わります）', bgmPick:'ファイルを選ぶ', bgmChange:'変える', bgmClear:'消す', bgmBad:'このファイルは再生できません。mp3かm4aか確認してください。', recheck:'…ん？！', streak:'{s}連続！', cover_calm:'冷静！+{n}', cover_close:'ギリギリセーフ！+{n}', quit:'やめる',
     patrol_warn:'コウガが来る！', patrol_watch:'しーっ…', hint_cover:'↓ スワイプでフタを閉める！', hideBtn:'かくす！', unhideBtn:'とりだす', patrol_caught:'バレた！', patrol_safe:'バレなかった！+{n}', hardTag:'ハード',
     fx_snap:'帯が切れた！', fx_regrab:'つかみ直した！', hint_snap:'つかみ直す', yell:'てめぇ！！！！！', fx_heart:'ハート', fx_star:'ほし',
     fx_combo:'COMBO', fx_comboUp:'×{t} COMBO!', fx_break:'コンボ切れ…', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
@@ -2961,7 +3016,7 @@ function startGame(keep){   // keep: the start screen's box (its post-it just fl
   audio(); if(HARD) bgm.stop(0.2); if(SUPER) decodeCBGM(['rage']); document.body.classList.remove('resultFx','paused'); decoyAway(true); fx.clear(); shownScore=0; hitStop=0; kick=0;
   const keepBox=keep===true&&cur&&state==='idle'?cur:null; if(!keepBox) disposeCur();
   for(const p of parts) scene.remove(p.mesh); parts.length=0; tweens.length=0;
-  cur=null; pickHeld=false; timeLeft=60; endCause=null; score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0;
+  cur=null; pickHeld=false; timeLeft=60; endCause=null; rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0;
   while(pile.children.length) pile.remove(pile.children[0]); pileCount=0;
   combo=0; maxCombo=0; comboT=0; lastTier=1; charge=0; endFever(); renderCombo(); addScore(0);
   $('fever').classList.remove('off');
@@ -3381,7 +3436,8 @@ const NM=()=>nightmare?1.35:1;                          // nightmare: everything
 const TEST_AUTOPLAY=true;                                 // TEST ONLY: remove before release
 const AUTO={on:false,cd:0,st:''};
 try{ AUTO.on=TEST_AUTOPLAY&&/[?&]auto\b/.test(location.search); }catch(e){}
-function setAuto(on){ AUTO.on=TEST_AUTOPLAY&&on; AUTO.cd=0.2; $('autoBadge').hidden=!AUTO.on; $('autoBtn').textContent=TX(AUTO.on?'autoOn':'autoOff'); }
+function setAuto(on){ AUTO.on=TEST_AUTOPLAY&&on; if(AUTO.on) RANK.auto=true;   // an autoplayed run never goes on the board
+  AUTO.cd=0.2; $('autoBadge').hidden=!AUTO.on; $('autoBtn').textContent=TX(AUTO.on?'autoOn':'autoOff'); }
 function autoStep(rdt){
   if(AUTO.on&&flickWait&&!paused){ flickPostit(rnd()-0.5,rnd()-0.5); return; }
   if(!AUTO.on||paused||!cur||readyT>0||state==='over'||state==='idle'||state==='swat') return;
@@ -3521,6 +3577,61 @@ function placeCoach(){ const c=COACH.on; if(!c) return; let x=null,y,r=0; const 
 function coachTick(){ const c=COACH.on; if(!c) return; placeCoach();
   if(state==='over'||state==='swat'||(c.o.until&&c.o.until())||(!c.o.tap&&!c.o.until&&performance.now()-c.t0>2600)) coachEnd(); }
 function coachEnd(){ COACH.on=null; COACH.ts=1; $('coach').hidden=true; }
+/* ---------- ranking event (needs the server in /server; RANK_API empty = no ranking anywhere) ----------
+   players join before a run (nickname + X handle, kept on this device); every run started inside the event window is sent
+   when it ends; the board shows the top 10, your own place, and refreshes itself while open */
+const RANK_API='';   // the ranking server's address, e.g. 'https://kouga-ranking.<your-name>.workers.dev'
+const RANK={token:null,mode:null,auto:false,sent:false,event:null,who:null}; let runT=0;
+try{ const w=JSON.parse(localStorage.getItem('kouga-rank-who')||'null'); if(w&&w.nick&&w.xid) RANK.who=w; }catch(e){}
+const rankOpen=()=>!!(RANK_API&&RANK.event&&RANK.event.open);
+function fmtLeft(ms){ ms=Math.max(0,ms); const d=Math.floor(ms/864e5), h=Math.floor(ms%864e5/36e5), m=Math.floor(ms%36e5/6e4);
+  return (d?TX('rankDay').replace('{n}',d):'')+(d||h?TX('rankHour').replace('{n}',h):'')+TX('rankMin').replace('{n}',m); }
+function fmtWhen(ms){ const d=new Date(ms); return (d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function eventLines(){ const e=RANK.event; if(!e||!e.start) return null; const now=Date.now()+((e.now||Date.now())-(e.at||Date.now()));
+  return { period:TX('rankPeriod').replace('{a}',fmtWhen(e.start)).replace('{b}',fmtWhen(e.end)),
+    left: now<e.start?TX('rankSoon').replace('{t}',fmtLeft(e.start-now)) : now<e.end?TX('rankLeft').replace('{t}',fmtLeft(e.end-now)) : TX('rankOver') }; }
+function evCard(){ const c=$('evCard'), L=eventLines(); c.hidden=!L; if(!L) return;
+  $('evPeriod').textContent=L.period; $('evLeft').textContent=L.left;
+  $('evWho').textContent=RANK.who?RANK.who.nick+' (@'+RANK.who.xid+')':''; $('evJoin').textContent=TX(RANK.who?'rankEdit':'rankJoin'); $('evJoin').hidden=!RANK.event.open&&!RANK.who; }
+function rankFetchEvent(){ if(!RANK_API) return Promise.resolve();
+  return fetch(RANK_API+'/api/event').then(r=>r.json()).then(e=>{ e.at=Date.now(); RANK.event=e; evCard(); }).catch(()=>{}); }
+let joinThen=null;   // what to do after the join dialog (start the run, or nothing)
+function joinDialog(then){ joinThen=then||null; $('rankErr').textContent='';
+  $('rankNick').value=RANK.who?RANK.who.nick:''; $('rankXid').value=RANK.who?RANK.who.xid:''; $('rankNick').placeholder=TX('rankNick');
+  $('rankSave').textContent=TX(then?'rankSave':'rankSaveOnly'); $('rankSkip').textContent=TX(then?'rankSkip':'rankCancel');
+  $('rankOv').hidden=false; setTimeout(()=>$('rankNick').focus(),60); }
+function joinSave(){ const nick=$('rankNick').value.trim(), xid=$('rankXid').value.trim().replace(/^@/,'');
+  if(!nick||!/^[A-Za-z0-9_]{1,15}$/.test(xid)){ $('rankErr').textContent=TX('rankNeed'); return; }
+  RANK.who={nick:Array.from(nick).slice(0,12).join(''),xid}; try{ localStorage.setItem('kouga-rank-who',JSON.stringify(RANK.who)); }catch(e){}
+  $('rankOv').hidden=true; evCard(); const t=joinThen; joinThen=null; if(t) t(); }
+function joinSkip(){ $('rankOv').hidden=true; const t=joinThen; joinThen=null; if(t) t(); }
+function rankStart(){ RANK.token=null; RANK.sent=false; RANK.auto=AUTO.on; RANK.mode=MODE; runT=0;
+  if(!rankOpen()||!RANK.who||TUT) return;
+  fetch(RANK_API+'/api/start',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({mode:MODE,xid:RANK.who.xid,nick:RANK.who.nick})})
+    .then(r=>r.ok?r.json():null).then(d=>{ if(d&&d.token&&RANK.mode===MODE) RANK.token=d.token; }).catch(()=>{}); }
+function rankResult(){   // the run ends: send it at once, and say where it put you
+  const row=$('rankRow'); row.hidden=!(RANK_API&&RANK.event); $('rankMsg').textContent='';
+  if(!RANK.token||RANK.auto||RANK.sent) return; RANK.sent=true; $('rankMsg').textContent=TX('rankLoading');
+  const summary={elapsed:+runT.toFixed(2),eaten:totalEaten,boxes:boxesDone,combo:maxCombo,lucky:luckyCount,patrols:patrol.count||0,rage:!!rageReached,nightmare:!!nightmareReached};
+  fetch(RANK_API+'/api/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:RANK.token,score,summary})})
+    .then(r=>r.json()).then(d=>{ $('rankMsg').textContent=d.status==='ok'&&d.rank?TX('rankResultOk').replace('{n}',d.rank).replace('{s}',(d.best||score).toLocaleString(LOCALE())):d.status?TX('rankHeld'):TX('rankFail'); })
+    .catch(()=>{ $('rankMsg').textContent=TX('rankFail'); }); }
+let boardTimer=0;
+const MEDAL=['🥇','🥈','🥉'];
+function boardRow(el,r){ el.innerHTML=''; const k=document.createElement('span'), n=document.createElement('span'), m=document.createElement('span'), c=document.createElement('span');
+  k.className='rk'; k.textContent=r.rank<=3?MEDAL[r.rank-1]:r.rank; n.className='nk'; n.textContent=r.nick; m.className='mc '+r.mode; m.textContent=TX(r.mode==='nightmare'?'mc_nm':'mc_'+r.mode);
+  c.className='sc'; c.textContent=r.score.toLocaleString(LOCALE()); el.append(k,n,m,c); }
+function boardLoad(first){
+  const ol=$('boardList'); if(first) ol.innerHTML='<li class="msg">'+TX('rankLoading')+'</li>';
+  fetch(RANK_API+'/api/board'+(RANK.who?'?xid='+encodeURIComponent(RANK.who.xid):'')).then(r=>r.json()).then(d=>{
+    d.event.at=Date.now(); RANK.event=d.event; const L=eventLines(); $('bdPeriod').textContent=L?L.period:''; $('bdLeft').textContent=L?L.left:''; evCard();
+    ol.innerHTML=''; if(!d.top.length) ol.innerHTML='<li class="msg">'+TX('rankEmpty')+'</li>';
+    d.top.forEach(r=>{ const li=document.createElement('li'); boardRow(li,r); ol.appendChild(li); });
+    const me=$('bdMe'); me.innerHTML=''; if(RANK.who){ const lab=document.createElement('p'); lab.className='lab'; lab.textContent=TX('rankMe'); me.appendChild(lab);
+      if(d.me){ const row=document.createElement('div'); row.className='row'; boardRow(row,d.me); me.appendChild(row); } else { const p=document.createElement('p'); p.className='none'; p.textContent=TX('rankMeNone'); me.appendChild(p); } }
+    $('bdCount').textContent=TX('rankPlayers').replace('{n}',d.players); })
+    .catch(()=>{ if(first) ol.innerHTML='<li class="msg">'+TX('rankFail')+'</li>'; }); }
+function boardShow(){ $('boardOv').hidden=false; boardLoad(true); clearInterval(boardTimer); boardTimer=setInterval(()=>{ if($('boardOv').hidden||document.hidden) return; boardLoad(false); },10000); }   // live: every 10 s while open
 let endCause=null;   // why the run ended, shown under the result title
 function patrolCaught(){   // spotted: that's the end of the night
   if(!HARD){ caughtLate(); return; }
@@ -3587,7 +3698,7 @@ function endGame(){
   $('rBest').textContent=isNew?TX('newBest'):TX('best').replace('{n}',best.toLocaleString(LOCALE()));
   $('rCrown').toggleAttribute('hidden',!nightmareReached); $('rCrown').classList.remove('go');   // svg: use the attribute, not .hidden
   { const m=reachedMode(); $('rMode').dataset.m=m; $('rMode').textContent=TX('mc_'+m); }
-  $('rTitle').textContent=endTitle(); { const c=$('rCause'); c.hidden=!endCause; c.textContent=endCause?TX('cause_'+endCause):''; }
+  $('rTitle').textContent=endTitle(); rankResult(); { const c=$('rCause'); c.hidden=!endCause; c.textContent=endCause?TX('cause_'+endCause):''; }
   const gr=gradeOf(score), ge=$('rGrade'); $('sayText').textContent=''; setTimeout(()=>typeText($('sayText'),TX('say_'+gr[0]),34,360),1300); setArt($('rGradeImg'),'g'+gr[0],68,'g'+gr[0],gr[0]);
   ge.classList.remove('go');
   $('shareMsg').textContent='';
@@ -3648,6 +3759,7 @@ $('tutBtn').addEventListener('click',()=>{ if(irisBusy||introOpen||flickWait) re
 function beginRun(tut){ irisBusy=true;
   iris.close(innerWidth/2,innerHeight/2,380,()=>{ tut?startTutorial():startGame(); setTimeout(()=>iris.open(innerWidth/2,innerHeight*0.55,480,()=>{ irisBusy=false; }),80); }); }
 $('go').addEventListener('click',()=>{ if(irisBusy||introOpen||flickWait) return; audio();
+  if(rankOpen()&&!RANK.who&&!RANK.asked){ RANK.asked=true; joinDialog(()=>$('go').click()); return; }   // ranking event on: join before the run (or skip)
   const tut=!HARD&&!tutSeen(), l=[]; if(HARD&&!introSeen('hard')) l.push('hard'); if(SUPER&&!introSeen('super')) l.push('super');
   if(tut){ awaitFlick(()=>beginRun(true)); return; }   // first normal run: the tutorial, once the note is off
   if(!l.length){ awaitFlick(()=>startGame(true)); return; }   // the box under the post-it is the first one
@@ -3695,6 +3807,13 @@ document.querySelectorAll('#bgmOv input[data-bgm]').forEach(inp=>inp.addEventLis
   .catch(()=>{ $('bgmMsg').textContent=TX('bgmBad'); });
 }));
 document.querySelectorAll('#bgmOv .bgmclr').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.clr; bundledBGM(k); bgmDB.del(k).catch(()=>{}); bgmSlots(); }));
+rankFetchEvent(); setInterval(()=>{ if(!document.hidden&&!$('start').hidden) evCard(); },30000);
+$('boardBtn').addEventListener('click',()=>{ audio(); boardShow(); });
+$('rankOpen').addEventListener('click',()=>{ audio(); boardShow(); });
+$('evJoin').addEventListener('click',()=>{ audio(); joinDialog(null); });
+$('boardClose').addEventListener('click',()=>{ $('boardOv').hidden=true; clearInterval(boardTimer); });
+$('rankSave').addEventListener('click',joinSave); $('rankSkip').addEventListener('click',joinSkip);
+['rankNick','rankXid'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter') joinSave(); }));
 $('coach').addEventListener('pointerdown',e=>{ const c=COACH.on; if(c&&c.o.tap&&performance.now()-c.t0>500){ e.preventDefault(); e.stopPropagation(); coachEnd(); } });
 $('dbgNm').addEventListener('click',e=>{ e.stopPropagation(); enterNightmare(); });   // TEST ONLY
 $('autoBtn').hidden=!TEST_AUTOPLAY; $('autoBtn').addEventListener('click',()=>setAuto(!AUTO.on));   // TEST ONLY
@@ -3937,7 +4056,7 @@ function loop(t){
       cur.meltT-=dt; meltLook(cur); if(cur.meltT<=0){ meltEnd(); }
     }
     if(HARD&&!rage&&mood>=100&&state!=='swat') enterRage();
-    if(state!=='swat'&&!held){ if(HARD){ elapsed+=dt; if(!rage&&elapsed>2.5&&state==='film') coach('sus',{target:'sus',tap:true}); if(rage) rageT+=dt; if(nightmare){ nmT+=dt; if(NM_STEP()>=4&&!document.body.classList.contains('nmMax')){ document.body.classList.add('nmMax'); thump(38,0.6,{dur:0.8}); sNoise(700,0.6,0.35,0.6,'lowpass'); buzz([40,30,40]); } } mood=Math.min(100,mood+(rage?0.175:0.175*HARD_K)*dt); if(rage&&!nightmare){ fury=Math.min(100,fury+0.0875*dt); if(fury>=100) enterNightmare(); } } else if(!TUT){ timeLeft-=dt; if(timeLeft<=0){ timeLeft=0; startSwat(); }
+    if(state!=='swat'&&!held){ runT+=dt; if(HARD){ elapsed+=dt; if(!rage&&elapsed>2.5&&state==='film') coach('sus',{target:'sus',tap:true}); if(rage) rageT+=dt; if(nightmare){ nmT+=dt; if(NM_STEP()>=4&&!document.body.classList.contains('nmMax')){ document.body.classList.add('nmMax'); thump(38,0.6,{dur:0.8}); sNoise(700,0.6,0.35,0.6,'lowpass'); buzz([40,30,40]); } } mood=Math.min(100,mood+(rage?0.175:0.175*HARD_K)*dt); if(rage&&!nightmare){ fury=Math.min(100,fury+0.0875*dt); if(fury>=100) enterNightmare(); } } else if(!TUT){ timeLeft-=dt; if(timeLeft<=0){ timeLeft=0; startSwat(); }
       else { const sc=Math.ceil(timeLeft); if(sc<=3&&sc!==lastCount){ lastCount=sc; pop(say(String(sc)),innerWidth/2,innerHeight*0.3,'count'); woodblock(sc===1?84:79,{vol:0.2}); if(sc===1) bell(96,{vol:0.05}); } } } }
     patrolTick(dt);
     const comboHold=held||((HARD||lateOn)&&(patrol.phase!=='none'||patrol.pendingRecheck||(cur&&cur.covered)));   // hands tied by Kouga: the combo waits
