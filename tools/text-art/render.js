@@ -246,6 +246,19 @@
     const star = gg => { gg.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? s * 0.25 : s * 0.52, a = -Math.PI / 2 + i * Math.PI / 5; gg.lineTo(cx + Math.cos(a) * r, cy + s * 0.04 + Math.sin(a) * r); } gg.closePath(); };
     const box = [cx - s / 2, cy - s / 2, s, s];
     if (kind === 'vein') { vein(g, cx, cy, s * 0.42, '#E0261B'); return c; }   // the anger mark, in place of the emoji
+    if (kind === 'trophy') {   // a gold cup: bowl, two handles, stem and a little base (no tilt, it sits on the line)
+      const cup = gg => { gg.beginPath();
+        gg.moveTo(cx - s * 0.32, cy - s * 0.4); gg.lineTo(cx + s * 0.32, cy - s * 0.4);
+        gg.bezierCurveTo(cx + s * 0.32, cy - s * 0.02, cx + s * 0.18, cy + s * 0.12, cx + s * 0.07, cy + s * 0.14);
+        gg.lineTo(cx + s * 0.07, cy + s * 0.26); gg.lineTo(cx + s * 0.24, cy + s * 0.3); gg.lineTo(cx + s * 0.24, cy + s * 0.42);
+        gg.lineTo(cx - s * 0.24, cy + s * 0.42); gg.lineTo(cx - s * 0.24, cy + s * 0.3); gg.lineTo(cx - s * 0.07, cy + s * 0.26); gg.lineTo(cx - s * 0.07, cy + s * 0.14);
+        gg.bezierCurveTo(cx - s * 0.18, cy + s * 0.12, cx - s * 0.32, cy - s * 0.02, cx - s * 0.32, cy - s * 0.4); gg.closePath();
+        [-1, 1].forEach(k => { gg.moveTo(cx + k * s * 0.3, cy - s * 0.32); gg.bezierCurveTo(cx + k * s * 0.56, cy - s * 0.34, cx + k * s * 0.52, cy - s * 0.02, cx + k * s * 0.24, cy + s * 0.02);
+          gg.lineTo(cx + k * s * 0.26, cy - s * 0.08); gg.bezierCurveTo(cx + k * s * 0.42, cy - s * 0.1, cx + k * s * 0.42, cy - s * 0.24, cx + k * s * 0.3, cy - s * 0.22); gg.closePath(); }); };
+      const box = [cx - s / 2, cy - s / 2, s, s];
+      sticker(g, cup, lin(box[1], box[1] + s, '#FFF07A', '#E89A00'), u * 0.75, { box });
+      g.beginPath(); g.moveTo(cx - s * 0.16, cy - s * 0.3); g.lineTo(cx - s * 0.16, cy - s * 0.12); g.lineWidth = s * 0.07; g.lineCap = 'round'; g.strokeStyle = 'rgba(255,255,255,.75)'; g.stroke();
+      return c; }
     g.translate(cx, cy); g.rotate(kind === 'heart' ? -0.18 : 0.12); g.translate(-cx, -cy);
     sticker(g, kind === 'heart' ? heart : star, kind === 'heart' ? lin(box[1], box[1] + s, '#FF9BC2', '#EC3F86') : lin(box[1], box[1] + s, '#FFF07A', '#F2A400'), u * 0.75, { box });
     return c;

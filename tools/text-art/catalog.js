@@ -58,6 +58,11 @@ window.CATALOG = {
     { key: 'patrol_watch',  ko: '쉿…',              ja: 'しーっ…',             style: 'hush',  size: 30 },   // no thought cloud: it read as Kouga talking
     { key: 'patrol_caught', ko: '들켰다!',          ja: 'バレた！',            style: 'alert', size: 36, plate: 'caught' },
     { key: 'melt_over',     ko: '피노가 녹았다!',   ja: 'ピノが溶けた！',      style: 'melt',  size: 31, plate: 'melt' },
+    // ranking event (the start screen's notice and the board's title)
+    { key: 'rank_live',     ko: '랭킹전 진행 중!',  ja: 'ランキング開催中！',  style: 'warn',  size: 21, icon: 'trophy' },
+    { key: 'rank_soon',     ko: '랭킹전 곧 시작!',  ja: 'ランキングまもなく！', style: 'warn',  size: 21, icon: 'trophy' },
+    { key: 'rank_end',      ko: '랭킹전 종료',      ja: 'ランキング終了',      style: 'bad',   size: 21, icon: 'trophy' },
+    { key: 'rank_title',    ko: '랭킹',             ja: 'ランキング',          style: 'score', size: 34, icon: 'trophy' },
     { key: 'pizza_hint',    ko: '피자?! 치워버려!', ja: 'ピザ？！どかしちゃえ！', style: 'pizza', size: 22, plate: 'pizza' },
   ],
   // ---- digit sets: one glyph per file, all digits the same width so numbers don't wobble ----
