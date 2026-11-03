@@ -218,7 +218,8 @@ html[lang="ja"] .memo-big{font-size:calc(var(--k,1)*(30px))}
 .btn.xbtn svg{width:20px;height:20px}
 .share .btn.ghost{margin-top:8px;font-size:calc(var(--k,1)*(16px));padding:9px}
 
-#pops{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+#pops{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:4}   /* above the chase pill (same z, later in the page) */
+#eaten{display:none}   /* 'N알 먹음' lives on the result card only */
 .pop{
   position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
   font-family:var(--display);font-size:calc(var(--k,1)*(24px));
@@ -879,6 +880,9 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 /* ranking event, in the run: the next rank to catch, right under the gauge */
 #chase{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + var(--chy,84px));transform:translateX(-50%);z-index:4;pointer-events:none;perspective:300px}
 #chase[hidden]{display:none}
+#chase{transition:opacity .2s}
+#chase.dim{opacity:.35}
+#chase.away{opacity:0}
 #chase .ch-in{position:relative;display:flex;align-items:center;gap:7px;padding:6px 12px 6px 6px;border-radius:999px;background:rgba(26,14,8,.62);border:2px solid #FFFBEF;box-shadow:0 3px 0 rgba(0,0,0,.25);transform-origin:50% 50%;perspective:200px}
 #chase .ch-rk{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#FFFBEF;border:2px solid #3A2416;font:900 14px/1 var(--sys);color:#3A2416;font-variant-numeric:tabular-nums}
 #chase .ch-rk.r1{background:#FFD447}#chase .ch-rk.r2{background:#D9E1E8}#chase .ch-rk.r3{background:#E9A774}
@@ -3755,8 +3759,8 @@ function boardLoad(first){
 function boardShow(){ artInto($('bdTitle'),'rank_title',TX('rankTitle')); $('boardOv').hidden=false; boardLoad(true); clearInterval(boardTimer); boardTimer=setInterval(()=>{ if($('boardOv').hidden||document.hidden) return; boardLoad(false); },10000); }   // live: every 10 s while open
 // ---- the rank chase: during an event run, once the score is in the top 10, the next rank to catch sits under the gauge ----
 // The board is read once when the run starts (the player's own best left out, so they race everyone else).
-const CH={on:false,run:0,L:[],need:0,rank:0,last:0,beatT:0,lab:''};
-function chaseInit(){ const run=++CH.run; CH.on=false; CH.rank=0; CH.lab=''; $('chase').hidden=true;
+const CH={on:false,run:0,L:[],need:0,rank:0,last:0,beatT:0,lab:'',pend:null};
+function chaseInit(){ const run=++CH.run; CH.on=false; CH.rank=0; CH.lab=''; CH.pend=null; $('chase').classList.remove('dim','away'); $('chase').hidden=true;
   if(!rankOpen()||!RANK.who||TUT) return;
   rankApi('/api/board?xid='+encodeURIComponent(RANK.who.xid)).then(d=>{ if(run!==CH.run||!d||!d.top) return;
     RANK.prev=d.me?{rank:d.me.rank,score:d.me.score}:null;
@@ -3764,7 +3768,7 @@ function chaseInit(){ const run=++CH.run; CH.on=false; CH.rank=0; CH.lab=''; $('
     CH.L=L; CH.need=others<10?0:L.length>=10?L[9]:me?me.score:L[L.length-1];   // beat this to be in the top 10 (one's own old best is a safe bar when the 11th is unknown)
     CH.on=true; CH.last=score; chaseTick(shownScore); }).catch(()=>{}); }
 function chaseRank(v){ if(v<=CH.need) return 0; let r=1; for(const x of CH.L) if(x>=v) r++; return Math.min(r,10); }
-function chaseHide(){ CH.on=false; $('chase').hidden=true; }
+function chaseHide(){ CH.on=false; CH.pend=null; $('chase').hidden=true; }
 function chaseTick(v){ if(!CH.on) return; v=Math.round(v); const r=chaseRank(v), box=$('chase'), inn=$('chIn');
   if(!r){ box.hidden=true; CH.rank=0; return; }
   if(box.hidden){ box.hidden=false; box.style.setProperty('--chy',$('sus').hidden?'84px':'116px'); $('chFx').style.setProperty('--chy',$('sus').hidden?'84px':'116px'); }
@@ -3784,7 +3788,12 @@ function chaseTick(v){ if(!CH.on) return; v=Math.round(v); const r=chaseRank(v),
   inn.classList.toggle('near',near);
   if(score>CH.last){ CH.last=score; const t=performance.now(); if(t-CH.beatT>110&&!inn.classList.contains('up')){ CH.beatT=t; inn.classList.remove('beat'); void inn.offsetWidth; inn.classList.add('beat'); } }
   else CH.last=score; }
+const chaseBusy=()=>!$('cutin').hidden||patrol.phase==='warn'||patrol.phase==='watch';   // Kouga coming / watching, or a cut-in: those come first
+function chaseFlush(){ if(!CH.on) return; const c=$('chase'), cut=!$('cutin').hidden, pat=patrol.phase==='warn'||patrol.phase==='watch';
+  if(c.classList.contains('away')!==cut) c.classList.toggle('away',cut); if(c.classList.contains('dim')!==(pat&&!cut)) c.classList.toggle('dim',pat&&!cut);
+  if(CH.pend&&!chaseBusy()){ const q=CH.pend; CH.pend=null; chaseUp(q.r,q.first); } }   // a rank passed meanwhile: celebrated once he has gone
 function chaseUp(r,first){   // a rank passed (or the top 10 reached): the badge flips, the pill flashes, a call-out pops below it
+  if(chaseBusy()){ CH.pend={r,first:first||!!(CH.pend&&CH.pend.first)}; return; }
   const inn=$('chIn'), rk=$('chRk'), el=$('chFx'); el.innerHTML='';
   const k=first&&r>1?'rk_top10':r===1?'rk_first':null, a=k&&artOf(k), sp=say(String(r),'w_rankup');
   const node=k?(a?artImgEl(a,1):null):artLine(sp,30,'score');
@@ -4302,6 +4311,7 @@ function loop(t){
     if(want&&!paused&&rnd()<rdt*(QL>0?9:4)){ const left=rnd()<0.5, x=left?rnd()*innerWidth*0.22:innerWidth*(0.78+rnd()*0.22);
       fx.burst(x,innerHeight*(0.94+rnd()*0.08),{n:1,dir:-Math.PI/2,spread:0.6,speed:60+rnd()*70,gravity:-38,drag:0.9,life:1.6+rnd()*0.9,size:2+rnd()*2.2,shape:'ember',colors:[nightmare?'violet':'fire']}); }
   }
+  chaseFlush();
   { const t=SUPER&&state==='idle'&&!$('start').hidden; if(document.body.classList.contains('titleFx')!==t) document.body.classList.toggle('titleFx',t); }   // the embers float over the start screen's shade
   if(SUPER&&state==='idle'&&!$('start').hidden&&!reduceMotion&&rnd()<rdt*(QL>0?9:4)){ const left=rnd()<0.5, x=left?rnd()*innerWidth*0.22:innerWidth*(0.78+rnd()*0.22);   // start screen, 초하드 picked: a taste of its embers
     fx.burst(x,innerHeight*(0.94+rnd()*0.08),{n:1,dir:-Math.PI/2,spread:0.6,speed:60+rnd()*70,gravity:-38,drag:0.9,life:1.6+rnd()*0.9,size:2+rnd()*2.2,shape:'ember',colors:['fire']}); }
