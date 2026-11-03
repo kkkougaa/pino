@@ -302,7 +302,7 @@ html[lang="ko"] .card{word-break:keep-all}
 .logo img:not([src]){display:none}
 .logo img:not([src])+.vh{position:static;width:auto;height:auto;clip:auto;overflow:visible;font-family:var(--display);font-size:calc(var(--k,1)*(40px));line-height:1.1}
 .rhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.grade{display:flex;flex-direction:column;align-items:center;gap:0;margin:-6px -6px -10px 0}
+.grade{display:flex;flex-direction:column;align-items:center;gap:0;margin:0}
 .grade img{display:block}
 .grade.go img{animation:gradeIn .7s cubic-bezier(.2,.9,.3,1.35) both}
 @keyframes gradeIn{0%{opacity:0;transform:scale(2.2) rotate(-12deg)}60%{opacity:1;transform:scale(.92) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
@@ -434,7 +434,7 @@ body.hard .gauges .mood .g{height:18px}
 @media (prefers-reduced-motion: reduce){#melt.hot{animation:none}}
 #rageFx{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity 1.2s;
   background:radial-gradient(125% 90% at 50% 50%,rgba(220,30,40,0) 48%,rgba(220,30,40,.3) 76%,rgba(200,20,30,.55) 100%)}
-body.rage #rageFx{opacity:1;animation:rageBeat 1.25s ease-in-out infinite}
+body.rage #rageFx,body.titleFx #rageFx{opacity:1;animation:rageBeat 1.25s ease-in-out infinite}
 @keyframes rageBeat{0%{opacity:.72}10%{opacity:1}20%{opacity:.84}30%{opacity:.97}62%,100%{opacity:.72}}
 #rageFx::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(190,15,25,.26),transparent 32%),linear-gradient(to bottom,rgba(110,0,10,.22),transparent 22%)}
 #rageFx::after{content:"";position:absolute;inset:-10%;background:radial-gradient(55% 38% at 8% 92%,rgba(255,70,40,.2),transparent 70%),radial-gradient(55% 38% at 92% 88%,rgba(255,70,40,.18),transparent 70%);animation:rageDrift 5s ease-in-out infinite alternate}
@@ -443,7 +443,7 @@ body.rage #rageFx{opacity:1;animation:rageBeat 1.25s ease-in-out infinite}
 body.rage .mood .g{box-shadow:0 0 0 3px rgba(224,65,94,.55),0 2px 0 rgba(58,36,22,.25)}
 .angerFloat{position:fixed;pointer-events:none;z-index:2;opacity:0;animation:angerUp 2.4s ease-out forwards;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
 @keyframes angerUp{0%{opacity:0;transform:translateY(10px) scale(.6) rotate(-10deg)}15%{opacity:.85;transform:translateY(0) scale(1.05) rotate(6deg)}30%{transform:translateY(-8px) scale(.95) rotate(-4deg)}100%{opacity:0;transform:translateY(-70px) scale(1) rotate(8deg)}}
-@media (prefers-reduced-motion: reduce){body.rage #rageFx{animation:none}}
+@media (prefers-reduced-motion: reduce){body.rage #rageFx,body.titleFx #rageFx{animation:none}}
 /* the pizza delivery cat: pops in when you shove his box away, smirks when you open it */
 #pkShove{position:fixed;right:0;bottom:0;width:min(34vw,170px);height:auto;pointer-events:none;z-index:6;transform:translateX(110%);visibility:hidden}
 #pkShove.go{visibility:visible;animation:pkIn 1.05s forwards}
@@ -721,7 +721,7 @@ body.nightmare #rageFx::after{background:radial-gradient(55% 38% at 8% 92%,rgba(
 .slot label b{font-weight:inherit}
 #bgmMsg{min-height:1.2em;color:#C0392B}
 
-.mrow{margin:-12px 0 6px}
+#result .mrow{position:absolute;left:16px;top:13px;margin:0;z-index:1}   /* the mode chip pinned to the memo's top-left corner */
 .mchip{display:inline-block;padding:3px 12px 2px;border-radius:999px;border:2px solid #3A2416;font-family:var(--ui),sans-serif;font-weight:700;font-size:calc(var(--k,1)*(13px));line-height:1.3;color:#fff;box-shadow:0 2px 0 rgba(58,36,22,.3)}
 .mchip[data-m="normal"]{background:#4C9A6A} .mchip[data-m="hard"]{background:#3E4C6E} .mchip[data-m="super"]{background:#D3263A} .mchip[data-m="nm"]{background:#7A2FD0}
 
@@ -871,7 +871,7 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 .rktext .new{font:800 11px/1 var(--sys);color:#FFFBEF;background:#E0412F;border-radius:4px;padding:4px 6px 3px;transform:rotate(-3deg)}
 .rktext .up{font:800 12.5px/1 var(--sys);color:#13A58B}
 .rankrow .chip{flex:none}
-#rankOv,#boardOv,#askOv{z-index:55}
+#rankOv,#boardOv,#askOv,#unlockOv{z-index:55}
 .rankcard .rkf{display:block;margin:10px 0 0;font:700 13px/1.3 var(--sys);color:#7A5A40}
 .rankcard input{width:100%;box-sizing:border-box;font:700 18px/1.2 var(--sys);padding:9px 11px;margin-top:4px;border:2.5px solid #3A2E28;border-radius:10px;background:#FFFBEF;color:#3A2E28}
 .rankcard .at{display:flex;align-items:center;gap:4px}.rankcard .at b{font:800 18px/1 var(--sys);color:#3A2E28;margin-top:4px}
@@ -927,7 +927,11 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 #boardList li.mine,.bdme .row{background:linear-gradient(to bottom,transparent 5px,rgba(255,214,60,.55) 5px calc(var(--L) - 3px),transparent calc(var(--L) - 3px))}
 .bdme .none{height:var(--L);display:flex;align-items:center;justify-content:center;font:600 13px/1 var(--sys);color:#9A7A60}
 .boardcard .btn{margin-top:12px}
-.askcard{text-align:center}
+.askcard,.unlockcard{text-align:center}
+.unlockcard p{margin:0 0 18px;font:700 16px/1.6 var(--sys);color:#3A2416;word-break:keep-all;white-space:pre-line}
+.unlockcard .asktitle{min-height:44px;display:flex;align-items:center;justify-content:center;margin:0 0 10px}
+.unlockcard .asktitle img{max-width:100%;height:auto}
+#unlockOv .card::before{background:radial-gradient(circle at 36% 30%,#FFC9C2 0 14%,#D3263A 42%,#7E1220 100%)}
 .askcard .asktitle{min-height:40px;display:flex;align-items:center;justify-content:center;margin:0 0 10px}
 .askcard .asktitle img{max-width:100%;height:auto}
 .askcard p{margin:0 0 18px;font:700 16px/1.6 var(--sys);color:#3A2E28;word-break:keep-all;white-space:pre-line}
@@ -1158,6 +1162,13 @@ bootStep(0.1);</script>
     <button class="btn ghost" id="rankSkip" type="button"></button>
   </div>
 </div>
+<div class="overlay" id="unlockOv" hidden>
+  <div class="card unlockcard">
+    <h2 class="asktitle" id="unlockTitle"></h2>
+    <p data-i18n="unlockTxt"></p>
+    <button class="btn" id="unlockOk" type="button" data-i18n="introOk"></button>
+  </div>
+</div>
 <div class="overlay" id="askOv" hidden>
   <div class="card askcard">
     <h2 class="asktitle" id="askTitle"></h2>
@@ -1211,7 +1222,6 @@ bootStep(0.1);</script>
       <dt data-i18n="rEaten"></dt><dd id="rEaten">0</dd>
       <dt data-i18n="rCombo"></dt><dd id="rCombo">0</dd>
       <dt data-i18n="rLucky"></dt><dd id="rLucky">0</dd>
-      <dt data-i18n="rBoxes"></dt><dd id="rBoxes">0</dd>
       <dt class="hardrow" data-i18n="timeHard"></dt><dd class="hardrow" id="rTime">0</dd>
     </dl>
     <p class="res best" id="rBest"></p>
@@ -1300,7 +1310,7 @@ var I18N={
     slot_back:'뒷면', hint_back:'128×23mm, 경첩 쪽',
     slot_bottom:'바닥', hint_bottom:'128×82mm',
     pickImg:'사진 선택', change:'바꾸기', done:'완료', reset:'기본으로 되돌리기',
-    caughtTitle:'들켰다…!', resultTitle:'끝!', endTitle:'끝!', pts:'점', rEaten:'먹은 개수', rCombo:'최대 콤보', rLucky:'하트와 별', rBoxes:'먹은 상자',
+    caughtTitle:'들켰다…!', resultTitle:'끝!', endTitle:'끝!', pts:'점', rEaten:'먹은 개수', rCombo:'최대 콤보', rLucky:'특수 피노', rBoxes:'먹은 상자', eatenVal:'{b}박스, {n}알', luckyVal:'하트 {h}개, 별 {s}개', unlockTxt:'처음부터 코우가가 화나 있고,\n점수 5배로 시작해요!',
     unitPiece:'알', unitCount:'개', best:'최고 기록 {n}점', newBest:'새 기록!', again:'한 판 더', home:'처음 화면',
     introOk:'알았어!',
     intro_hard_t:'하드 모드 규칙', intro_hard:['발소리가 들리면 「숨기기!」','코우가가 볼 땐 손 떼기','열린 상자의 피노는 녹아요','띠는 천천히 당기기','피자는 열지 말기','미스하면 감점'],
@@ -1358,7 +1368,7 @@ var I18N={
     slot_back:'背面', hint_back:'128×23mm、ちょうつがい側',
     slot_bottom:'底面', hint_bottom:'128×82mm',
     pickImg:'画像を選ぶ', change:'変える', done:'完了', reset:'元に戻す',
-    caughtTitle:'バレた…！', resultTitle:'タイムアップ！', endTitle:'おしまい！', pts:'点', rEaten:'食べた数', rCombo:'最大コンボ', rLucky:'ハートと星', rBoxes:'食べた箱',
+    caughtTitle:'バレた…！', resultTitle:'タイムアップ！', endTitle:'おしまい！', pts:'点', rEaten:'食べた数', rCombo:'最大コンボ', rLucky:'特別なピノ', rBoxes:'食べた箱', eatenVal:'{b}箱・{n}粒', luckyVal:'ハート{h}個・星{s}個', unlockTxt:'最初からコウガが怒っていて、\nスコア5倍でスタート！',
     unitPiece:'粒', unitCount:'個', best:'ベスト {n}点', newBest:'新記録！', again:'もう一回', home:'タイトルへ',
     introOk:'わかった！',
     intro_hard_t:'ハードモードのルール', intro_hard:['足音がしたら「かくす！」','コウガが見てる間は手をはなす','あけた箱のピノは溶ける','帯はゆっくり引く','ピザはあけない','ミスは減点'],
@@ -2328,6 +2338,7 @@ function makeBox(){
     const isL=lucky&&lucky.idx===n;
     const p=mesh(isL?G[lucky.kind]:G.pino,M.choco,x,0.06,z,g);
     p.rotation.y=isL?(rnd()-0.5)*0.3:rnd()*6;
+    if(rage&&!isL&&rnd()<0.5){ p.rotation.order='ZYX'; p.rotation.z=(rnd()<0.5?-1:1)*(0.6+rnd()*0.2); p.position.y+=0.05; }   // angry Kouga's boxes come knocked about: some pinos lean ~40° left or right
     p.userData={eaten:false,lucky:isL?lucky.kind:null};
     pinos.push(p); n++;
   }
@@ -2347,7 +2358,7 @@ function makeBox(){
 
 /* ---------- state ---------- */
 let state='idle', cur=null, timeLeft=60, now=0, boxNo=0, paused=false;
-let score=0, totalEaten=0, boxesThrown=0, boxesDone=0, luckyCount=0;
+let score=0, totalEaten=0, boxesThrown=0, boxesDone=0, luckyCount=0, heartCount=0, starCount=0;
 let combo=0, maxCombo=0, comboT=0, lastTier=1;
 const COMBO_WIN=2.6;
 let pickHeld=false, tipReturnAt=0;
@@ -2907,7 +2918,7 @@ function eat(p){
     fx.burst(s.x,s.y,{n:5,even:true,speed:220,gravity:0,drag:5,size:10,life:0.5,shape:'star5',colors:p.userData.lucky==='heart'?['#FF8FB5']:['#FFD83A']});
     impact(0.08,0.035); addShake(0.12); fx.ring(s.x,s.y,{r0:10,r1:90,life:0.4,color:p.userData.lucky==='heart'?'#FF8FB5':'#FFD83A',width:6,style:'double'});
     const base=1000, pts=Math.round(base*t);
-    addScore(pts); timeLeft+=2; luckyCount++; addCharge(0.2); sfx.lucky(); buzz(30);
+    addScore(pts); timeLeft+=2; luckyCount++; if(p.userData.lucky==='heart') heartCount++; else starCount++; addCharge(0.2); sfx.lucky(); buzz(30);
     pop(say(p.userData.lucky==='heart'?'fx_heart':'fx_star','+'+Math.round(pts*SM())),s.x,s.y-24,'lucky');
   } else {
     const pts=Math.round(100*t); addScore(pts); pop(say('+'+Math.round(pts*SM())),s.x,s.y,dare?'alert':undefined);
@@ -3089,7 +3100,7 @@ function startGame(keep){   // keep: the start screen's box (its post-it just fl
   audio(); if(HARD) bgm.stop(0.2); if(SUPER) decodeCBGM(['rage']); document.body.classList.remove('resultFx','paused'); decoyAway(true); fx.clear(); shownScore=0; hitStop=0; kick=0;
   const keepBox=keep===true&&cur&&state==='idle'?cur:null; if(!keepBox) disposeCur();
   for(const p of parts) scene.remove(p.mesh); parts.length=0; tweens.length=0;
-  cur=null; pickHeld=false; timeLeft=60; endCause=null; rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0;
+  cur=null; pickHeld=false; timeLeft=60; endCause=null; rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0; heartCount=0; starCount=0;
   while(pile.children.length) pile.remove(pile.children[0]); pileCount=0;
   combo=0; maxCombo=0; comboT=0; lastTier=1; charge=0; endFever(); renderCombo(); addScore(0);
   $('fever').classList.remove('off');
@@ -3599,7 +3610,7 @@ function enterNightmare(){
 }
 function enterRage(){
   rage=true; rageReached=true; document.body.classList.add('rage'); decodeCBGM(['rage','nightmare']); bgm.setMode('rage');
-  if(!superOpen&&!SUPER){ superOpen=true; try{ localStorage.setItem('kouga-super','1'); }catch(e){} later(()=>popUnderShout('superUnlock','lucky',1),900); }
+  if(!superOpen&&!SUPER){ superOpen=true; try{ localStorage.setItem('kouga-super','1'); }catch(e){} later(()=>popUnderShout('superUnlock','lucky',1),900); superJust=true; }
   fury=0; const announce=()=>{ alarm(2); cutIn(false,'shout_rage'); later(()=>coach('rage',{target:'sus',tap:true}),3200); };   // the alarm goes off with the "코우가가 화났다!" cut-in (super-hard: after READY / START)
   if(readyT>0) later(()=>{ if(rage&&state!=='over'&&state!=='idle') announce(); },(readyT+0.9)*1000); else announce();
   thump(40,0.45,{dur:0.7}); [49,48,47].forEach((n,i)=>bell(n,{vol:0.07,delay:i*0.02,dur:2})); whoosh(2000,200,0.8,0.12); buzz([60,40,60,40,120]); shake=0.3;
@@ -3785,6 +3796,9 @@ function chaseUp(r,first){   // a rank passed (or the top 10 reached): the badge
     fx.ring(x,y,{r0:10,r1:r===1?120:80,life:0.45,color:'#FFE45C',width:5,style:'double'});
     fx.burst(x,y,{n:r===1||first?26:16,speed:340,gravity:520,size:7,life:0.8,shape:'star5',colors:['#FFE45C','#FF86A4','#7EEBCF','#FFFFFF']}); });
   if(r===1||first) sfx.lucky(); else sfx.tier(); buzz(r===1?60:25); }
+const eatenStr=()=>TX('eatenVal').replace('{b}',boxesDone).replace('{n}',totalEaten), luckyStr=()=>TX('luckyVal').replace('{h}',heartCount).replace('{s}',starCount);
+let superJust=false;   // super-hard opened during this run: explain it on the result screen
+function unlockShow(){ artInto($('unlockTitle'),'superUnlock',TX('superUnlock')); $('unlockOv').hidden=false; woodblock(84,{vol:0.12}); sfx.lucky(); }
 let endCause=null;   // why the run ended, shown under the result title
 function patrolCaught(){   // spotted: that's the end of the night
   if(!HARD){ caughtLate(); return; }
@@ -3844,15 +3858,13 @@ function endGame(){
   let best=0, isNew=false;
   try{ best=+localStorage.getItem('six-bites-best-score')||0; if(score>best){ isNew=best>0; best=score; localStorage.setItem('six-bites-best-score',String(best)); } }catch(e){ best=Math.max(best,score); }
   $('rScore').textContent=score.toLocaleString(LOCALE());
-  $('rEaten').textContent=totalEaten+TX('unitPiece');
+  $('rEaten').textContent=eatenStr(); $('rLucky').textContent=luckyStr();
   $('rCombo').textContent=maxCombo;
-  $('rLucky').textContent=luckyCount+TX('unitCount');
-  $('rBoxes').textContent=boxesDone+TX('unitCount');
   $('rBest').textContent=isNew?TX('newBest'):TX('best').replace('{n}',best.toLocaleString(LOCALE()));
   $('rCrown').toggleAttribute('hidden',!nightmareReached); $('rCrown').classList.remove('go');   // svg: use the attribute, not .hidden
   { const m=reachedMode(); $('rMode').dataset.m=m; $('rMode').textContent=TX('mc_'+m); }
-  $('rTitle').textContent=endTitle(); chaseHide(); rankResult(); { const c=$('rCause'); c.hidden=!endCause; c.textContent=endCause?TX('cause_'+endCause):''; }
-  const gr=gradeOf(score), ge=$('rGrade'); $('sayText').textContent=''; setTimeout(()=>typeText($('sayText'),TX('say_'+gr[0]),34,360),1300); setArt($('rGradeImg'),'g'+gr[0],68,'g'+gr[0],gr[0]);
+  $('rTitle').textContent=endTitle(); chaseHide(); rankResult(); if(superJust){ superJust=false; setTimeout(unlockShow,2400); } { const c=$('rCause'); c.hidden=!endCause; c.textContent=endCause?TX('cause_'+endCause):''; }
+  const gr=gradeOf(score), ge=$('rGrade'); $('sayText').textContent=''; setTimeout(()=>typeText($('sayText'),TX('say_'+gr[0]),34,360),1300); setArt($('rGradeImg'),'g'+gr[0],42,'g'+gr[0],gr[0]);   // about the title's height
   ge.classList.remove('go');
   $('shareMsg').textContent='';
   shareFile=null; updateShareLink();
@@ -3969,6 +3981,7 @@ $('rankOpen').addEventListener('click',()=>{ audio(); boardShow(); });
 $('evJoin').addEventListener('click',()=>{ audio(); joinDialog(null); });
 $('boardClose').addEventListener('click',()=>{ $('boardOv').hidden=true; clearInterval(boardTimer); });
 $('rankSave').addEventListener('click',joinSave); $('rankSkip').addEventListener('click',joinSkip);
+$('unlockOk').addEventListener('click',()=>{ $('unlockOv').hidden=true; });
 $('askJoin').addEventListener('click',()=>{ $('askOv').hidden=true; const g=askGo; askGo=null; joinDialog(g); });
 $('askPlay').addEventListener('click',()=>{ $('askOv').hidden=true; const g=askGo; askGo=null; if(g) g(); });
 ['rankNick','rankXid'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter') joinSave(); }));
@@ -4048,7 +4061,7 @@ function makeShareImage(){
     const scW=g.measureText(sc).width; g.fillText(sc,X+P,Y+360);
     g.font='800 48px '+disp; g.fillText(TX('pts'),X+P+scW+14,Y+360);
     // rows
-    const rows=[[TX('rEaten'),totalEaten+TX('unitPiece')],[TX('rCombo'),String(maxCombo)],[TX('rLucky'),luckyCount+TX('unitCount')],[TX('rBoxes'),boxesDone+TX('unitCount')]];
+    const rows=[[TX('rEaten'),eatenStr()],[TX('rCombo'),String(maxCombo)],[TX('rLucky'),luckyStr()]];
     rows.forEach((r,i)=>{ const y=Y+460+i*70;
       g.textAlign='left'; g.globalAlpha=0.75; g.font='500 38px '+body; g.fillText(r[0],X+P,y);
       g.globalAlpha=1; g.textAlign='right'; g.font='800 40px '+disp; g.fillText(r[1],X+Wc-P,y); });
@@ -4284,7 +4297,7 @@ function loop(t){
       cov=!!(near&&((cur&&cur.covered)||patrol.preHidden)), want=!!(near&&(cov||(patrol.phase==='warn'&&exposed())));
     if(want===hb.hidden||cov!==hb.classList.contains('undo')){ hb.hidden=!want; hb.classList.toggle('undo',cov); $('hideLab').textContent=TX(cov?'unhideBtn':'hideBtn');
       if(want){ hb.classList.remove('pop-in'); void hb.offsetWidth; hb.classList.add('pop-in'); woodblock(cov?72:84,{vol:0.12}); } } }
-  { const want=rage&&state!=='idle'&&state!=='over'&&!reduceMotion; const ph=(now%1.25)/1.25, beat=ph<0.1?ph/0.1:ph<0.2?1-(ph-0.1)/0.1*0.5:ph<0.3?0.5+(ph-0.2)/0.1*0.4:Math.max(0,0.9-(ph-0.3)/0.4*0.9);
+  { const want=((rage&&state!=='idle'&&state!=='over')||document.body.classList.contains('titleFx'))&&!reduceMotion; const ph=(now%1.25)/1.25, beat=ph<0.1?ph/0.1:ph<0.2?1-(ph-0.1)/0.1*0.5:ph<0.3?0.5+(ph-0.2)/0.1*0.4:Math.max(0,0.9-(ph-0.3)/0.4*0.9);
     rageLight.intensity+=((want?(0.55+0.55*beat)*(nightmare?1.15:1):0)-rageLight.intensity)*Math.min(1,rdt*10); rageLight.color.set(nightmare?'#A040FF':'#FF2A2A');
     if(want&&!paused&&rnd()<rdt*(QL>0?9:4)){ const left=rnd()<0.5, x=left?rnd()*innerWidth*0.22:innerWidth*(0.78+rnd()*0.22);
       fx.burst(x,innerHeight*(0.94+rnd()*0.08),{n:1,dir:-Math.PI/2,spread:0.6,speed:60+rnd()*70,gravity:-38,drag:0.9,life:1.6+rnd()*0.9,size:2+rnd()*2.2,shape:'ember',colors:[nightmare?'violet':'fire']}); }
