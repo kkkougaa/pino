@@ -4,6 +4,7 @@
 //   SOFT limit:  the score compared with the autoplay reference (a run that never misses and keeps its combo),
 //                with every bonus added on top. Above it -> 'review' (kept hidden until an admin approves it).
 // Tune the numbers here; the game itself does not need to change.
+import { REF_CURVE } from './ref_curve.js';
 
 export const RULES = {
   MIN_BOX_SEC: 1.2,        // fastest possible box (peel, open, pick, six pinos, toss) in game seconds, fever included
@@ -20,7 +21,8 @@ export const RULES = {
   // Measured with the game's autoplay: normal 88,500 in ~72 s of play (60 s + PERFECT time) = ~1,230/s;
   // hard 143,530 in 60 s (x1.7, then x2.5 after anger) = ~1,140/s at x1. Hearts / stars / visits are added on top.
   REF_RATE: { normal: 1300, hard: 1300, super: 1300 },
-  REF_MARGIN: 1.3,
+  REF_MARGIN: 1.3,        // the fallback formula's margin
+  CURVE_MARGIN: 1.2,      // a run may beat the every-bonus autoplay curve by this much before it is held
   SM: { normal: 1, hard: 1.7, hardRage: 2.5, super: 5, nightmare: 6 },
 };
 
@@ -58,8 +60,18 @@ export function judge(mode, score, s, wallSec) {
   const ceiling = sm * (eaten * R.PINO_MAX * dare + lucky * R.LUCKY_MAX + boxes * R.PERFECT + patrols * R.SAFE);
   if (score > ceiling * 1.05) return bad(`score ${score} above the possible ${Math.round(ceiling)}`);
 
-  // the softer check: the autoplay reference for this much time, every bonus on top, with a margin
-  const ref = (sm * (R.REF_RATE[mode] || 1300) * t + sm * (lucky * R.LUCKY_MAX + patrols * R.SAFE)) * R.REF_MARGIN;
+  // the softer check: the score autoplay reached at this second while taking every bonus (ref_curve.js),
+  // past the end of the recording it carries on at the last 30 s' pace; without a recording, a formula
+  const ref = curveAt(mode, t) * R.CURVE_MARGIN || (sm * (R.REF_RATE[mode] || 1300) * t + sm * (lucky * R.LUCKY_MAX + patrols * R.SAFE)) * R.REF_MARGIN;
   if (score > ref) return { status: 'review', reason: `score ${score} above the reference ${Math.round(ref)} for ${t.toFixed(0)}s` };
   return { status: 'ok', reason: '' };
+}
+
+// the every-bonus autoplay score at second t (0 when there is no recording for the mode)
+export function curveAt(mode, t) {
+  const c = REF_CURVE && REF_CURVE[mode]; if (!c || c.length < 2) return 0;
+  const i = Math.max(0, Math.floor(t)), n = c.length - 1;
+  if (i <= n) return c[i];
+  const back = Math.min(30, n), pace = (c[n] - c[n - back]) / back;   // points per second near the end
+  return c[n] + pace * (i - n);
 }
