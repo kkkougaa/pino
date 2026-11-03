@@ -444,9 +444,12 @@ body.hard .gauges .mood .g{height:18px}
 #nmAura{position:fixed;inset:-4%;pointer-events:none;z-index:2;opacity:0;transition:opacity .8s;
   background:radial-gradient(ellipse 72% 64% at 50% 50%,transparent 60%,rgba(150,60,255,.18) 76%,rgba(110,20,220,.4) 91%,rgba(70,0,160,.56) 100%)}
 body.nmMax #nmAura{opacity:1;animation:auraBeat .95s ease-out infinite}
+body.nmMax #nmAura.enter{animation:auraEnter 1.2s cubic-bezier(.2,1.2,.4,1) both}   /* the first beat: big */
+@keyframes auraEnter{0%{transform:scale(1.12);opacity:0}30%{transform:scale(.93);opacity:1}55%{transform:scale(1.01)}100%{transform:scale(1);opacity:.85}}
+#draftFx{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:0;background:radial-gradient(ellipse 70% 60% at 50% 52%,transparent 45%,rgba(20,6,10,.75) 100%)}   /* DRAFT: the tightening / loosening edge */
 #nmDim{position:fixed;inset:0;pointer-events:none;z-index:1;background:#000;opacity:0;transition:opacity 4s ease-in-out}   /* a plain dark sheet over the 3D room only (cheaper than a filter on the canvas) */
 body.nightmare #nmDim{opacity:.5}   /* nightmare: the room at half its light, so the embers' glow stands out */
-body.nmMax #nmDim{opacity:.625}   /* at its limit: a quarter darker again, sinking slowly */
+body.nmMax #nmDim{opacity:.68}   /* at its limit: a quarter darker again, sinking slowly */
 #nmAura i{position:absolute;inset:0;
   background:radial-gradient(40% 26% at 10% 20%,rgba(190,110,255,.5),transparent 70%),radial-gradient(36% 24% at 92% 34%,rgba(170,80,255,.45),transparent 70%),
     radial-gradient(42% 28% at 16% 86%,rgba(200,120,255,.45),transparent 70%),radial-gradient(38% 26% at 86% 80%,rgba(160,70,255,.5),transparent 70%);
@@ -1127,6 +1130,7 @@ bootStep(0.1);</script>
 <div id="iris" hidden></div>
 <div id="flash" aria-hidden="true"></div>
 <div id="nmDim" aria-hidden="true"></div>
+<div id="draftFx" aria-hidden="true"></div>
 <div id="rageFx" aria-hidden="true"></div>
 <div id="nmAura" aria-hidden="true"><i></i></div>
 <img id="pkShove" alt="" aria-hidden="true"><img id="pkLaugh" alt="" aria-hidden="true">
@@ -1701,7 +1705,7 @@ const bgm=(()=>{
     get file(){ return fileNow?fileNow.key:null; },
     refresh(){ if(running&&mode==='rage') playFile(nmOn&&CBGM.nightmare?'nightmare':'rage',1.2); },
     fever(v){ feverOn=v; },
-    duck(lv){ if(!ac||!bus) return; duckLv=lv; level(ac,0.18); },
+    duck(lv,fade){ if(!ac||!bus) return; duckLv=lv; level(ac,fade||0.18); },
     toggle(){ on=!on; try{ localStorage.setItem('kouga-bgm',on?'1':'0'); }catch(e){} if(ac&&bus) level(ac,0.2); return on; },
     get on(){ return on; }
   };
@@ -1876,6 +1880,8 @@ const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(24,1,0.1,100);   // narrow lens: flatter, more like a drawing
 const camBase=new V3(), lookAt=new V3(0,0.25,0.05);
 let shake=0, camLean=0, camIntro=0;
+const CAMN={yaw:0,v:0,push:0,pushT:-1};   // camera follow: a sprung turn (throws, shoves) and the nightmare push-in
+function camWhip(a){ if(!reduceMotion) CAMN.v+=a; }
 const FRIDGE={z:-2,x0:0,y0:0,len0:1,last:''}; let camRest=null;
 let titleK=1, titleTo=1; const UP=new V3(0,1,0);   // 1 = start-screen framing (box in the top half, a touch closer), 0 = play framing   // the 2D fridge follows the 3D camera: where its foot sits at rest
 function fit(){
@@ -2727,7 +2733,8 @@ function shovePizza(dir){
   const sp=toScreen(b.group.position.clone().setY(0.6)); pop(say('pizza_away'),sp.x,sp.y,'good');
   later(()=>{ playOnce('pkShove'); whoosh(2400,500,0.22,0.16,{pan:0.6}); thump(80,0.32,{delay:0.08,pan:0.4}); },120);
   const x0=b.group.position.x;
-  tween(0.45,k=>{ const e=k*k; b.group.position.x=x0+dir*9*e; b.group.rotation.y=(b.yaw||0)+dir*-0.9*e; b.group.position.y=0.3*Math.sin(Math.PI*k); },
+  camWhip(-dir*0.7);   // a whip pan after it
+  tween(0.45,k=>{ const e=k*k; b.group.position.x=x0+dir*9*e; b.group.rotation.y=(b.yaw||0)+dir*-0.9*e-dir*Math.PI*1.6*e; b.group.rotation.z=-dir*0.5*Math.sin(Math.PI*k); b.group.position.y=0.3*Math.sin(Math.PI*k)+0.4*e; },
     ()=>{ scene.remove(b.group); nextBox(); });
 }
 function openPizza(){
@@ -3010,8 +3017,13 @@ function tossBox(){
   const target=pile.localToWorld(slot.pos.clone()), arc=camBase.distanceTo(lookAt)*0.55;
   const lid=cur.lidPivot, a0=lid.rotation.x, pk=cur.pick;
   slimForPile(g);
+  const tdir=Math.sign(target.x-p0.x)||1; camWhip(-tdir*0.55);   // a quick glance after it
+  let lastQ=null;
   tween(0.8,k=>{
     const e=1-Math.pow(1-k,2);
+    if(k<0.65){ const q=toScreen(g.position.clone().setY(g.position.y+0.3));   // streaks left behind, pointing back along its path on screen
+      if(lastQ&&Math.hypot(q.x-lastQ.x,q.y-lastQ.y)>6) fx.burst(q.x,q.y,{n:2,dir:Math.atan2(lastQ.y-q.y,lastQ.x-q.x),spread:0.35,speed:120,gravity:0,drag:7,size:4,life:0.26,colors:['#FFFFFF','#FFF3D6']});
+      lastQ=q; }
     g.position.lerpVectors(p0,target,e); g.position.y+=arc*Math.sin(Math.PI*k);
     g.rotation.set(r0.x-Math.PI*4*k, r0.y+(slot.rot.y-r0.y)*k, r0.z*(1-k));
     g.scale.setScalar(1+(pile.scale.x-1)*e);
@@ -3343,7 +3355,7 @@ function footstep(i,n){
 }
 function patrolSet(phase){
   if(phase==='warn') midY();
-  const el=$('patrol'); patrol.phase=phase; bgm.duck(phase==='watch'?0.25:phase==='warn'?0.25:1); patrol.hb=0; el.hidden=phase==='none'; el.className=phase==='none'?'':'on '+phase;
+  const el=$('patrol'); patrol.phase=phase; bgm.duck(phase==='watch'?0.25:phase==='warn'?0.25:1,DRAFT&&performance.now()-RELIEF.at<200?0.9:0);   // DRAFT: the music swells back slowly on relief patrol.hb=0; el.hidden=phase==='none'; el.className=phase==='none'?'':'on '+phase;
   if(phase==='warn'){ const m=mood/100; $('patrolKouga').src=YELL_IMG;
     // super-hard (rage) only: no "he's coming" caption, shadow-only visits, double checks, 0.8 s warning
     $('patrolTxt').style.visibility=''; setArt($('patrolTxt'),'patrol_warn',29,'warn');
@@ -3403,7 +3415,7 @@ function patrolTick(dt){
     if(patrol.t>0) return;
     if(nightmare&&!patrol.feinted&&(patrol.nmFeintDue||rnd()<(NM_MAX()&&patrol.kind==='recheck'?0.35:0.1))){ patrol.nmFeintDue=false; feintStart(); return; }   // nightmare: his first look always ends in the feint, then 10%
     patrol.streak=(patrol.streak||0)+1;
-    const sb=500; addScore(sb); sfx.speed();   // a flat bonus: getting caught ends the run anyway, so no streak
+    const sb=500; addScore(sb); sfx.speed(); if(DRAFT){ RELIEF.at=performance.now(); bgm.duck(1,0.9); }   // DRAFT: the breath out   // a flat bonus: getting caught ends the run anyway, so no streak
     popCenter(say('w_safe','+'+Math.round(sb*SM())),'good');
     patrolSet('none'); uncoverBox();
     // double check: when he's suspicious enough he may spin straight back round
@@ -3511,6 +3523,7 @@ function decoyAway(instant){
 function coverBox(){   // HIDE: box whisked down out of shot, decoy plops in
   const b=cur; if(!b||b.covered) return; b.covered=true; const tok=b.mv=(b.mv||0)+1;   // tok: a newer cover/uncover cancels this one's motion
   if(patrol.phase==='warn') patrol.coverK=1-patrol.t/patrol.warnT;
+  if(DRAFT&&patrol.phase==='warn'&&patrol.t<0.18){ NEAR.at=performance.now(); thump(52,0.35,{dur:0.35}); buzz(30); }   // DRAFT: hidden at the last moment
   const g=b.group; b.homePos=new V3(0,0,0); const p0=b.homePos, r0=0;   // always back to the table spot, even if hidden mid-way through coming back
   if(b.pick&&b.pick.parent!==b.group) b.pick.visible=false;   // the pick in your hand goes too
   const s0=g.position.clone(), q0=g.rotation.x;
@@ -3613,6 +3626,11 @@ function placeFace(){
 // Kouga's cut-in: the room drops into slow motion as the strip slams in, then eases back. Only the game slows:
 // the strip, his line and the timers (later()) keep real time, so the cut-in plays at its own speed.
 const SLOW={at:-1e9};
+// DRAFT (?draft in the address): a near-miss beat when you hide at the last moment, and a relief beat when he leaves
+const DRAFT=/[?&]draft\b/.test(location.search), NEAR={at:-1e9}, RELIEF={at:-1e9};
+function nearK(t){ const e=(t-NEAR.at)/1000; if(e<0||e>0.85) return 1; if(e<0.05) return 1-0.75*e/0.05; if(e<0.35) return 0.25; const q=(e-0.35)/0.5; return 0.25+0.75*q*q*(3-2*q); }
+function nearBump(t){ const e=(t-NEAR.at)/1000; if(e<0||e>0.9) return 0; return e<0.15?e/0.15:1-(e-0.15)/0.75; }
+function reliefK(t){ const e=(t-RELIEF.at)/1000; if(e<0||e>1.1) return 0; const q=e/1.1; return 1-q*q*(3-2*q); }
 function slowMo(){ SLOW.at=performance.now(); }
 function slowK(t){ const e=(t-SLOW.at)/1000, lo=reduceMotion?0.6:0.18;
   if(e<0||e>2.6) return 1; if(e<0.1) return 1-(1-lo)*e/0.1; if(e<1.5) return lo; const q=(e-1.5)/1.1; return lo+(1-lo)*q*q*(3-2*q); }
@@ -4237,7 +4255,7 @@ let last=performance.now();
 const tmp=new V3();
 function loop(t){
   requestAnimationFrame(loop);
-  let dt=paused?0:Math.min(0.05,(t-last)/1000)*COACH.ts; last=t; const rdt=dt; coachTick(); stepLater(rdt); if(hitStop>0&&dt>0){ hitStop-=dt; dt=0; } dt*=slowK(t); now+=dt;
+  let dt=paused?0:Math.min(0.05,Math.max(0,(t-last)/1000))*COACH.ts; last=t; const rdt=dt; coachTick(); stepLater(rdt); if(hitStop>0&&dt>0){ hitStop-=dt; dt=0; } dt*=slowK(t)*nearK(t); now+=dt;
   const active=state!=='idle'&&state!=='over'; watchFps(rdt,active);
   if(active){
     if(readyT>0) readyT-=rdt;
@@ -4247,7 +4265,7 @@ function loop(t){
       cur.meltT-=dt; meltLook(cur); if(cur.meltT<=0){ meltEnd(); }
     }
     if(HARD&&!rage&&mood>=100&&state!=='swat') enterRage();
-    if(state!=='swat'&&!held){ runT+=dt; if(HARD){ elapsed+=dt; if(!rage&&elapsed>2.5&&state==='film') coach('sus',{target:'sus',tap:true}); if(rage) rageT+=dt; if(nightmare){ nmT+=dt; if(NM_STEP()>=4&&!document.body.classList.contains('nmMax')){ document.body.classList.add('nmMax'); thump(38,0.6,{dur:0.8}); sNoise(700,0.6,0.35,0.6,'lowpass'); buzz([40,30,40]); } } mood=Math.min(100,mood+(rage?0.175:0.175*HARD_K)*dt); if(rage&&!nightmare){ fury=Math.min(100,fury+0.13125*dt); if(fury>=100) enterNightmare(); } } else if(!TUT){ timeLeft-=dt; if(timeLeft<=0){ timeLeft=0; startSwat(); }
+    if(state!=='swat'&&!held){ runT+=dt; if(HARD){ elapsed+=dt; if(!rage&&elapsed>2.5&&state==='film') coach('sus',{target:'sus',tap:true}); if(rage) rageT+=dt; if(nightmare){ nmT+=dt; if(NM_STEP()>=4&&!document.body.classList.contains('nmMax')){ document.body.classList.add('nmMax'); CAMN.pushT=now; { const a=$('nmAura'); a.classList.remove('enter'); void a.offsetWidth; a.classList.add('enter'); setTimeout(()=>a.classList.remove('enter'),1300); } thump(38,0.6,{dur:0.8}); sNoise(700,0.6,0.35,0.6,'lowpass'); buzz([40,30,40]); } } mood=Math.min(100,mood+(rage?0.175:0.175*HARD_K)*dt); if(rage&&!nightmare){ fury=Math.min(100,fury+0.13125*dt); if(fury>=100) enterNightmare(); } } else if(!TUT){ timeLeft-=dt; if(timeLeft<=0){ timeLeft=0; startSwat(); }
       else { const sc=Math.ceil(timeLeft); if(sc<=3&&sc!==lastCount){ lastCount=sc; pop(say(String(sc)),innerWidth/2,innerHeight*0.3,'count'); woodblock(sc===1?84:79,{vol:0.2}); if(sc===1) bell(96,{vol:0.05}); } } } }
     patrolTick(dt);
     const comboHold=held||((HARD||lateOn)&&(patrol.phase!=='none'||patrol.pendingRecheck||(cur&&cur.covered)));   // hands tied by Kouga: the combo waits
@@ -4301,7 +4319,12 @@ function loop(t){
   if(shake>0.001){ camera.position.x+=(rnd()-.5)*shake; camera.position.y+=(rnd()-.5)*shake; shake*=Math.exp(-dt*10); }
   if(kick>0.0005){ camera.position.lerp(lookAt,kick); kick*=Math.exp(-rdt*14); }
   if(titleK>0.0005) camera.position.sub(lookAt).applyAxisAngle(UP,0.3*titleK).add(lookAt);   // start screen: swung round to the right, looking across the box
-  camera.lookAt(lookAt); if(patrol.phase==='watch'&&!reduceMotion) camera.rotateZ(Math.sin(now*1.3)*0.012);   // holding your breath
+  { CAMN.v+=(-CAMN.yaw*90-CAMN.v*13)*rdt; CAMN.yaw+=CAMN.v*rdt; if(Math.abs(CAMN.yaw)<1e-4&&Math.abs(CAMN.v)<1e-3){ CAMN.yaw=0; CAMN.v=0; }   // the turn springs back
+    if(CAMN.pushT>=0){ const t=now-CAMN.pushT, e=t<1.8?(t/1.8)*(t/1.8)*(3-2*t/1.8):t<4.3?1-((t-1.8)/2.5)*((t-1.8)/2.5)*(3-2*(t-1.8)/2.5):0; CAMN.push=0.06*e; if(t>=4.3){ CAMN.pushT=-1; CAMN.push=0; } }
+    const dp=DRAFT?0.06*nearBump(t)-0.05*reliefK(t):0;   // DRAFT: lean in on a near miss, ease back on relief
+    if(Math.abs(CAMN.push+dp)>0.0005) camera.position.lerp(lookAt,CAMN.push+dp);
+    if(DRAFT){ const v=$('draftFx'); const o=Math.max(0.55*nearBump(t),0.6*reliefK(t)); if(v._o!==o){ v._o=o; v.style.opacity=o.toFixed(3); } } }
+  camera.lookAt(lookAt); if(CAMN.yaw) camera.rotateY(CAMN.yaw); if(patrol.phase==='watch'&&!reduceMotion) camera.rotateZ(Math.sin(now*1.3)*0.012);   // holding your breath
   if(caughtEnd&&state==='swat'&&!reduceMotion){ const q=Math.min(1,(now-caughtAt)*5); camera.rotateZ(-0.045*q*(2-q)); }   // caught: the shot tips over
   if(titleK>0.0005) camera.rotateZ(-0.07*titleK);   // and a slight lean
   followFridge();
