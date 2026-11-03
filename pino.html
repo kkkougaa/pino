@@ -1172,12 +1172,12 @@ bootStep(0.1);</script>
     <div class="setrow"><span data-i18n="setBgm"></span><button class="tog" type="button" data-set="bgm"></button></div>
     <div class="setrow"><span data-i18n="setSfx"></span><button class="tog" type="button" data-set="sfx"></button></div>
     <div class="setrow"><span data-i18n="setVib"></span><button class="tog" type="button" data-set="vib"></button></div>
+    <div class="setrow"><span data-i18n="setLow"></span><button class="tog" type="button" data-set="low"></button></div>
     <div class="settest" id="setTest" hidden><p class="sethead" data-i18n="setTest"></p>
       <div class="setrow"><span data-i18n="tSuper"></span><button class="tog" type="button" data-test="super"></button></div>
       <div class="setrow"><span data-i18n="tAuto"></span><button class="tog" type="button" data-test="auto"></button></div>
       <div class="setrow"><span data-i18n="tNm"></span><button class="tog" type="button" data-test="nm"></button></div>
       <div class="setrow"><span data-i18n="tCoach"></span><button class="tog" type="button" data-test="coach"></button></div>
-      <div class="setrow"><span data-i18n="tLow"></span><button class="tog" type="button" data-test="low"></button></div>
     </div>
     <button class="btn" id="setClose" type="button" data-i18n="close" style="margin-top:18px"></button>
   </div>
@@ -1282,7 +1282,7 @@ var I18N={
     say_C:'흥, 한두개쯤이야. 이번만 봐준다.',
     say_F:'뭐야, 먹긴 한 거냐?',
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.', intro2Rank:'1등은 좋은 일이 생길지도…',
-    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tLow:'저사양 모드 강제', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
+    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
     fx_miss:'MISS −1초', 
     ready:'준비~', go_:'START!', modeNormal:'보통', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
@@ -1340,7 +1340,7 @@ var I18N={
     say_C:'フン、1つや2つくらいどうってことねぇぜ。今回だけは見逃してやるぜ。',
     say_F:'なんだ、ほんとに食ったのか？',
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。', intro2Rank:'1位にはいいことがあるかも…',
-    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tLow:'低スペックモード固定', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
+    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
     fx_miss:'MISS −1秒', 
     ready:'よーい…', go_:'START!', modeNormal:'ふつう', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
@@ -1994,8 +1994,9 @@ const TEST=(()=>{ const d={super:true,auto:true,nm:true,coach:false,low:false}; 
 function testSave(){ try{ localStorage.setItem('kouga-test',JSON.stringify(TEST)); }catch(e){} }
 // ===== low-spec mode: chosen while loading (device check, or a slow earlier run), or switched on when frames drop.
 // Same game, same difficulty, same motion and effect counts: lighter models (from the next load), no shadows, lower resolution.
-const LOW={on:(()=>{ if(TEST.low) return true; try{ if(localStorage.getItem('kouga-lowspec')==='1') return true; }catch(e){}
-  const c=navigator.hardwareConcurrency||8, m=navigator.deviceMemory||8; if(c<=2||m<=2||(c<=4&&m<=3)) return true;
+let LOW_PREF=null; try{ localStorage.removeItem('kouga-lowspec'); LOW_PREF=localStorage.getItem('kouga-lowspec-pref'); }catch(e){}   // '1' / '0' = chosen in Settings; nothing = automatic (the old key held automatic switches: dropped)
+const LOW={on:(()=>{ if(LOW_PREF==='1') return true; if(LOW_PREF==='0') return false;
+  const m=navigator.deviceMemory; if(m&&m<=2) return true;   // only a reported small memory counts (Safari reports no memory and can under-report cores)
   try{ const gl=renderer.getContext(), ex=gl.getExtension('WEBGL_debug_renderer_info'), r=ex?String(gl.getParameter(ex.UNMASKED_RENDERER_WEBGL)):'';
     if(/Mali-(4\d\d|T6|T7|G31|G51|G52)|Adreno \(TM\) [2-5]\d\d|PowerVR SGX|SwiftShader|llvmpipe|Software/i.test(r)) return true; }catch(e){}
   return false; })()};
@@ -2003,16 +2004,18 @@ const LOD=LOW.on?0.5:1, segN=(n,min)=>Math.max(min||3,Math.round(n*LOD));   // p
 function setLow(){ if(LOW.applied) return; LOW.on=true; LOW.applied=true; document.body.classList.add('lowspec');
   renderer.setPixelRatio(1); fit(); renderer.shadowMap.enabled=false; sun.castShadow=false; fridgeLight.castShadow=false;
   scene.traverse(o=>{ if(o.material) (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.needsUpdate=true); });
-  if(typeof fx!=='undefined'&&fx.size) fx.size(); try{ localStorage.setItem('kouga-lowspec','1'); }catch(e){} }   // remembered: the next load also builds the lighter models
+  if(typeof fx!=='undefined'&&fx.size) fx.size(); }
+function setHigh(){ LOW.on=false; LOW.applied=false; document.body.classList.remove('lowspec'); applyQuality(2);   // back to full quality now (the full-detail models come with the next load)
+  renderer.shadowMap.enabled=true; setNight(NIGHT); scene.traverse(o=>{ if(o.material) (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.needsUpdate=true); }); if(typeof fx!=='undefined'&&fx.size) fx.size(); }
 let QL=2, fpsT=0, fpsN=0;
-try{ if((navigator.hardwareConcurrency||8)<=4||(navigator.deviceMemory||8)<=3) QL=1; }catch(e){}
+try{ if(navigator.deviceMemory&&navigator.deviceMemory<=3) QL=1; }catch(e){}   // a reported small memory starts one step lower; otherwise the frame check decides
 function applyQuality(l){ QL=l;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,LOW.on?1:l>=2?2:l===1?1.5:1)); fit();
   [[sun,l>=2?2048:1024],[fridgeLight,l>=1?2048:1024]].forEach(([L,ms])=>{ if(L.shadow.mapSize.x!==ms){ L.shadow.mapSize.set(ms,ms); if(L.shadow.map){ L.shadow.map.dispose(); L.shadow.map=null; } } });
   INK_MAT.visible=l>0; }
 if(QL<2) applyQuality(QL);
 function watchFps(rdt,active){ if(!active||paused||LOW.applied||rdt<=0) return; fpsT+=rdt; fpsN++;
-  if(fpsT>=3){ const fps=fpsN/fpsT; fpsT=0; fpsN=0; if(fps<45){ if(QL>0) applyQuality(QL-1); else setLow(); } } }   // still slow at the lowest step: low-spec
+  if(fpsT>=3){ const fps=fpsN/fpsT; fpsT=0; fpsN=0; if(fps<38&&QL>1) applyQuality(QL-1); else if(fps<30&&LOW_PREF==null) setLow(); } }   // still very slow at the lowest step (and no choice made in Settings): low-spec for this visit
 
 /* ---------- geometry ---------- */
 const W=3.2,D=2.05,H=0.575,T=0.03,STRIP_H=0.12,NF=12,NS=7;
@@ -3965,7 +3968,7 @@ document.querySelectorAll('.mode button').forEach(b=>b.addEventListener('click',
 setMode(MODE);
 // settings (start screen): music, sound effects, vibration, all remembered on this device
 function setLabels(){ $('setTest').hidden=!TEST_MENU; document.querySelectorAll('#setOv .tog[data-test]').forEach(b=>{ const v=!!TEST[b.dataset.test]; b.setAttribute('aria-pressed',String(v)); b.textContent=TX(v?'on':'off'); });
-  document.querySelectorAll('#setOv .tog[data-set]').forEach(b=>{ const k=b.dataset.set, v=k==='bgm'?bgm.on:k==='sfx'?sfxOn:vibOn; b.setAttribute('aria-pressed',String(v)); b.textContent=TX(v?'on':'off'); }); }
+  document.querySelectorAll('#setOv .tog[data-set]').forEach(b=>{ const k=b.dataset.set, v=k==='bgm'?bgm.on:k==='sfx'?sfxOn:k==='low'?LOW.on:vibOn; b.setAttribute('aria-pressed',String(v)); b.textContent=TX(v?'on':'off'); }); }
 function placeSetBtn(){ const l=$('tlang'); if(l&&l.offsetWidth) $('setBtn').style.right=(16+l.offsetWidth+8)+'px'; }   // just left of the language switch
 addEventListener('resize',placeSetBtn);
 $('setBtn').addEventListener('click',()=>{ audio(); setLabels(); $('setOv').hidden=false; });
@@ -3973,11 +3976,11 @@ $('setClose').addEventListener('click',()=>{ $('setOv').hidden=true; });
 document.querySelectorAll('#setOv .tog[data-test]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.test; TEST[k]=!TEST[k]; testSave();   // TEST ONLY
   if(k==='super'){ let st=false; try{ st=localStorage.getItem('kouga-super')==='1'; }catch(e){} superOpen=TEST.super||st; setMode(MODE==='super'&&!superOpen?'hard':MODE); }
   if(k==='auto'){ $('autoBtn').hidden=!TEST.auto; if(!TEST.auto&&AUTO.on) setAuto(false); }
-  if(k==='low'){ if(TEST.low) setLow(); else { try{ localStorage.removeItem('kouga-lowspec'); }catch(e){} } }   // off: back to full quality on the next load
   setLabels(); }));
 document.querySelectorAll('#setOv .tog[data-set]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.set;
   if(k==='bgm'){ audio(); bgm.toggle(); bgmLabel(); }
   else if(k==='sfx'){ sfxOn=!sfxOn; try{ localStorage.setItem('kouga-sfx',sfxOn?'1':'0'); }catch(e){} }
+  else if(k==='low'){ const on=!LOW.on; LOW_PREF=on?'1':'0'; try{ localStorage.setItem('kouga-lowspec-pref',LOW_PREF); }catch(e){} if(on) setLow(); else setHigh(); }   // remembered: the choice wins over the automatic check
   else { vibOn=!vibOn; try{ localStorage.setItem('kouga-vib',vibOn?'1':'0'); }catch(e){} if(vibOn) buzz(20); }
   setLabels(); if(k==='sfx'&&sfxOn) kalimba(84,{vol:0.09}); }));   // a little ding to hear it's back
 document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>{
@@ -4339,7 +4342,7 @@ function prewarm(){   // compile the shaders and upload the textures of things t
     const hid=[DECOY,kougaShade].filter(Boolean).map(o=>[o,o.visible]); hid.forEach(([o])=>o.visible=true); scene.add(tmp);
     renderer.compile(scene,camera); renderer.render(scene,camera);
     scene.remove(tmp); hid.forEach(([o,v])=>o.visible=v); } catch(e){} }
-function lowCheck(){ let n=0; const t0=performance.now(); (function f(){ n++; const e=performance.now()-t0; if(e<1600) requestAnimationFrame(f); else if(n/(e/1000)<40) setLow(); })(); }   // loading: under 40 fps on the start screen -> low-spec
+function lowCheck(){ if(LOW_PREF!=null) return; setTimeout(()=>{ let n=0; const t0=performance.now(); (function f(){ n++; const e=performance.now()-t0; if(e<2000) requestAnimationFrame(f); else if(n/(e/1000)<28&&!document.hidden) setLow(); })(); },2500); }   // once the start screen has settled: under 28 fps -> low-spec for this visit
 function init(){
   $('pkShove').src=PK_SHOVE; $('pkLaugh').src=PK_LAUGH;
   setFeverLab(); setSprite($('moodLab'),TX('mood'),'lucky',17); setArt($('celeT'),'pino',28,'combo','PINO!'); $('sayImg').src=$('celeImg').src;
