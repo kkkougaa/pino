@@ -373,6 +373,13 @@ body.hard .hardtag{display:inline-block}
 #patrol .pk{position:absolute;right:0;bottom:22%;width:min(46vw,230px);height:auto;transform:translateX(105%);transition:transform .5s cubic-bezier(.3,1.2,.5,1),filter .3s}
 #patrol.warn .pk{transform:translateX(105%)}
 #patrol.watch .pk{transform:translateX(42%) rotate(-6deg);filter:none}
+/* what he says when he comes back for another look: a speech bubble from his side */
+#patrol .pksay{position:absolute;right:calc(min(46vw,230px)*.6);bottom:calc(22% + min(46vw,230px)*.6);max-width:min(58vw,240px);margin:0;padding:9px 13px 8px;
+  background:#FFFBEF;border:3px solid #3A2416;border-radius:16px;box-shadow:0 4px 0 rgba(58,36,22,.3);font-family:var(--hand);font-size:clamp(15px,4.2vw,18px);line-height:1.25;color:#C0141C;
+  text-align:center;word-break:keep-all;animation:bubIn2 .28s cubic-bezier(.2,1.6,.4,1) both}
+#patrol .pksay::after{content:"";position:absolute;left:100%;top:50%;margin:-7px 0 0 -1px;border:solid transparent;border-width:7px 0 7px 13px;border-left-color:#3A2416}   /* the tail points at him */
+#patrol .pksay[hidden]{display:none}
+@keyframes bubIn2{from{opacity:0;transform:scale(.6) translateY(8px)}to{opacity:1;transform:none}}
 /* nightmare feint: he starts to leave (half out, the hush fades)... then slams back in */
 #patrol.watch.feint .pk{transform:translateX(71%) rotate(4deg);transition:transform .55s cubic-bezier(.4,0,.7,.7)}   /* about half of him off screen */
 #patrol.watch.feint .pt{opacity:0;transition:opacity .3s}
@@ -859,7 +866,7 @@ body.nmMax #sus .sus-g>i{border-radius:999px}
 .dbgbtn{top:calc(env(safe-area-inset-top,0px) + 118px)!important}
 #autoBadge{top:auto!important;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);left:16px;transform:none;background:rgba(20,140,90,.88)}   /* TEST ONLY */
 /* ===== hands off while he looks ===== */
-#patrol .nohand{display:none;position:absolute;left:50%;top:calc(var(--midY,240px) + 62px);width:68px;height:68px;margin-left:-34px;filter:drop-shadow(0 4px 0 rgba(58,36,22,.35))}
+#patrol .nohand{display:none;position:absolute;left:50%;top:calc(var(--midY,240px) + 104px);width:68px;height:68px;margin-left:-34px;filter:drop-shadow(0 4px 0 rgba(58,36,22,.35))}
 #patrol .nohand svg{width:100%;height:100%}
 #patrol.watch .nohand{display:block;animation:noHand .5s ease-in-out infinite alternate}
 @keyframes noHand{from{transform:scale(1) rotate(-6deg)}to{transform:scale(1.1) rotate(6deg)}}
@@ -998,7 +1005,7 @@ bootStep(0.1);</script>
 <div id="rageFx" aria-hidden="true"></div>
 <img id="pkShove" alt="" aria-hidden="true"><img id="pkLaugh" alt="" aria-hidden="true">
 <div id="pops"></div>
-<div id="patrol" hidden aria-live="polite"><div class="vig"></div><div class="tape" aria-hidden="true"></div><img class="pk" id="patrolKouga" alt=""><img class="pt" id="patrolTxt" alt=""><div class="nohand" aria-hidden="true"><!-- hand: Font Awesome Free 6.5.2 "hand" (solid) by Fonticons, Inc., CC BY 4.0, https://fontawesome.com/license/free --><svg viewBox="0 0 64 64"><g transform="translate(15.00 15.00) scale(0.0664)"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V336c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64H304c97.2 0 176-78.8 176-176V128c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V32z" fill="#FFFBEF" stroke="#3A2416" stroke-width="45.18" stroke-linejoin="round" paint-order="stroke"/></g><circle cx="32" cy="32" r="27" fill="none" stroke="#3A2416" stroke-width="9"/><circle cx="32" cy="32" r="27" fill="none" stroke="#E0261B" stroke-width="5.5"/><path d="M13 51 51 13" stroke="#3A2416" stroke-width="9" stroke-linecap="round"/><path d="M13 51 51 13" stroke="#E0261B" stroke-width="5.5" stroke-linecap="round"/></svg></div></div>
+<div id="patrol" hidden aria-live="polite"><div class="vig"></div><div class="tape" aria-hidden="true"></div><img class="pk" id="patrolKouga" alt=""><p class="pksay" id="pkSay" hidden></p><img class="pt" id="patrolTxt" alt=""><div class="nohand" aria-hidden="true"><!-- hand: Font Awesome Free 6.5.2 "hand" (solid) by Fonticons, Inc., CC BY 4.0, https://fontawesome.com/license/free --><svg viewBox="0 0 64 64"><g transform="translate(15.00 15.00) scale(0.0664)"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V336c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64H304c97.2 0 176-78.8 176-176V128c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V32z" fill="#FFFBEF" stroke="#3A2416" stroke-width="45.18" stroke-linejoin="round" paint-order="stroke"/></g><circle cx="32" cy="32" r="27" fill="none" stroke="#3A2416" stroke-width="9"/><circle cx="32" cy="32" r="27" fill="none" stroke="#E0261B" stroke-width="5.5"/><path d="M13 51 51 13" stroke="#3A2416" stroke-width="9" stroke-linecap="round"/><path d="M13 51 51 13" stroke="#E0261B" stroke-width="5.5" stroke-linecap="round"/></svg></div></div>
 <div id="yell" hidden aria-live="polite"><p id="yellTxt"></p><img id="yellImg" alt=""></div>
 <button class="pausebtn" id="pauseBtn" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg><span class="vh" data-i18n="pause"></span></button>
 <div class="overlay" id="pauseOv" hidden>
@@ -1128,7 +1135,7 @@ var I18N={
     fx_perfect:'퍼펙트! +{n}', fx_nice:'NICE!', fx_miss:'MISS −1초', fx_missHard:'미스 −{n}', fx_speed:'스피드 보너스 +{n}',
     ready:'준비~', go_:'START!', modeNormal:'보통', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
-    cause_moved:'쳐다보는 중에 움직였어!', cause_late:'제때 못 숨겼어!', cause_silent:'발소리 없이 왔어!', cause_recheck:'…다시 돌아봤어!', cause_feint:'가는 척이었어!', cause_melt:'피노가 다 녹아버렸어…', cause_pizza:'피자 냄새로 들켰어!', co_sus:'의심 게이지예요. 시간이 지나고 피노를 먹을수록 차올라요. 꽉 차면… 코우가가 화내요!', co_warn:'발소리! 코우가가 와요. 「숨기기」를 눌러 상자를 숨겨요!', co_watch:'코우가가 보고 있어요. 떠날 때까지 아무것도 만지지 마요!', co_melt:'상자를 열면 피노가 녹기 시작해요. 다 녹기 전에 6알 다 먹어요!', co_snap:'띠를 너무 빨리 당기면 끊어져요. 다시 톡 잡고 천천히!', co_pizza:'피자 상자예요! 옆으로 쓸어서 치워요. 열면 냄새로 들켜요', co_fake:'…오다가 그냥 가버렸어요. 이런 일도 있지만, 방심은 금물!', co_rage:'코우가가 화났어요! 순찰이 잦아지고 예고가 짧아져요. 게이지가 다 차면… 폭주!', co_silent:'발소리 없이 왔어요! 「코우가가 온다!」 글자를 보면 바로 숨겨요', co_recheck:'…다시 돌아봤어요! 바로 다시 숨겨요', co_feint:'가는 척이었어요! 완전히 떠날 때까지 기다려요', coTap:'탭해서 계속', x5:'×5', timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_open:'앗, 피자잖아! −{n}', pizza_away:'휙!', yell_pizza:'이 피자 냄새는 뭐야?! 피자녀석?!', pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:'이 몸의 피노가 없어졌잖아!?!\n누구야!!!', nm_on:'코우가가 폭주한다!', shout_nm:'피노 돌려줘!!!!!!!!!!', dbgNm:'나이트메어', autoOn:'자동 플레이: 켜짐', autoOff:'자동 플레이: 꺼짐', legal:'본 게임은 비상업적이며 모든 리소스의 권리는 원 저작권자에게 있습니다.', bgmSet:'🎵 음악 바꾸기', bgmTitle:'내 음악 넣기', bgmLead:'내 기기에 있는 음악 파일을 고르면 그 모드에서 대신 나와요. 이 기기에만 저장되고, 직접 가진 음원만 넣어 주세요.', bgmRage:'초하드 BGM', bgmNm:'나이트메어 BGM', bgmHintRage:'코우가가 화났을 때', bgmHintNm:'폭주했을 때 (자연스럽게 넘어가요)', bgmPick:'파일 고르기', bgmChange:'바꾸기', bgmClear:'지우기', bgmBad:'이 파일은 재생할 수 없어요. mp3나 m4a 파일인지 확인해 주세요.', recheck:'…응?!', streak:'{s}연속!', cover_calm:'침착! +{n}', cover_close:'간발의 차! +{n}', quit:'그만하기',
+    cause_moved:'쳐다보는 중에 움직였어!', cause_late:'제때 못 숨겼어!', cause_silent:'발소리 없이 왔어!', cause_recheck:'…다시 돌아봤어!', cause_feint:'가는 척이었어!', cause_melt:'피노가 다 녹아버렸어…', cause_pizza:'피자 냄새로 들켰어!', co_sus:'의심 게이지예요. 시간이 지나고 피노를 먹을수록 차올라요. 꽉 차면… 코우가가 화내요!', co_warn:'발소리! 코우가가 와요. 「숨기기」를 눌러 상자를 숨겨요!', co_watch:'코우가가 보고 있어요. 떠날 때까지 아무것도 만지지 마요!', co_melt:'상자를 열면 피노가 녹기 시작해요. 다 녹기 전에 6알 다 먹어요!', co_snap:'띠를 너무 빨리 당기면 끊어져요. 다시 톡 잡고 천천히!', co_pizza:'피자 상자예요! 옆으로 쓸어서 치워요. 열면 냄새로 들켜요', co_fake:'…오다가 그냥 가버렸어요. 이런 일도 있지만, 방심은 금물!', co_rage:'코우가가 화났어요! 순찰이 잦아지고 예고가 짧아져요. 게이지가 다 차면… 폭주!', co_silent:'발소리 없이 왔어요! 「코우가가 온다!」 글자를 보면 바로 숨겨요', co_recheck:'…다시 돌아봤어요! 바로 다시 숨겨요', co_feint:'가는 척이었어요! 완전히 떠날 때까지 기다려요', rc_lines:['어디서 피노 냄새가 나는데?!','네 녀석, 피노 먹고 있던 거 아니지?!','부스럭 소리가 난 것 같은데?!','뭔가 수상한데!','다시 와서 확인할 테니까, 가만히 있어!'], fe_lines:['진짜 안 먹는 거 맞아?!','이 몸이 다 보고 있다고!','네 녀석…! 지켜보고 있을 거야!','수상하다니까 네 녀석!!!!'], coTap:'탭해서 계속', x5:'×5', timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_open:'앗, 피자잖아! −{n}', pizza_away:'휙!', yell_pizza:'이 피자 냄새는 뭐야?! 피자녀석?!', pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:'이 몸의 피노가 없어졌잖아!?!\n누구야!!!', nm_on:'코우가가 폭주한다!', shout_nm:'피노 돌려줘!!!!!!!!!!', dbgNm:'나이트메어', autoOn:'자동 플레이: 켜짐', autoOff:'자동 플레이: 꺼짐', legal:'본 게임은 비상업적이며 모든 리소스의 권리는 원 저작권자에게 있습니다.', bgmSet:'🎵 음악 바꾸기', bgmTitle:'내 음악 넣기', bgmLead:'내 기기에 있는 음악 파일을 고르면 그 모드에서 대신 나와요. 이 기기에만 저장되고, 직접 가진 음원만 넣어 주세요.', bgmRage:'초하드 BGM', bgmNm:'나이트메어 BGM', bgmHintRage:'코우가가 화났을 때', bgmHintNm:'폭주했을 때 (자연스럽게 넘어가요)', bgmPick:'파일 고르기', bgmChange:'바꾸기', bgmClear:'지우기', bgmBad:'이 파일은 재생할 수 없어요. mp3나 m4a 파일인지 확인해 주세요.', recheck:'…응?!', streak:'{s}연속!', cover_calm:'침착! +{n}', cover_close:'간발의 차! +{n}', quit:'그만하기',
     patrol_warn:'코우가가 온다!', patrol_watch:'쉿…', hint_cover:'↓ 쓸어서 상자 덮기!', hideBtn:'숨기기!', unhideBtn:'꺼내기', patrol_caught:'들켰다!', patrol_safe:'안 들켰다! +{n}', hardTag:'하드',
     fx_snap:'띠 끊김!', fx_regrab:'다시 잡았다!', hint_snap:'다시 잡기', yell:'네 녀석!!!!!', fx_heart:'하트', fx_star:'별',
     fx_combo:'COMBO', fx_comboUp:'×{t} COMBO!', fx_break:'콤보 끊김…', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
@@ -1186,7 +1193,7 @@ var I18N={
     fx_perfect:'パーフェクト！+{n}', fx_nice:'NICE!', fx_miss:'MISS −1秒', fx_missHard:'ミス −{n}', fx_speed:'スピードボーナス +{n}',
     ready:'よーい…', go_:'START!', modeNormal:'ふつう', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
-    cause_moved:'見られてる時に動いた！', cause_late:'かくすのが間に合わなかった！', cause_silent:'足音なしで来た！', cause_recheck:'…また振り返った！', cause_feint:'帰るふりだった！', cause_melt:'ピノが溶けちゃった…', cause_pizza:'ピザのにおいでバレた！', co_sus:'あやしさゲージ。時間がたつほど、ピノを食べるほどたまっていく。満タンになると…コウガが怒る！', co_warn:'足音！コウガが来る。「かくす！」を押して箱をかくそう！', co_watch:'コウガが見てる。いなくなるまで何もさわらないで！', co_melt:'箱をあけるとピノが溶けはじめる。溶ける前に6粒食べよう！', co_snap:'帯をいきおいよく引くと切れちゃう。つかみ直してゆっくり！', co_pizza:'ピザの箱！横にスワイプしてどかそう。あけるとにおいでバレる', co_fake:'…来る途中で帰っちゃった。こんなこともあるけど、油断は禁物！', co_rage:'コウガが怒った！見回りが増えて予告も短くなる。ゲージが満タンになると…暴走！', co_silent:'足音なしで来た！「コウガが来る！」の文字を見たらすぐかくそう', co_recheck:'…また振り返った！すぐかくし直そう', co_feint:'帰るふりだった！完全にいなくなるまで待とう', coTap:'タップでつづける', x5:'×5', timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_open:'あっ、ピザだ！−{n}', pizza_away:'ポイッ！', yell_pizza:'このピザのにおいはなんなんだ？！ピザ野郎？！', pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:'俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!', nm_on:'コウガが暴走した！', shout_nm:'ピノ返せ!!!!!!!!!!', dbgNm:'ナイトメア', autoOn:'オートプレイ：オン', autoOff:'オートプレイ：オフ', legal:'本ゲームは非営利であり、すべての素材の権利は原著作者に帰属します。', bgmSet:'🎵 音楽を変える', bgmTitle:'自分の音楽を入れる', bgmLead:'端末にある音楽ファイルを選ぶと、そのモードで代わりに流れます。この端末にだけ保存されます。自分で持っている音源だけを入れてください。', bgmRage:'超ハードBGM', bgmNm:'ナイトメアBGM', bgmHintRage:'コウガが怒ったとき', bgmHintNm:'暴走したとき（自然に切り替わります）', bgmPick:'ファイルを選ぶ', bgmChange:'変える', bgmClear:'消す', bgmBad:'このファイルは再生できません。mp3かm4aか確認してください。', recheck:'…ん？！', streak:'{s}連続！', cover_calm:'冷静！+{n}', cover_close:'ギリギリセーフ！+{n}', quit:'やめる',
+    cause_moved:'見られてる時に動いた！', cause_late:'かくすのが間に合わなかった！', cause_silent:'足音なしで来た！', cause_recheck:'…また振り返った！', cause_feint:'帰るふりだった！', cause_melt:'ピノが溶けちゃった…', cause_pizza:'ピザのにおいでバレた！', co_sus:'あやしさゲージ。時間がたつほど、ピノを食べるほどたまっていく。満タンになると…コウガが怒る！', co_warn:'足音！コウガが来る。「かくす！」を押して箱をかくそう！', co_watch:'コウガが見てる。いなくなるまで何もさわらないで！', co_melt:'箱をあけるとピノが溶けはじめる。溶ける前に6粒食べよう！', co_snap:'帯をいきおいよく引くと切れちゃう。つかみ直してゆっくり！', co_pizza:'ピザの箱！横にスワイプしてどかそう。あけるとにおいでバレる', co_fake:'…来る途中で帰っちゃった。こんなこともあるけど、油断は禁物！', co_rage:'コウガが怒った！見回りが増えて予告も短くなる。ゲージが満タンになると…暴走！', co_silent:'足音なしで来た！「コウガが来る！」の文字を見たらすぐかくそう', co_recheck:'…また振り返った！すぐかくし直そう', co_feint:'帰るふりだった！完全にいなくなるまで待とう', rc_lines:['どこかでピノのにおいがするぞ？！','お前、ピノ食べてたんじゃないだろうな？！','ガサッて音がした気がするぞ？！','なんか怪しいな！','また見に来るからな、じっとしてろ！'], fe_lines:['本当に食べてないんだな？！','俺様が全部見てるんだからな！','お前…！見張ってるからな！','怪しいって言ってんだろ、お前！！！！'], coTap:'タップでつづける', x5:'×5', timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_open:'あっ、ピザだ！−{n}', pizza_away:'ポイッ！', yell_pizza:'このピザのにおいはなんなんだ？！ピザ野郎？！', pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:'俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!', nm_on:'コウガが暴走した！', shout_nm:'ピノ返せ!!!!!!!!!!', dbgNm:'ナイトメア', autoOn:'オートプレイ：オン', autoOff:'オートプレイ：オフ', legal:'本ゲームは非営利であり、すべての素材の権利は原著作者に帰属します。', bgmSet:'🎵 音楽を変える', bgmTitle:'自分の音楽を入れる', bgmLead:'端末にある音楽ファイルを選ぶと、そのモードで代わりに流れます。この端末にだけ保存されます。自分で持っている音源だけを入れてください。', bgmRage:'超ハードBGM', bgmNm:'ナイトメアBGM', bgmHintRage:'コウガが怒ったとき', bgmHintNm:'暴走したとき（自然に切り替わります）', bgmPick:'ファイルを選ぶ', bgmChange:'変える', bgmClear:'消す', bgmBad:'このファイルは再生できません。mp3かm4aか確認してください。', recheck:'…ん？！', streak:'{s}連続！', cover_calm:'冷静！+{n}', cover_close:'ギリギリセーフ！+{n}', quit:'やめる',
     patrol_warn:'コウガが来る！', patrol_watch:'しーっ…', hint_cover:'↓ スワイプで箱をとじる！', hideBtn:'かくす！', unhideBtn:'とりだす', patrol_caught:'バレた！', patrol_safe:'バレなかった！+{n}', hardTag:'ハード',
     fx_snap:'帯が切れた！', fx_regrab:'つかみ直した！', hint_snap:'つかみ直す', yell:'てめぇ！！！！！', fx_heart:'ハート', fx_star:'ほし',
     fx_combo:'COMBO', fx_comboUp:'×{t} COMBO!', fx_break:'コンボきれた…', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
@@ -2558,7 +2565,7 @@ function openPizza(){
 }
 function nextBox(){
   if(state==='over') return;
-  const kougaAround=(HARD||lateOn)&&(patrol.phase!=='none'||patrol.pendingRecheck);
+  const kougaAround=(HARD||lateOn)&&patrol.preHidden&&patrol.phase!=='none';   // you hid before the box came: it arrives hidden
   if(boxNo>=1&&rnd()<0.05&&!kougaAround&&!TUT){   // 5 %: a pizza box turns up instead
     const b=makePizza(); cur=b; scene.add(b.group); boxNo++;
     b.group.position.set(6,0,0); b.group.rotation.y=-0.4; state='arrive'; setGuide(null);
@@ -2568,7 +2575,7 @@ function nextBox(){
   }
   const b=makeBox(); cur=b; scene.add(b.group); boxNo++; b.covered=false; b.meltT=meltTime();
   if(kougaAround){   // he's here: the decoy sits on the table, the pino waits below until he's gone
-    b.covered=true; b.homePos=new V3(0,0,0); b.group.position.set(0,-0.5,4.6); b.group.rotation.x=0.35; b.group.visible=false;
+    patrol.preHidden=false; b.covered=true; b.homePos=new V3(0,0,0); b.group.position.set(0,-0.5,4.6); b.group.rotation.x=0.35; b.group.visible=false;
     state='film'; setGuide('film'); if(!(DECOY&&DECOY.visible)) decoyIn(); return;
   }
   b.group.position.set(6,0,0); b.group.rotation.y=-0.4;
@@ -3127,7 +3134,7 @@ function showYell(key){
 }
 // ===== patrol (hard): footsteps, then Kouga peeks in and watches. Touch anything while he watches and you're caught =====
 const patrol={phase:'none',t:0,next:9};
-function patrolReset(){ patrol.nmLeft=0; patrol.phase='none'; patrol.t=0; patrol.next=8+rnd()*4; patrol.streak=0; patrol.count=0; patrol.pendingRecheck=false; patrol.linger=false; rageOff(); patrol.leave=null; if(kougaShade) kougaShade.visible=false; const el=$('patrol'); el.hidden=true; el.className=''; }
+function patrolReset(){ patrol.preHidden=false; patrol.nmLeft=0; patrol.phase='none'; patrol.t=0; patrol.next=8+rnd()*4; patrol.streak=0; patrol.count=0; patrol.pendingRecheck=false; patrol.linger=false; rageOff(); patrol.leave=null; if(kougaShade) kougaShade.visible=false; const el=$('patrol'); el.hidden=true; el.className=''; }
 // his shadow: an invisible cut-out (ears, spiky head, shoulders) between the fridge light and the box
 let kougaShade=null;
 function makeKougaShade(){
@@ -3183,27 +3190,31 @@ function patrolSet(phase){
     patrol.kind=patrol.pendingRecheck?'recheck':(!first&&rnd()<0.05)?'cat'   // a passing dog: 5%, footsteps only, nothing overrides it
       :(rage&&rnd()<(nightmare?Math.min(0.5,0.3+0.05*NM_STEP()):0.2))?'silent':'steps';   // silent: 20% in rage, 30% in nightmare +5% every 30 s, up to 50%
     patrol.pendingRecheck=false; patrol.linger=false; patrol.leave=null;
-    patrol.warnT=patrol.kind==='recheck'?(nightmare?Math.max(0.5,0.8-0.1*NM_STEP()):1)   // recheck: rage 1 s; nightmare 0.8 s, -0.1 s every 30 s, down to 0.5 s
-      :nightmare?Math.max(0.8,1-0.1*NM_STEP()):rage?1.4:lerpN(3,2,m)/HARD_K;   // hard 3 s -> 2 s (/1.2), rage 1.4 s, nightmare 1.2 s, -0.1 s every 30 s, down to 1 s
+    patrol.warnT=patrol.kind==='recheck'?(nightmare?Math.max(0.35,Math.max(0.5,0.8-0.1*NM_STEP())-(NM_MAX()?0.3:0)):1)   // recheck: rage 1 s; nightmare 0.8 s, -0.1 s every 30 s, down to 0.5 s
+      :nightmare?Math.max(0.8,1-0.1*NM_STEP())-(NM_MAX()?0.3:0):rage?1.4:lerpN(3,2,m)/HARD_K;   // hard 3 s -> 2 s (/1.2), rage 1.4 s, nightmare 1.2 s, -0.1 s every 30 s, down to 1 s
     if(patrol.kind==='silent') patrol.warnT*=1.25;   // no footsteps to warn you, so a touch longer
     patrol.t=patrol.warnT; patrol.steps=0; patrol.coverK=null;
     patrol.fake=patrol.kind!=='recheck'&&patrol.kind!=='cat'&&!first&&rnd()<(nightmare?0.05:rage?0.1:0.2);   // he turns back: hard 20%, rage 10%, nightmare 5%
     patrol.count=(patrol.count||0)+1;
-    { const hid=()=>!boxShowing()||patrol.phase!=='warn';   // guided, in slow motion, the first time each kind of visit shows up
+    { const hid=()=>!exposed()||patrol.phase!=='warn';   // guided, in slow motion, the first time each kind of visit shows up
       if(patrol.kind==='silent') later(()=>coach('silent',{target:'patrolTxt',slow:0.2,until:hid}),80);
       else if(patrol.kind==='recheck') later(()=>coach('recheck',{target:'hideBtn',slow:0.2,until:hid}),80);
-      else if(patrol.kind!=='cat'&&boxShowing()) later(()=>coach('warn',{target:'hideBtn',slow:0.2,until:hid}),80); }
+      else if(patrol.kind!=='cat'&&exposed()) later(()=>coach('warn',{target:'hideBtn',slow:0.2,until:hid}),80); }
     if(patrol.kind==='recheck'){ popCenter(say('recheck'),'warn'); voice(300,{vol:0.07,dur:0.14,bend:1.4}); woodblock(61,{vol:0.1,delay:0.1}); buzz(30); } }
+  $('pkSay').hidden=true; if(phase==='watch'&&patrol.kind==='recheck') later(()=>pkSay('rc_lines'),150);
   if(phase==='watch'){ later(()=>coach('watch',{target:()=>{ const e=document.querySelector('#patrol .nohand'); if(!e) return null; const b=e.getBoundingClientRect(); return {x:b.left+b.width/2,y:b.top+b.height/2,r:60}; },tap:true}),200); patrol.feinted=false; patrol.feint=0; el.classList.remove('feint','slam'); $('patrolTxt').style.visibility=''; setArt($('patrolTxt'),'patrol_watch',30,'hush'); patrol.t=lerpN(1.8,2.6,mood/100); buzz(40); bell(61,{vol:0.05,dur:1.6}); bell(62,{vol:0.04,dur:1.6}); thump(45,0.2,{dur:0.4}); }
+  if(phase==='none'&&patrol.preHidden){ patrol.preHidden=false; if(!(cur&&cur.covered)) decoyAway(); }   // pre-hid and no box came: the daifuku goes
   if(phase==='none'&&kougaShade&&patrol.leave==null&&patrol.kind!=='cat') patrol.leave=1;   // the dog: no shadow at all
 }
 const PATROL_STEPS=6;
 const lerpN=(a,b,t)=>a+(b-a)*t;
 // ---- patrol tuning (seconds). Hard: suspicion m 0..1 eases the numbers from the first to the second value.
 // Nightmare: every minute survived tightens it, down to a floor.
+const NM_MAX=()=>nightmare&&NM_STEP()>=4;   // every nightmare ramp at its limit (the burning gauge)
 const NM_MIN=()=>Math.floor(nmT/60), RAGE_MIN=()=>Math.floor(rageT/60), NM_STEP=()=>Math.floor(nmT/30);   // NM_STEP: every 30 s survived in nightmare
 function patrolGap(){
   if(nightmare){ let g=Math.max(5,6-0.5*NM_STEP())+rnd();   // 6~7 s, -0.5 s every 30 s, down to 5~6 s
+    if(NM_MAX()) g-=0.5;   // at the limit: 4.5~5.5 s
     patrol.nmLeft=(patrol.nmLeft||(2+Math.floor(rnd()*2)))-1; if(patrol.nmLeft<=0){ g*=2; patrol.nmLeft=2+Math.floor(rnd()*2); }   // a breather now and then
     return g; }
   if(rage) return 7+rnd()*2;                                   // 7~9 s
@@ -3223,12 +3234,13 @@ function patrolTick(dt){
     if(patrol.kind==='steps'||patrol.kind==='cat') while(patrol.steps<due){ footstep(patrol.steps,PATROL_STEPS-1); patrol.steps++; }
     patrol.hb-=dt; if(patrol.hb<=0){ heartbeat(0.7+0.5*k); patrol.hb=0.78-0.3*k; buzz(10); }   // pulse quickens as he nears
     if(patrol.kind!=='cat') shadePos(patrol.kind==='recheck'?Math.min(1,0.55+0.45*k*1.4):Math.min(1,k*1.05));
-    if(patrol.t<=0){ if(patrol.kind==='cat'){ catPass(); return; } if(boxShowing()){ endCause=patrol.kind==='silent'?'silent':patrol.kind==='recheck'?'recheck':'late'; patrolCaught(); return; } patrolSet('watch'); } }
+    if(patrol.t<=0){ if(patrol.kind==='cat'){ catPass(); return; } if(exposed()){ endCause=patrol.kind==='silent'?'silent':patrol.kind==='recheck'?'recheck':'late'; patrolCaught(); return; } patrolSet('watch'); } }
   else if(patrol.phase==='watch'){
     if(patrol.feint>0){ patrol.feint-=dt; shadePos(1-0.5*Math.min(1,1-patrol.feint/0.6)); if(patrol.feint<=0) feintSlam(); return; }   // still 'watch': a touch now is caught
+    if(exposed()&&patrol.feint<=0){ endCause='late'; patrolCaught(); return; }   // a pino box turned up in front of him
     shadePos(1); patrol.hb-=dt; if(patrol.hb<=0){ heartbeat(1.25); patrol.hb=0.46; }   // heartbeat, pounding
     if(patrol.t>0) return;
-    if(nightmare&&!patrol.feinted&&(patrol.nmFeintDue||rnd()<0.1)){ patrol.nmFeintDue=false; feintStart(); return; }   // nightmare: his first look always ends in the feint, then 10%
+    if(nightmare&&!patrol.feinted&&(patrol.nmFeintDue||rnd()<(NM_MAX()&&patrol.kind==='recheck'?0.35:0.1))){ patrol.nmFeintDue=false; feintStart(); return; }   // nightmare: his first look always ends in the feint, then 10%
     patrol.streak=(patrol.streak||0)+1;
     const sb=500; addScore(sb); sfx.speed();   // a flat bonus: getting caught ends the run anyway, so no streak
     popCenter(say('w_safe','+'+Math.round(sb*SM())),'good');
@@ -3242,6 +3254,8 @@ function patrolTick(dt){
   }
 }
 // ---- nightmare feint: he turns to go, the box starts creeping back up... then he slams back in. Moving before he's really gone gets you caught
+function pkSay(key){ const el=$('pkSay'), L=TX(key); el.textContent=''; el.hidden=false; el.style.animation='none'; void el.offsetWidth; el.style.animation='';
+  typeText(el,L[Math.floor(rnd()*L.length)],34,280); }
 function feintStart(){
   patrol.feinted=true; patrol.feint=0.6; const el=$('patrol'); el.classList.remove('slam'); el.classList.add('feint'); bgm.duck(0.6);
   whoosh(900,300,0.5,0.06);   // he turns away...
@@ -3258,7 +3272,7 @@ function feintSlam(){
   fx.lines(innerWidth*0.86,innerHeight*0.62,{n:26,inner:70,len:150,life:0.38,color:'#FFFFFF',width:5});
   { const e2=document.createElement('img'); e2.className='pop sprite thud step'; e2.alt=''; e2.style.setProperty('--r','-8deg'); setArt(e2,'thud',58,'thud',LANG==='ja'?'ドスッ':'쿵');
     e2.style.left=(innerWidth*0.62)+'px'; e2.style.top=(innerHeight*0.42)+'px'; $('pops').appendChild(e2); later(()=>e2.remove(),900); }
-  popCenter(say('recheck'),'warn'); patrol.t=1.3; patrol.hb=0; later(()=>coach('feint',{tap:true}),700);
+  pkSay('fe_lines'); patrol.t=1.3; patrol.hb=0; later(()=>coach('feint',{tap:true}),700);
   const b=cur; if(b&&b.covered&&b.feintFrom){ const g=b.group, s0=g.position.clone(), r0=g.rotation.x, f=b.feintFrom; b.feintFrom=null;
     const tok=b.mv; tween(0.12,k=>{ if(b.mv!==tok) return; g.position.lerpVectors(s0,f.p,k*k); g.rotation.x=r0+(f.r-r0)*k; },()=>{ if(b.mv===tok) g.visible=false; }); }   // the box whisked back out of sight
   const d=DECOY; if(d&&d.visible&&d.userData.feintY!=null){ const tok=d.userData.mv, y1=d.position.y, z1=d.position.z, x1=d.rotation.x, y0=d.userData.feintY; d.userData.feintY=null;
@@ -3268,6 +3282,9 @@ function feintSlam(){
       tween(0.3,k=>{ if(d.userData.mv!==tok) return; const w=(1-k)*Math.cos(k*Math.PI*2.6); d.scale.set(1+0.12*w,1-0.22*w,1+0.12*w); },()=>d.scale.set(1,1,1)); }); }
 }
 // is anything on show? a closed or still-sealed box is fine, an open one has to be covered
+// exposed: Kouga would see pino. True unless the box is covered, you pre-hid (no box on the table yet), or a pizza is up
+function exposed(){ if(cur&&cur.pizza&&state==='pizza') return false; if((cur&&cur.covered)||patrol.preHidden) return false; return true; }
+function preHide(){ patrol.preHidden=true; if(!(DECOY&&DECOY.visible)) decoyIn(); whoosh(2600,300,0.22,0.2); buzz(25); }
 function boxShowing(){   // any pino box on the table gives you away, open or not
   if(!cur||cur.covered||cur.pizza) return false;
   return state==='arrive'||state==='film'||state==='tear'||state==='pick'||state==='eat'||state==='toss';
@@ -3370,7 +3387,7 @@ function autoStep(rdt){
   if(!AUTO.on||paused||!cur||readyT>0||state==='over'||state==='idle'||state==='swat') return;
   if(patrol.phase==='watch') return;                                                   // not a twitch while he looks
   const kouga=patrol.phase==='warn'||patrol.pendingRecheck;
-  if(kouga&&boxShowing()&&state!=='arrive'){ coverBox(); return; }                      // hide at once
+  if(kouga&&exposed()){ if(boxShowing()) coverBox(); else preHide(); return; }           // hide at once (no box yet: hide anyway)
   if(cur.covered) return;
   if(state!==AUTO.st){ AUTO.st=state; AUTO.cd=state==='film'?0.08:0.12; }               // a beat to react to each new step
   AUTO.cd-=rdt; if(AUTO.cd>0) return;
@@ -3687,10 +3704,10 @@ setAuto(AUTO.on);
 // title music: browsers only allow sound after a tap, so the normal tune starts on the first tap anywhere on the start memo
 
 $('hideBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation();
-  if(!cur||cur.pizza||state==='over'||state==='swat') return;
-  if(cur.covered){ if(patrol.phase!=='warn'&&patrol.phase!=='watch') return; const watching=patrol.phase==='watch';
-    const fe=patrol.feint>0; uncoverBox(); if(watching) later(()=>{ if(patrol.phase==='watch'&&state!=='over'&&state!=='swat'){ endCause=fe?'feint':'moved'; patrolCaught(); } },380); }   // took it out in front of him
-  else if(patrol.phase==='warn'&&boxShowing()) coverBox(); });
+  if(state==='over'||state==='swat'||state==='idle') return;
+  if((cur&&cur.covered)||patrol.preHidden){ if(patrol.phase!=='warn'&&patrol.phase!=='watch') return; const watching=patrol.phase==='watch';
+    const fe=patrol.feint>0; if(patrol.preHidden&&!(cur&&cur.covered)){ patrol.preHidden=false; decoyAway(); } else uncoverBox(); if(watching) later(()=>{ if(patrol.phase==='watch'&&state!=='over'&&state!=='swat'){ endCause=fe?'feint':'moved'; patrolCaught(); } },380); }   // took it out in front of him
+  else if(patrol.phase==='warn'&&exposed()){ if(boxShowing()) coverBox(); else preHide(); } });
 function bgmLabel(){ $('bgmBtn').textContent=TX(bgm.on?'bgmOn':'bgmOff'); }
 $('bgmBtn').addEventListener('click',()=>{ audio(); bgm.toggle(); bgmLabel(); });
 $('restartBtn').addEventListener('click',()=>{ tutEnd(); paused=false; document.body.classList.remove('paused'); $('pauseOv').hidden=true; startGame(); });
@@ -3986,8 +4003,8 @@ function loop(t){
   floorLight(rdt);   // fever: light rays on the floor behind the box
   autoStep(rdt);   // TEST ONLY
   { const db=$('dbgNm'), w=TEST_NIGHTMARE_BTN&&rage&&!nightmare&&!paused&&state!=='idle'&&state!=='over'&&state!=='swat'; if(db.hidden===w){ db.hidden=!w; db.textContent=TX('dbgNm'); } }   // TEST ONLY
-  { const hb=$('hideBtn'), near=(HARD||lateOn)&&!paused&&cur&&!cur.pizza&&(patrol.phase==='warn'||patrol.phase==='watch'), cov=!!(near&&cur.covered),
-      want=!!(near&&(cov||(patrol.phase==='warn'&&boxShowing())));
+  { const hb=$('hideBtn'), near=(HARD||lateOn)&&!paused&&state!=='over'&&state!=='swat'&&state!=='idle'&&(patrol.phase==='warn'||patrol.phase==='watch'),
+      cov=!!(near&&((cur&&cur.covered)||patrol.preHidden)), want=!!(near&&(cov||(patrol.phase==='warn'&&exposed())));
     if(want===hb.hidden||cov!==hb.classList.contains('undo')){ hb.hidden=!want; hb.classList.toggle('undo',cov); $('hideLab').textContent=TX(cov?'unhideBtn':'hideBtn');
       if(want){ hb.classList.remove('pop-in'); void hb.offsetWidth; hb.classList.add('pop-in'); woodblock(cov?72:84,{vol:0.12}); } } }
   { const want=rage&&state!=='idle'&&state!=='over'&&!reduceMotion; const ph=(now%1.25)/1.25, beat=ph<0.1?ph/0.1:ph<0.2?1-(ph-0.1)/0.1*0.5:ph<0.3?0.5+(ph-0.2)/0.1*0.4:Math.max(0,0.9-(ph-0.3)/0.4*0.9);
