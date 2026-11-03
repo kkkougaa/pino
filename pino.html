@@ -1050,6 +1050,10 @@ html[lang="ja"] #tui .legal{word-break:normal;line-break:strict}
 .setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px dashed rgba(58,36,22,.2);font-size:calc(var(--k,1)*(19px))}
 .tog{appearance:none;min-width:84px;padding:7px 12px;border:2.5px solid #3A2E28;border-radius:999px;background:#FFFBEF;color:#3A2E28;font:700 15px/1 var(--sys);cursor:pointer}
 .tog[aria-pressed="true"]{background:#E0412F;border-color:#3A2416;color:#FFFBEF}
+.settest{margin-top:12px;padding-top:10px;border-top:2px dashed rgba(58,36,22,.3)}   /* TEST ONLY */
+.settest[hidden]{display:none}
+.sethead{margin:0 0 4px;font:800 12px/1.3 var(--sys);color:#C0141C;letter-spacing:.04em}
+.settest .tog[aria-pressed="true"]{background:#3A2E28;color:#FFFBEF}
 #tlogo{position:fixed;left:12px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:3;height:auto;image-rendering:pixelated;image-rendering:crisp-edges;filter:drop-shadow(0 3px 0 rgba(26,14,8,.35))}   /* whole-pixel scale, set in titleOn */
 #tlang .seg{background:rgba(26,14,8,.55);border-color:#FFFBEF}
 #tlang button{color:#FFFBEF}
@@ -1159,6 +1163,12 @@ bootStep(0.1);</script>
     <div class="setrow"><span data-i18n="setBgm"></span><button class="tog" type="button" data-set="bgm"></button></div>
     <div class="setrow"><span data-i18n="setSfx"></span><button class="tog" type="button" data-set="sfx"></button></div>
     <div class="setrow"><span data-i18n="setVib"></span><button class="tog" type="button" data-set="vib"></button></div>
+    <div class="settest" id="setTest" hidden><p class="sethead" data-i18n="setTest"></p>
+      <div class="setrow"><span data-i18n="tSuper"></span><button class="tog" type="button" data-test="super"></button></div>
+      <div class="setrow"><span data-i18n="tAuto"></span><button class="tog" type="button" data-test="auto"></button></div>
+      <div class="setrow"><span data-i18n="tNm"></span><button class="tog" type="button" data-test="nm"></button></div>
+      <div class="setrow"><span data-i18n="tCoach"></span><button class="tog" type="button" data-test="coach"></button></div>
+    </div>
     <button class="btn" id="setClose" type="button" data-i18n="close" style="margin-top:18px"></button>
   </div>
 </div>
@@ -1280,11 +1290,11 @@ var I18N={
     say_C:'흥, 몇 개쯤이야. 이번만 봐준다.',
     say_F:'뭐야, 그거밖에 안 먹었냐? 그 정도는 용서해 주지!',
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.', intro2Rank:'1등은 좋은 일이 생길지도…',
-    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
+    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
     fx_perfect:'퍼펙트! +{n}', fx_nice:'NICE!', fx_miss:'MISS −1초', fx_missHard:'미스 −{n}', fx_speed:'스피드 보너스 +{n}',
     ready:'준비~', go_:'START!', modeNormal:'보통', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
-    cause_moved:'쳐다보는 중에 움직였어!', cause_late:'제때 못 숨겼어!', cause_silent:'발소리 없이 왔어!', cause_recheck:'…다시 돌아봤어!', cause_feint:'가는 척이었어!', cause_melt:'피노가 다 녹아버렸어…', cause_pizza:'피자 냄새로 들켰어!', co_sus:'의심 게이지예요. 시간이 지나고 피노를 먹을수록 차올라요. 꽉 차면… 코우가가 화내요!', co_warn:'발소리! 코우가가 와요. 「숨기기」를 눌러 상자를 숨겨요!', co_watch:'코우가가 보고 있어요. 떠날 때까지 아무것도 만지지 마요!', co_melt:'상자를 열면 피노가 녹기 시작해요. 다 녹기 전에 6알 다 먹어요!', co_snap:'띠를 너무 빨리 당기면 끊어져요. 다시 톡 잡고 천천히!', co_pizza:'피자 상자예요! 옆으로 쓸어서 치워요. 열면 냄새로 들켜요', co_fake:'…오다가 그냥 가버렸어요. 이런 일도 있지만, 방심은 금물!', co_rage:'코우가가 화났어요! 순찰이 잦아지고 예고가 짧아져요. 게이지가 다 차면… 폭주!', co_silent:'발소리 없이 왔어요! 「코우가가 온다!」 글자를 보면 바로 숨겨요', co_recheck:'…다시 돌아봤어요! 바로 다시 숨겨요', co_feint:'가는 척이었어요! 완전히 떠날 때까지 기다려요', rc_lines:['어디서 피노 냄새가 나는데?!','네 녀석, 피노 먹고 있던 거 아니지?!','부스럭 소리가 난 것 같은데?!','뭔가 수상한데!','다시 와서 확인할 테니까, 가만히 있어!'], fe_lines:['진짜 안 먹는 거 맞아?!','이 몸이 다 보고 있다고!','네 녀석…! 지켜보고 있을 거야!','수상하다니까 네 녀석!!!!'], rankBtn:'🏆 랭킹', rankJoin:'랭킹 참가하기', rankEdit:'수정', rankTitle:'코우가 챌린지 랭킹', rankNick:'닉네임 (12자까지)', rankXid:'X 아이디 (@없이)', rankXidNote:'X 아이디는 운영자만 볼 수 있어요. 순위 확인과 연락에 쓰여요.', rankSave:'참가하고 시작', rankSkip:'그냥 시작', rankSaveOnly:'저장', rankCancel:'취소', rankNeed:'닉네임과 X 아이디를 넣어 주세요', rankPeriod:'{a} ~ {b}', rankLeft:'남은 시간 {t}', rankSoon:'{t} 뒤 시작', rankOver:'종료 · 최종 순위', rankPlayers:'{n}명 참가', rankMe:'내 순위', rankMeNone:'아직 기록이 없어요', rankAsk:'랭킹전이 진행 중이에요!\n닉네임과 아이디를 등록하고 플레이해야 점수가 기록돼요!', rankAskJoin:'닉네임 등록하기', rankAskPlay:'그냥 플레이하기', rankJoinShort:'닉네임 등록', rankUnit:'위', rankNow:'이벤트 랭킹', rankBestS:'최고 {s}점', rankNew:'기록 갱신!', w_rankto:'위까지', w_rankup:'위 달성!', rk_lead:'1위 독주 중!', rk_top10:'TOP 10 진입!', rk_first:'1위 달성!', rankResultOk:'랭킹 {n}위 · 최고 {s}점', rankHeld:'기록을 확인한 뒤 반영돼요', rankFail:'랭킹에 보내지 못했어요', rankView:'랭킹 보기', rankEmpty:'아직 기록이 없어요', rankLoading:'불러오는 중…', rankDay:'{n}일 ', rankHour:'{n}시간 ', rankMin:'{n}분', coTap:'탭해서 계속', x5:'×5', timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_open:'앗, 피자잖아! −{n}', pizza_away:'휙!', yell_pizza:'이 피자 냄새는 뭐야?! 피자녀석?!', pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:'이 몸의 피노가 없어졌잖아!?!\n누구야!!!', nm_on:'코우가가 폭주한다!', shout_nm:'피노 돌려줘!!!!!!!!!!', dbgNm:'나이트메어', autoOn:'자동 플레이: 켜짐', autoOff:'자동 플레이: 꺼짐', legal:'본 게임은 비공식\u2060·\u2060비영리 팬 게임으로, 모리나가유업\u2060·\u2060롯데 및 관계사와 무관합니다.\n「피노」는 모리나가유업, 「유키미다이후쿠」는 롯데의 상표이며, 그 밖의 상표\u2060·\u2060캐릭터\u2060·\u2060이미지의 권리는 각 권리자에게 있습니다.', crGame:'게임 제작 코우가', crArt:'일러스트 A', bgmSet:'🎵 음악 바꾸기', bgmTitle:'내 음악 넣기', bgmLead:'내 기기에 있는 음악 파일을 고르면 그 모드에서 대신 나와요. 이 기기에만 저장되고, 직접 가진 음원만 넣어 주세요.', bgmRage:'초하드 BGM', bgmNm:'나이트메어 BGM', bgmHintRage:'코우가가 화났을 때', bgmHintNm:'폭주했을 때 (자연스럽게 넘어가요)', bgmPick:'파일 고르기', bgmChange:'바꾸기', bgmClear:'지우기', bgmBad:'이 파일은 재생할 수 없어요. mp3나 m4a 파일인지 확인해 주세요.', recheck:'…응?!', streak:'{s}연속!', cover_calm:'침착! +{n}', cover_close:'간발의 차! +{n}', quit:'그만하기',
+    cause_moved:'쳐다보는 중에 움직였어!', cause_late:'제때 못 숨겼어!', cause_silent:'발소리 없이 왔어!', cause_recheck:'…다시 돌아봤어!', cause_feint:'가는 척이었어!', cause_melt:'피노가 다 녹아버렸어…', cause_pizza:'피자 냄새로 들켰어!', co_sus:'의심 게이지예요. 시간이 지나고 피노를 먹을수록 차올라요. 꽉 차면… 코우가가 화내요!', co_warn:'발소리! 코우가가 와요. 「숨기기」를 눌러 상자를 숨겨요!', co_watch:'코우가가 보고 있어요. 떠날 때까지 아무것도 만지지 마요!', co_melt:'상자를 열면 피노가 녹기 시작해요. 다 녹기 전에 6알 다 먹어요!', co_snap:'띠를 너무 빨리 당기면 끊어져요. 다시 톡 잡고 천천히!', co_pizza:'피자 상자예요! 옆으로 쓸어서 치워요. 열면 냄새로 들켜요', co_fake:'…오다가 그냥 가버렸어요. 이런 일도 있지만, 방심은 금물!', co_dare:'코우가가 오는 중에 먹으면 점수 ×5! 대신 늦게 숨기면 들켜요', co_late:'코우가가 깨어났어요! 남은 30초는 발소리가 들리면 숨겨요. 들키면 −5초', co_rage:'코우가가 화났어요! 순찰이 잦아지고 예고가 짧아져요. 게이지가 다 차면… 폭주!', co_silent:'발소리 없이 왔어요! 「코우가가 온다!」 글자를 보면 바로 숨겨요', co_recheck:'…다시 돌아봤어요! 바로 다시 숨겨요', co_feint:'가는 척이었어요! 완전히 떠날 때까지 기다려요', rc_lines:['어디서 피노 냄새가 나는데?!','네 녀석, 피노 먹고 있던 거 아니지?!','부스럭 소리가 난 것 같은데?!','뭔가 수상한데!','다시 와서 확인할 테니까, 가만히 있어!'], fe_lines:['진짜 안 먹는 거 맞아?!','이 몸이 다 보고 있다고!','네 녀석…! 지켜보고 있을 거야!','수상하다니까 네 녀석!!!!'], rankBtn:'🏆 랭킹', rankJoin:'랭킹 참가하기', rankEdit:'수정', rankTitle:'코우가 챌린지 랭킹', rankNick:'닉네임 (12자까지)', rankXid:'X 아이디 (@없이)', rankXidNote:'X 아이디는 운영자만 볼 수 있어요. 순위 확인과 연락에 쓰여요.', rankSave:'참가하고 시작', rankSkip:'그냥 시작', rankSaveOnly:'저장', rankCancel:'취소', rankNeed:'닉네임과 X 아이디를 넣어 주세요', rankPeriod:'{a} ~ {b}', rankLeft:'남은 시간 {t}', rankSoon:'{t} 뒤 시작', rankOver:'종료 · 최종 순위', rankPlayers:'{n}명 참가', rankMe:'내 순위', rankMeNone:'아직 기록이 없어요', rankAsk:'랭킹전이 진행 중이에요!\n닉네임과 아이디를 등록하고 플레이해야 점수가 기록돼요!', rankAskJoin:'닉네임 등록하기', rankAskPlay:'그냥 플레이하기', rankJoinShort:'닉네임 등록', rankUnit:'위', rankNow:'이벤트 랭킹', rankBestS:'최고 {s}점', rankNew:'기록 갱신!', w_rankto:'위까지', w_rankup:'위 달성!', rk_lead:'1위 독주 중!', rk_top10:'TOP 10 진입!', rk_first:'1위 달성!', rankResultOk:'랭킹 {n}위 · 최고 {s}점', rankHeld:'기록을 확인한 뒤 반영돼요', rankFail:'랭킹에 보내지 못했어요', rankView:'랭킹 보기', rankEmpty:'아직 기록이 없어요', rankLoading:'불러오는 중…', rankDay:'{n}일 ', rankHour:'{n}시간 ', rankMin:'{n}분', coTap:'탭해서 계속', x5:'×5', timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_open:'앗, 피자잖아! −{n}', pizza_away:'휙!', yell_pizza:'이 피자 냄새는 뭐야?! 피자녀석?!', pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:'이 몸의 피노가 없어졌잖아!?!\n누구야!!!', nm_on:'코우가가 폭주한다!', shout_nm:'피노 돌려줘!!!!!!!!!!', dbgNm:'나이트메어', autoOn:'자동 플레이: 켜짐', autoOff:'자동 플레이: 꺼짐', legal:'본 게임은 비공식\u2060·\u2060비영리 팬 게임으로, 모리나가유업\u2060·\u2060롯데 및 관계사와 무관합니다.\n「피노」는 모리나가유업, 「유키미다이후쿠」는 롯데의 상표이며, 그 밖의 상표\u2060·\u2060캐릭터\u2060·\u2060이미지의 권리는 각 권리자에게 있습니다.', crGame:'게임 제작 코우가', crArt:'일러스트 A', bgmSet:'🎵 음악 바꾸기', bgmTitle:'내 음악 넣기', bgmLead:'내 기기에 있는 음악 파일을 고르면 그 모드에서 대신 나와요. 이 기기에만 저장되고, 직접 가진 음원만 넣어 주세요.', bgmRage:'초하드 BGM', bgmNm:'나이트메어 BGM', bgmHintRage:'코우가가 화났을 때', bgmHintNm:'폭주했을 때 (자연스럽게 넘어가요)', bgmPick:'파일 고르기', bgmChange:'바꾸기', bgmClear:'지우기', bgmBad:'이 파일은 재생할 수 없어요. mp3나 m4a 파일인지 확인해 주세요.', recheck:'…응?!', streak:'{s}연속!', cover_calm:'침착! +{n}', cover_close:'간발의 차! +{n}', quit:'그만하기',
     patrol_warn:'코우가가 온다!', patrol_watch:'쉿…', hint_cover:'↓ 쓸어서 상자 덮기!', hideBtn:'숨기기!', unhideBtn:'꺼내기', patrol_caught:'들켰다!', patrol_safe:'안 들켰다! +{n}', hardTag:'하드',
     fx_snap:'띠 끊김!', fx_regrab:'다시 잡았다!', hint_snap:'다시 잡기', yell:'네 녀석!!!!!', fx_heart:'하트', fx_star:'별',
     fx_combo:'COMBO', fx_comboUp:'×{t} COMBO!', fx_break:'콤보 끊김…', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
@@ -1338,11 +1348,11 @@ var I18N={
     say_C:'フン、数個ぐらいどうってことねぇぜ。今回だけは見逃してやるぜ。',
     say_F:'なんだ、それしか食ってねぇのか？それくらいなら許してやるぜ！',
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。', intro2Rank:'1位にはいいことがあるかも…',
-    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
+    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
     fx_perfect:'パーフェクト！+{n}', fx_nice:'NICE!', fx_miss:'MISS −1秒', fx_missHard:'ミス −{n}', fx_speed:'スピードボーナス +{n}',
     ready:'よーい…', go_:'START!', modeNormal:'ふつう', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
-    cause_moved:'見られてる時に動いた！', cause_late:'かくすのが間に合わなかった！', cause_silent:'足音なしで来た！', cause_recheck:'…また振り返った！', cause_feint:'帰るふりだった！', cause_melt:'ピノが溶けちゃった…', cause_pizza:'ピザのにおいでバレた！', co_sus:'あやしさゲージ。時間がたつほど、ピノを食べるほどたまっていく。満タンになると…コウガが怒る！', co_warn:'足音！コウガが来る。「かくす！」を押して箱をかくそう！', co_watch:'コウガが見てる。いなくなるまで何もさわらないで！', co_melt:'箱をあけるとピノが溶けはじめる。溶ける前に6粒食べよう！', co_snap:'帯をいきおいよく引くと切れちゃう。つかみ直してゆっくり！', co_pizza:'ピザの箱！横にスワイプしてどかそう。あけるとにおいでバレる', co_fake:'…来る途中で帰っちゃった。こんなこともあるけど、油断は禁物！', co_rage:'コウガが怒った！見回りが増えて予告も短くなる。ゲージが満タンになると…暴走！', co_silent:'足音なしで来た！「コウガが来る！」の文字を見たらすぐかくそう', co_recheck:'…また振り返った！すぐかくし直そう', co_feint:'帰るふりだった！完全にいなくなるまで待とう', rc_lines:['どっかからピノのにおいがするぜ？！','お前、ピノ食ってたんじゃねぇだろうな？！','ガサッて音がした気がするぜ？！','なんか怪しいぜ！','また見に来るからな、おとなしくしてんだぜ！'], fe_lines:['ほんとに食ってねぇんだな？！','俺様が全部見てるんだからな！','てめぇ…！見張ってるからな！','怪しいって言ってんだろ、お前！！！！'], rankBtn:'🏆 ランキング', rankJoin:'ランキングに参加', rankEdit:'変更', rankTitle:'コウガチャレンジ ランキング', rankNick:'ニックネーム（12文字まで）', rankXid:'Xのユーザー名（@なし）', rankXidNote:'Xのユーザー名は運営だけが見られます。順位の確認と連絡に使います。', rankSave:'参加してスタート', rankSkip:'参加せずにスタート', rankSaveOnly:'保存', rankCancel:'キャンセル', rankNeed:'ニックネームとXのユーザー名を入れてください', rankPeriod:'{a} ～ {b}', rankLeft:'残り {t}', rankSoon:'開始まで {t}', rankOver:'終了・最終順位', rankPlayers:'{n}人参加', rankMe:'あなたの順位', rankMeNone:'まだ記録がありません', rankAsk:'ランキング開催中！\nニックネームとXのユーザー名を登録してプレイすると、スコアが記録されます！', rankAskJoin:'ニックネームを登録する', rankAskPlay:'そのままプレイする', rankJoinShort:'ニックネーム登録', rankUnit:'位', rankNow:'イベントランキング', rankBestS:'ベスト {s}点', rankNew:'記録更新！', w_rankto:'位まで', w_rankup:'位 達成！', rk_lead:'1位 独走中！', rk_top10:'TOP10入り！', rk_first:'1位 達成！', rankResultOk:'ランキング {n}位・ベスト {s}点', rankHeld:'記録を確認してから反映されます', rankFail:'ランキングに送れませんでした', rankView:'ランキングを見る', rankEmpty:'まだ記録がありません', rankLoading:'読み込み中…', rankDay:'{n}日', rankHour:'{n}時間', rankMin:'{n}分', coTap:'タップでつづける', x5:'×5', timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_open:'あっ、ピザだ！−{n}', pizza_away:'ポイッ！', yell_pizza:'このピザのにおいはなんなんだ？！ピザ野郎？！', pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:'俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!', nm_on:'コウガが暴走した！', shout_nm:'ピノ返せ!!!!!!!!!!', dbgNm:'ナイトメア', autoOn:'オートプレイ：オン', autoOff:'オートプレイ：オフ', legal:'本ゲームは非公式\u2060・\u2060非営利のファンゲームであり、森永乳業\u2060・\u2060ロッテおよび関係各社とは関係ありません。\n「ピノ」は森永乳業、「雪見だいふく」はロッテの商標であり、その他の商標\u2060・\u2060キャラクター\u2060・\u2060画像の権利は各権利者に帰属します。', crGame:'ゲーム制作 コウガ', crArt:'イラスト A', bgmSet:'🎵 音楽を変える', bgmTitle:'自分の音楽を入れる', bgmLead:'端末にある音楽ファイルを選ぶと、そのモードで代わりに流れます。この端末にだけ保存されます。自分で持っている音源だけを入れてください。', bgmRage:'超ハードBGM', bgmNm:'ナイトメアBGM', bgmHintRage:'コウガが怒ったとき', bgmHintNm:'暴走したとき（自然に切り替わります）', bgmPick:'ファイルを選ぶ', bgmChange:'変える', bgmClear:'消す', bgmBad:'このファイルは再生できません。mp3かm4aか確認してください。', recheck:'…ん？！', streak:'{s}連続！', cover_calm:'冷静！+{n}', cover_close:'ギリギリセーフ！+{n}', quit:'やめる',
+    cause_moved:'見られてる時に動いた！', cause_late:'かくすのが間に合わなかった！', cause_silent:'足音なしで来た！', cause_recheck:'…また振り返った！', cause_feint:'帰るふりだった！', cause_melt:'ピノが溶けちゃった…', cause_pizza:'ピザのにおいでバレた！', co_sus:'あやしさゲージ。時間がたつほど、ピノを食べるほどたまっていく。満タンになると…コウガが怒る！', co_warn:'足音！コウガが来る。「かくす！」を押して箱をかくそう！', co_watch:'コウガが見てる。いなくなるまで何もさわらないで！', co_melt:'箱をあけるとピノが溶けはじめる。溶ける前に6粒食べよう！', co_snap:'帯をいきおいよく引くと切れちゃう。つかみ直してゆっくり！', co_pizza:'ピザの箱！横にスワイプしてどかそう。あけるとにおいでバレる', co_fake:'…来る途中で帰っちゃった。こんなこともあるけど、油断は禁物！', co_dare:'コウガが来る途中に食べるとスコア×5！でも、かくすのが遅れるとバレる', co_late:'コウガが起きた！残り30秒は足音がしたらかくそう。バレると−5秒', co_rage:'コウガが怒った！見回りが増えて予告も短くなる。ゲージが満タンになると…暴走！', co_silent:'足音なしで来た！「コウガが来る！」の文字を見たらすぐかくそう', co_recheck:'…また振り返った！すぐかくし直そう', co_feint:'帰るふりだった！完全にいなくなるまで待とう', rc_lines:['どっかからピノのにおいがするぜ？！','お前、ピノ食ってたんじゃねぇだろうな？！','ガサッて音がした気がするぜ？！','なんか怪しいぜ！','また見に来るからな、おとなしくしてんだぜ！'], fe_lines:['ほんとに食ってねぇんだな？！','俺様が全部見てるんだからな！','てめぇ…！見張ってるからな！','怪しいって言ってんだろ、お前！！！！'], rankBtn:'🏆 ランキング', rankJoin:'ランキングに参加', rankEdit:'変更', rankTitle:'コウガチャレンジ ランキング', rankNick:'ニックネーム（12文字まで）', rankXid:'Xのユーザー名（@なし）', rankXidNote:'Xのユーザー名は運営だけが見られます。順位の確認と連絡に使います。', rankSave:'参加してスタート', rankSkip:'参加せずにスタート', rankSaveOnly:'保存', rankCancel:'キャンセル', rankNeed:'ニックネームとXのユーザー名を入れてください', rankPeriod:'{a} ～ {b}', rankLeft:'残り {t}', rankSoon:'開始まで {t}', rankOver:'終了・最終順位', rankPlayers:'{n}人参加', rankMe:'あなたの順位', rankMeNone:'まだ記録がありません', rankAsk:'ランキング開催中！\nニックネームとXのユーザー名を登録してプレイすると、スコアが記録されます！', rankAskJoin:'ニックネームを登録する', rankAskPlay:'そのままプレイする', rankJoinShort:'ニックネーム登録', rankUnit:'位', rankNow:'イベントランキング', rankBestS:'ベスト {s}点', rankNew:'記録更新！', w_rankto:'位まで', w_rankup:'位 達成！', rk_lead:'1位 独走中！', rk_top10:'TOP10入り！', rk_first:'1位 達成！', rankResultOk:'ランキング {n}位・ベスト {s}点', rankHeld:'記録を確認してから反映されます', rankFail:'ランキングに送れませんでした', rankView:'ランキングを見る', rankEmpty:'まだ記録がありません', rankLoading:'読み込み中…', rankDay:'{n}日', rankHour:'{n}時間', rankMin:'{n}分', coTap:'タップでつづける', x5:'×5', timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_open:'あっ、ピザだ！−{n}', pizza_away:'ポイッ！', yell_pizza:'このピザのにおいはなんなんだ？！ピザ野郎？！', pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:'俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!', nm_on:'コウガが暴走した！', shout_nm:'ピノ返せ!!!!!!!!!!', dbgNm:'ナイトメア', autoOn:'オートプレイ：オン', autoOff:'オートプレイ：オフ', legal:'本ゲームは非公式\u2060・\u2060非営利のファンゲームであり、森永乳業\u2060・\u2060ロッテおよび関係各社とは関係ありません。\n「ピノ」は森永乳業、「雪見だいふく」はロッテの商標であり、その他の商標\u2060・\u2060キャラクター\u2060・\u2060画像の権利は各権利者に帰属します。', crGame:'ゲーム制作 コウガ', crArt:'イラスト A', bgmSet:'🎵 音楽を変える', bgmTitle:'自分の音楽を入れる', bgmLead:'端末にある音楽ファイルを選ぶと、そのモードで代わりに流れます。この端末にだけ保存されます。自分で持っている音源だけを入れてください。', bgmRage:'超ハードBGM', bgmNm:'ナイトメアBGM', bgmHintRage:'コウガが怒ったとき', bgmHintNm:'暴走したとき（自然に切り替わります）', bgmPick:'ファイルを選ぶ', bgmChange:'変える', bgmClear:'消す', bgmBad:'このファイルは再生できません。mp3かm4aか確認してください。', recheck:'…ん？！', streak:'{s}連続！', cover_calm:'冷静！+{n}', cover_close:'ギリギリセーフ！+{n}', quit:'やめる',
     patrol_warn:'コウガが来る！', patrol_watch:'しーっ…', hint_cover:'↓ スワイプでフタを閉める！', hideBtn:'かくす！', unhideBtn:'とりだす', patrol_caught:'バレた！', patrol_safe:'バレなかった！+{n}', hardTag:'ハード',
     fx_snap:'帯が切れた！', fx_regrab:'つかみ直した！', hint_snap:'つかみ直す', yell:'てめぇ！！！！！', fx_heart:'ハート', fx_star:'ほし',
     fx_combo:'COMBO', fx_comboUp:'×{t} COMBO!', fx_break:'コンボ切れ…', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
@@ -2622,7 +2632,12 @@ function renderCombo(bump){
 }
 // hard mode pays ×1.5 on every point (shown values already include it)
 let HARD=false, SUPER=false, MODE='normal', superOpen=false;
-const TEST_SUPER_OPEN=true;   // TEST ONLY: remove before release (super-hard always unlocked)
+// ===== TEST ONLY: switches in Settings > 테스트. For release set TEST_MENU=false (the section disappears and every switch is off) =====
+const TEST_MENU=true;
+const TEST=(()=>{ const d={super:true,auto:true,nm:true,coach:false}; if(!TEST_MENU) return {super:false,auto:false,nm:false,coach:false};
+  try{ return Object.assign(d,JSON.parse(localStorage.getItem('kouga-test')||'{}')); }catch(e){ return d; } })();
+function testSave(){ try{ localStorage.setItem('kouga-test',JSON.stringify(TEST)); }catch(e){} }
+const TEST_SUPER_OPEN=TEST.super;
 try{ superOpen=TEST_SUPER_OPEN||localStorage.getItem('kouga-super')==='1'; MODE=localStorage.getItem('kouga-mode')||'normal'; }catch(e){}
 if(MODE==='super'&&!superOpen) MODE='hard';
 HARD=MODE!=='normal'; SUPER=MODE==='super';
@@ -2933,7 +2948,7 @@ function eat(p){
     pop(say(p.userData.lucky==='heart'?'fx_heart':'fx_star','+'+Math.round(pts*SM())),s.x,s.y-24,'lucky');
   } else {
     const pts=Math.round(100*t); addScore(pts); pop(say('+'+Math.round(pts*SM())),s.x,s.y,dare?'alert':undefined);
-    if(dare){ later(()=>pop(say(TX('x5')),s.x+46,s.y-34,'lucky'),80); impact(0.05,0.03); kalimba(91,{vol:0.08}); }
+    if(dare){ later(()=>pop(say(TX('x5')),s.x+46,s.y-34,'lucky'),80); impact(0.05,0.03); kalimba(91,{vol:0.08}); later(()=>coach('dare',{any:true,target:'hideBtn'}),200); }
   }
   // swap in a bitten piece (vanilla showing), hold it for a beat, then it goes
   const kind=p.userData.lucky||'pino', bit=new THREE.Mesh(G.bit[kind],M.bitten); bit.castShadow=true;
@@ -3112,7 +3127,7 @@ function startGame(keep){   // keep: the start screen's box (its post-it just fl
   audio(); if(HARD) bgm.stop(0.2); if(SUPER) decodeCBGM(['rage']); document.body.classList.remove('resultFx','paused'); decoyAway(true); fx.clear(); shownScore=0; hitStop=0; kick=0;
   const keepBox=keep===true&&cur&&state==='idle'?cur:null; if(!keepBox) disposeCur();
   for(const p of parts) scene.remove(p.mesh); parts.length=0; tweens.length=0;
-  cur=null; pickHeld=false; timeLeft=60; endCause=null; caughtFx(false); $('patrol').classList.remove('lean'); rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0; heartCount=0; starCount=0;
+  cur=null; pickHeld=false; timeLeft=60; endCause=null; COACH.run={}; caughtFx(false); $('patrol').classList.remove('lean'); rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0; heartCount=0; starCount=0;
   while(pile.children.length) pile.remove(pile.children[0]); pileCount=0;
   combo=0; maxCombo=0; comboT=0; lastTier=1; charge=0; endFever(); renderCombo(); addScore(0);
   $('fever').classList.remove('off');
@@ -3529,10 +3544,10 @@ const NM=()=>nightmare?1.35:1;                          // nightmare: everything
    It plays through the same game functions a finger would reach, at a quick human pace:
    hides the box the instant Kouga is coming, stays perfectly still while he looks, shoves pizzas aside,
    peels and opens without snapping the band, always grabs the pick by the handle (PERFECT), eats all six, tosses. */
-const TEST_AUTOPLAY=true;                                 // TEST ONLY: remove before release
+const TEST_AUTOPLAY=()=>TEST.auto;                         // TEST ONLY (Settings > 테스트)
 const AUTO={on:false,cd:0,st:''};
-try{ AUTO.on=TEST_AUTOPLAY&&/[?&]auto\b/.test(location.search); }catch(e){}
-function setAuto(on){ AUTO.on=TEST_AUTOPLAY&&on; if(AUTO.on) RANK.auto=true;   // an autoplayed run never goes on the board
+try{ AUTO.on=TEST_AUTOPLAY()&&/[?&]auto\b/.test(location.search); }catch(e){}
+function setAuto(on){ AUTO.on=TEST_AUTOPLAY()&&on; if(AUTO.on) RANK.auto=true;   // an autoplayed run never goes on the board
   AUTO.cd=0.2; $('autoBadge').hidden=!AUTO.on; $('autoBtn').textContent=TX(AUTO.on?'autoOn':'autoOff'); }
 function autoStep(rdt){
   if(AUTO.on&&flickWait&&!paused){ flickPostit(rnd()-0.5,rnd()-0.5); return; }
@@ -3550,7 +3565,7 @@ function autoStep(rdt){
   else if(state==='eat'){ const t=cur.pinos.find(p=>!p.userData.eaten); if(t){ eat(t); AUTO.cd=0.11; } }
   else if(state==='toss') tossBox();
 }
-const TEST_NIGHTMARE_BTN=true;                          // TEST ONLY: "nightmare" button while in super-hard
+const TEST_NIGHTMARE_BTN=()=>TEST.nm;                  // TEST ONLY: "nightmare" button while in super-hard (Settings > 테스트)
 let shoutT=0;
 function burstPath(){   // a spiky shout: sharp points of uneven length round an ellipse
   const N=17, cx=200, cy=100, rx=178, ry=80; let d='';
@@ -3660,12 +3675,13 @@ function meltEnd(){
 }
 /* ---------- hard-mode guide: the first time each trouble appears, the game slows (or stops), a spotlight picks out
    what matters and one line says what to do. Shown once per device; never in autoplay or the tutorial ---------- */
-const COACH={on:null,ts:1};
+const COACH={on:null,ts:1,run:{}};
 function coachSeen(k){ try{ return localStorage.getItem('kouga-coach-'+k)==='1'; }catch(e){ return false; } }
 function coach(k,o){   // o.target: element id | ()=>{x,y,r}; o.tap: stop the game until a tap; o.slow: time scale while the hint shows; o.until: done when true
-  if(!HARD||TUT||AUTO.on||COACH.on||coachSeen(k)||state==='over'||state==='swat'||state==='idle') return false;
+  o=o||{}; if((!HARD&&!o.any)||TUT||AUTO.on||COACH.on||(TEST.coach?COACH.run[k]:coachSeen(k))||state==='over'||state==='swat'||state==='idle') return false;
+  COACH.run[k]=1;   // test switch 'guide always': each guide once per run
   try{ localStorage.setItem('kouga-coach-'+k,'1'); }catch(e){}
-  o=o||{}; COACH.on={k,o,t0:performance.now()}; COACH.ts=o.tap?0:(o.slow??0.25);
+  COACH.on={k,o,t0:performance.now()}; COACH.ts=o.tap?0:(o.slow??0.25);
   const el=$('coach'); $('coachTxt').textContent=TX('co_'+k); $('coachTap').textContent=TX('coTap'); $('coachTap').hidden=!o.tap;
   el.classList.toggle('tap',!!o.tap); el.hidden=false; el.classList.remove('in'); void el.offsetWidth; el.classList.add('in');
   placeCoach(); buzz(15); bell(84,{vol:0.05}); bell(91,{vol:0.035,delay:0.06}); return true; }
@@ -3836,7 +3852,7 @@ function patrolCaught(){   // spotted: that's the end of the night
 let lateOn=false;
 function lateTick(){
   if(HARD||TUT||lateOn||readyT>0||timeLeft>30||state==='idle'||state==='over'||state==='swat') return;
-  lateOn=true; patrol.next=2.4; popCenter(say('late_wake'),'warn'); voice(260,{vol:0.07,dur:0.16,bend:1.3}); thump(48,0.25,{dur:0.4}); buzz([20,40,20]);
+  lateOn=true; patrol.next=2.4; popCenter(say('late_wake'),'warn'); later(()=>coach('late',{any:true,tap:true}),900); voice(260,{vol:0.07,dur:0.16,bend:1.3}); thump(48,0.25,{dur:0.4}); buzz([20,40,20]);
 }
 function caughtLate(){
   breakCombo(); timeLeft=Math.max(0,timeLeft-5); shake=0.4; buzz([60,40,90]); scareHit(); flash('#FF1E1E',0.3,0.45); impact(0.08,0.05);
@@ -3967,12 +3983,17 @@ $('homeBtn2').addEventListener('click',goHome);
 document.querySelectorAll('.mode button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
 setMode(MODE);
 // settings (start screen): music, sound effects, vibration, all remembered on this device
-function setLabels(){ document.querySelectorAll('#setOv .tog').forEach(b=>{ const k=b.dataset.set, v=k==='bgm'?bgm.on:k==='sfx'?sfxOn:vibOn; b.setAttribute('aria-pressed',String(v)); b.textContent=TX(v?'on':'off'); }); }
+function setLabels(){ $('setTest').hidden=!TEST_MENU; document.querySelectorAll('#setOv .tog[data-test]').forEach(b=>{ const v=!!TEST[b.dataset.test]; b.setAttribute('aria-pressed',String(v)); b.textContent=TX(v?'on':'off'); });
+  document.querySelectorAll('#setOv .tog[data-set]').forEach(b=>{ const k=b.dataset.set, v=k==='bgm'?bgm.on:k==='sfx'?sfxOn:vibOn; b.setAttribute('aria-pressed',String(v)); b.textContent=TX(v?'on':'off'); }); }
 function placeSetBtn(){ const l=$('tlang'); if(l&&l.offsetWidth) $('setBtn').style.right=(14+l.offsetWidth+8)+'px'; }   // just left of the language switch
 addEventListener('resize',placeSetBtn);
 $('setBtn').addEventListener('click',()=>{ audio(); setLabels(); $('setOv').hidden=false; });
 $('setClose').addEventListener('click',()=>{ $('setOv').hidden=true; });
-document.querySelectorAll('#setOv .tog').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.set;
+document.querySelectorAll('#setOv .tog[data-test]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.test; TEST[k]=!TEST[k]; testSave();   // TEST ONLY
+  if(k==='super'){ let st=false; try{ st=localStorage.getItem('kouga-super')==='1'; }catch(e){} superOpen=TEST.super||st; setMode(MODE==='super'&&!superOpen?'hard':MODE); }
+  if(k==='auto'){ $('autoBtn').hidden=!TEST.auto; if(!TEST.auto&&AUTO.on) setAuto(false); }
+  setLabels(); }));
+document.querySelectorAll('#setOv .tog[data-set]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.set;
   if(k==='bgm'){ audio(); bgm.toggle(); bgmLabel(); }
   else if(k==='sfx'){ sfxOn=!sfxOn; try{ localStorage.setItem('kouga-sfx',sfxOn?'1':'0'); }catch(e){} }
   else { vibOn=!vibOn; try{ localStorage.setItem('kouga-vib',vibOn?'1':'0'); }catch(e){} if(vibOn) buzz(20); }
@@ -4017,9 +4038,9 @@ $('askPlay').addEventListener('click',()=>{ $('askOv').hidden=true; const g=askG
 ['rankNick','rankXid'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter') joinSave(); }));
 $('coach').addEventListener('pointerdown',e=>{ const c=COACH.on; if(c&&c.o.tap&&performance.now()-c.t0>500){ e.preventDefault(); e.stopPropagation(); coachEnd(); } });
 $('dbgNm').addEventListener('click',e=>{ e.stopPropagation(); enterNightmare(); });   // TEST ONLY
-$('autoBtn').hidden=!TEST_AUTOPLAY; $('autoBtn').addEventListener('click',()=>setAuto(!AUTO.on));   // TEST ONLY
+$('autoBtn').hidden=!TEST_AUTOPLAY(); $('autoBtn').addEventListener('click',()=>setAuto(!AUTO.on));   // TEST ONLY
 $('autoBadge').addEventListener('click',e=>{ e.stopPropagation(); setAuto(false); });
-addEventListener('keydown',e=>{ if(TEST_AUTOPLAY&&e.shiftKey&&(e.key==='A'||e.key==='a')) setAuto(!AUTO.on); });
+addEventListener('keydown',e=>{ if(TEST_AUTOPLAY()&&e.shiftKey&&(e.key==='A'||e.key==='a')) setAuto(!AUTO.on); });
 setAuto(AUTO.on);
 // title music: browsers only allow sound after a tap, so the normal tune starts on the first tap anywhere on the start memo
 
@@ -4324,7 +4345,7 @@ function loop(t){
   // fever: rays centred on the box, golden motes drifting up
   floorLight(rdt);   // fever: light rays on the floor behind the box
   autoStep(rdt);   // TEST ONLY
-  { const db=$('dbgNm'), w=TEST_NIGHTMARE_BTN&&rage&&!nightmare&&!paused&&state!=='idle'&&state!=='over'&&state!=='swat'; if(db.hidden===w){ db.hidden=!w; db.textContent=TX('dbgNm'); } }   // TEST ONLY
+  { const db=$('dbgNm'), w=TEST_NIGHTMARE_BTN()&&rage&&!nightmare&&!paused&&state!=='idle'&&state!=='over'&&state!=='swat'; if(db.hidden===w){ db.hidden=!w; db.textContent=TX('dbgNm'); } }   // TEST ONLY
   { const hb=$('hideBtn'), near=(HARD||lateOn)&&!paused&&state!=='over'&&state!=='swat'&&state!=='idle'&&(patrol.phase==='warn'||patrol.phase==='watch'),
       cov=!!(near&&((cur&&cur.covered)||patrol.preHidden)), want=!!(near&&(cov||(patrol.phase==='warn'&&exposed())));
     if(want===hb.hidden||cov!==hb.classList.contains('undo')){ hb.hidden=!want; hb.classList.toggle('undo',cov); $('hideLab').textContent=TX(cov?'unhideBtn':'hideBtn');
