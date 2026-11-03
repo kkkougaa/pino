@@ -440,6 +440,18 @@ body.hard .gauges .mood .g{height:18px}
 @media not all{#melt.hot{animation:none}}
 #rageFx{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity 1.2s;
   background:radial-gradient(125% 90% at 50% 50%,rgba(220,30,40,0) 48%,rgba(220,30,40,.3) 76%,rgba(200,20,30,.55) 100%)}
+/* nightmare at its limit: a purple aura round the screen that beats like a heart (lub-dub, the nightmare pulse) and flickers like flame */
+#nmAura{position:fixed;inset:-4%;pointer-events:none;z-index:2;opacity:0;transition:opacity .8s;
+  background:radial-gradient(ellipse 72% 64% at 50% 50%,transparent 58%,rgba(150,60,255,.22) 74%,rgba(110,20,220,.5) 90%,rgba(70,0,160,.7) 100%)}
+body.nmMax #nmAura{opacity:1;animation:auraBeat .95s ease-out infinite}
+#nmAura i{position:absolute;inset:0;
+  background:radial-gradient(40% 26% at 10% 20%,rgba(190,110,255,.5),transparent 70%),radial-gradient(36% 24% at 92% 34%,rgba(170,80,255,.45),transparent 70%),
+    radial-gradient(42% 28% at 16% 86%,rgba(200,120,255,.45),transparent 70%),radial-gradient(38% 26% at 86% 80%,rgba(160,70,255,.5),transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse 70% 62% at 50% 50%,transparent 55%,#000 82%);mask-image:radial-gradient(ellipse 70% 62% at 50% 50%,transparent 55%,#000 82%);
+  filter:blur(14px);animation:auraFlow 5.2s ease-in-out infinite alternate}
+@keyframes auraBeat{0%{transform:scale(1);opacity:.8}12%{transform:scale(.975);opacity:1}24%{transform:scale(.995);opacity:.88}36%{transform:scale(.982);opacity:1}100%{transform:scale(1);opacity:.8}}   /* lub ... dub, then rest */
+@keyframes auraFlow{0%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(1.5%,-2%) rotate(3deg)}100%{transform:translate(-2%,1.5%) rotate(-2deg)}}
+body.lowspec #nmAura i{filter:none}
 body.rage #rageFx,body.titleFx #rageFx{opacity:1;animation:rageBeat 1.25s ease-in-out infinite}
 @keyframes rageBeat{0%{opacity:.72}10%{opacity:1}20%{opacity:.84}30%{opacity:.97}62%,100%{opacity:.72}}
 #rageFx::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(190,15,25,.26),transparent 32%),linear-gradient(to bottom,rgba(110,0,10,.22),transparent 22%)}
@@ -1113,6 +1125,7 @@ bootStep(0.1);</script>
 <div id="iris" hidden></div>
 <div id="flash" aria-hidden="true"></div>
 <div id="rageFx" aria-hidden="true"></div>
+<div id="nmAura" aria-hidden="true"><i></i></div>
 <img id="pkShove" alt="" aria-hidden="true"><img id="pkLaugh" alt="" aria-hidden="true">
 <div id="pops"></div>
 <div id="patrol" hidden aria-live="polite"><div class="vig"></div><div class="tape" aria-hidden="true"></div><img class="pk" id="patrolKouga" alt=""><p class="pksay" id="pkSay" hidden></p><img class="pt" id="patrolTxt" alt=""><div class="nohand" aria-hidden="true"><!-- hand: Font Awesome Free 6.5.2 "hand" (solid) by Fonticons, Inc., CC BY 4.0, https://fontawesome.com/license/free --><svg viewBox="0 0 64 64"><g transform="translate(15.00 15.00) scale(0.0664)"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V336c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64H304c97.2 0 176-78.8 176-176V128c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V32z" fill="#FFFBEF" stroke="#3A2416" stroke-width="45.18" stroke-linejoin="round" paint-order="stroke"/></g><circle cx="32" cy="32" r="27" fill="none" stroke="#3A2416" stroke-width="9"/><circle cx="32" cy="32" r="27" fill="none" stroke="#E0261B" stroke-width="5.5"/><path d="M13 51 51 13" stroke="#3A2416" stroke-width="9" stroke-linecap="round"/><path d="M13 51 51 13" stroke="#E0261B" stroke-width="5.5" stroke-linecap="round"/></svg></div></div>
