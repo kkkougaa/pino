@@ -15,7 +15,6 @@ window.CATALOG = {
     { key: 'fx_heart',    ko: '하트',           ja: 'ハート',           style: 'lucky', size: 24, icon: 'heart' },
     { key: 'fx_star',     ko: '별',             ja: 'ほし',             style: 'lucky', size: 24, icon: 'star' },
     { key: 'w_combo',     x: 'COMBO!',                                  style: 'combo', size: 34 },
-    { key: 'fx_break',    ko: '콤보 끊김…',     ja: 'コンボ切れ…',    style: 'bad',   size: 19 },
     { key: 'w_safe',      ko: '안 들켰다!',     ja: 'バレなかった！',   style: 'good',  size: 20 },
     { key: 'patrol_fake', ko: '…기분 탓인가?',  ja: '…気のせいか？',    style: 'lucky', size: 22 },   // same look as the dog line: one let-down, two captions
     { key: 'w_pizzaOpen', ko: '앗, 피자잖아!',  ja: 'あっ、ピザだ！',   style: 'alert', size: 29 },
@@ -23,7 +22,7 @@ window.CATALOG = {
     { key: 'recheck',     ko: '…응?!',          ja: '…ん？！',          style: 'warn',  size: 26 },
     { key: 'hint_film',   ko: '띠를 쭉 당겨요!', ja: '帯をひっぱって！', style: 'hint',  size: 17 },
     { key: 'hint_tear',   ko: '위로 쭉 열어요!', ja: '上にグイッとあけて！', style: 'hint', size: 17 },
-    { key: 'hint_flick',  ko: '무시하고 먹어버리기!', ja: '無視して食べちゃえ！', style: 'hint', size: 19 },   // flick the post-it off
+    { key: 'hint_flick',  ko: '쓸어서 포스트잇 떼기!', ja: 'スワイプでふせんをはがそう！', style: 'hint', size: 19 },   // flick the post-it off
     { key: 'hint_cover',  ko: '↓ 쓸어서 상자 덮기!', ja: '↓ スワイプでフタを閉める！', style: 'warn', size: 19 },
     { key: 'thud',        ko: '쿵',             ja: 'ドスッ',           style: 'thud',  size: 58 },
     { key: 'q',           x: '…?',                                      style: 'bad',   size: 22 },
