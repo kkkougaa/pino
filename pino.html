@@ -4102,12 +4102,9 @@ async function saveFile(f){ await dlsReady;
   if(DLS===null) return false;
   const a=document.createElement('a'); a.href=URL.createObjectURL(f); a.download=f.name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },4000); return true; }
 $('saveImg').addEventListener('click',async()=>{ const f=shareFile||await makeShareImage().catch(()=>null); if(f) saveFile(f); });
-// X: on phones the share sheet takes the image straight to X; elsewhere open X and save the image to attach
-$('shareX').addEventListener('click',e=>{
-  const f=shareFile, text=TX('shareText')(totalEaten,boxesDone)+'\n'+TX('shareTag');
-  if(f&&navigator.canShare&&navigator.canShare({files:[f]})){ e.preventDefault(); navigator.share({files:[f],text}).catch(()=>{}); return; }
-  if(f){ saveFile(f).then(ok=>{ if(ok) $('shareMsg').textContent=TX('shareHint'); }); }
-});
+// X: straight to X's post screen (the app opens it on phones, through the x.com link), no share sheet in between.
+// The link carries the text and the game's address; the result picture is saved with the download button next to it.
+$('shareX').addEventListener('click',()=>{ updateShareLink(); });
 $('assetsDone').addEventListener('click',()=>{ $('assets').hidden=true; $('start').hidden=false; });
 function texFrom(c){const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t;}
 function applyImage(slot,c){
