@@ -3709,7 +3709,7 @@ const RANK_LOCAL=(()=>{ const K='kouga-rank-local', toks={};
       d.scores.push({xid:tk.xid,mode:tk.mode,score:body.score|0,nightmare:body.summary&&body.summary.nightmare?1:0,at:Date.now()}); save(d);
       const all=best(d), me=all.find(r=>r.xid===tk.xid); return {status:'ok',rank:me?me.rank:null,best:me?me.score:null}; }
     if(path.startsWith('/api/board')){ const xid=(path.split('xid=')[1]||'').toLowerCase(), all=best(d), me=all.find(r=>r.xid===decodeURIComponent(xid))||null;
-      const strip=r=>r&&{rank:r.rank,nick:r.nick,score:r.score,mode:r.mode}; return {event:ev(d),players:all.length,top:all.slice(0,10).map(strip),me:strip(me),cut:all[10]?all[10].score:null}; }
+      const strip=r=>r&&{rank:r.rank,nick:r.nick,score:r.score,mode:r.mode}; return {event:ev(d),players:all.length,top:all.slice(0,10).map(strip),me:strip(me)}; }
     return {error:'not found'}; }; })();
 function rankApi(path,body){   // the server, or the stand-in
   if(RANK_API==='local') return new Promise(res=>setTimeout(()=>res(RANK_LOCAL(path,body)),150));
@@ -3784,9 +3784,8 @@ function chaseInit(){ const run=++CH.run; CH.on=false; CH.rank=0; CH.lab=''; CH.
   if(!rankOpen()||!RANK.who||TUT) return;
   rankApi('/api/board?xid='+encodeURIComponent(RANK.who.xid)).then(d=>{ if(run!==CH.run||!d||!d.top) return;
     RANK.prev=d.me?{rank:d.me.rank,score:d.me.score}:null;
-    const me=d.me, L=d.top.filter(r=>!(me&&r.rank===me.rank&&r.nick===me.nick)).map(r=>r.score), others=(d.players||0)-(me?1:0);
-    if(me&&me.rank<=10&&d.cut!=null) L.push(d.cut); L.sort((a,b)=>b-a);   // with you in the top 10, the 11th best is everyone else's 10th
-    CH.L=L; CH.need=others<10?0:L.length>=10?L[9]:L[L.length-1];   // beat the 10th of everyone else to show up, whatever your own record
+    const L=d.top.map(r=>r.score).sort((a,b)=>b-a);   // the board as it stands, your own best included: ranks match the board
+    CH.L=L; CH.need=(d.players||0)<10?0:L[9];   // beat the 10th to show up
     CH.on=true; CH.last=score; chaseTick(shownScore); }).catch(()=>{}); }
 function chaseRank(v){ if(v<=CH.need) return 0; let r=1; for(const x of CH.L) if(x>=v) r++; return Math.min(r,10); }
 function chaseHide(){ CH.on=false; CH.pend=null; CH.q=[]; $('chase').hidden=true; }
