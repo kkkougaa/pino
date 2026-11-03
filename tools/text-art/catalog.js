@@ -16,15 +16,15 @@ window.CATALOG = {
     { key: 'w_miss',      x: 'MISS',                                    style: 'bad',   size: 19 },
     { key: 'w_speed',     ko: '스피드 보너스',  ja: 'スピードボーナス', style: 'good',  size: 20 },
     { key: 'fx_heart',    ko: '하트',           ja: 'ハート',           style: 'lucky', size: 24, icon: 'heart' },
-    { key: 'fx_star',     ko: '별',             ja: 'ほし',             style: 'lucky', size: 24, icon: 'star' },
+    { key: 'fx_star',     ko: '별',             ja: 'スター',             style: 'lucky', size: 24, icon: 'star' },
     { key: 'w_combo',     x: 'COMBO!',                                  style: 'combo', size: 34 },
-    { key: 'fx_break',    ko: '콤보 끊김…',     ja: 'コンボきれた…',    style: 'bad',   size: 19 },
+    { key: 'fx_break',    ko: '콤보 끊김…',     ja: 'コンボが切れた…',    style: 'bad',   size: 19 },
     { key: 'fx_snap',     ko: '띠 끊김!',       ja: '帯が切れた！',     style: 'alert', size: 29 },
     { key: 'w_safe',      ko: '안 들켰다!',     ja: 'バレなかった！',   style: 'good',  size: 20 },
     { key: 'w_streak',    ko: '연속!',          ja: '連続！',           style: 'good',  size: 20 },
     { key: 'w_calm',      ko: '침착!',          ja: '冷静！',           style: 'lucky', size: 24 },
     { key: 'w_close',     ko: '간발의 차!',     ja: 'ギリギリセーフ！', style: 'lucky', size: 24 },
-    { key: 'patrol_fake', ko: '…기분 탓인가?',  ja: '…気のせいか？',    style: 'lucky', size: 22 },   // same look as the dog line: one let-down, two captions
+    { key: 'patrol_fake', ko: '…기분 탓인가?',  ja: '…気のせいだったか',    style: 'lucky', size: 22 },   // same look as the dog line: one let-down, two captions
     { key: 'w_pizzaOpen', ko: '앗, 피자잖아!',  ja: 'あっ、ピザだ！',   style: 'alert', size: 29 },
     { key: 'pizza_away',  ko: '휙!',            ja: 'ポイッ！',         style: 'good',  size: 20 },
     { key: 'recheck',     ko: '…응?!',          ja: '…ん？！',          style: 'warn',  size: 26 },
@@ -53,7 +53,7 @@ window.CATALOG = {
     { key: 'nm_on',         ko: '코우가가 폭주한다!', ja: 'コウガが暴走した！',  style: 'nm',    size: 31, plate: 'nm' },
     { key: 'superUnlock',   ko: '초하드 모드 해금!', ja: '超ハードモード解放！', style: 'unlock', size: 22, plate: 'ribbon' },
     { key: 'late_wake',     ko: '코우가가 깨어났다…!', ja: 'コウガが起きた…！',     style: 'warn',  size: 27 },   // normal mode, last 30 s
-    { key: 'cat_pass',      ko: '…지나가던 강아지였잖아!', ja: '…通りすがりの犬だった！', style: 'lucky', size: 22 },   // fake footsteps: just a passing dog
+    { key: 'cat_pass',      ko: '…지나가던 강아지였잖아!', ja: '…ただの通りすがりの犬じゃん！', style: 'lucky', size: 22 },   // fake footsteps: just a passing dog
     { key: 'patrol_warn',   ko: '코우가가 온다!',   ja: 'コウガが来る！',      style: 'warn',  size: 29 },
     { key: 'patrol_watch',  ko: '쉿…',              ja: 'しーっ…',             style: 'hush',  size: 30 },   // no thought cloud: it read as Kouga talking
     { key: 'patrol_caught', ko: '들켰다!',          ja: 'バレた！',            style: 'alert', size: 36, plate: 'caught' },
