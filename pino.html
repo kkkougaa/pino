@@ -1920,6 +1920,7 @@ fridgeLight.shadow.mapSize.set(2048,2048); fridgeLight.shadow.bias=-0.0006; frid
 scene.add(fridgeLight); scene.add(fridgeLight.target);
 const fillL=new THREE.DirectionalLight(col('#F2E6D6'),0.35); fillL.position.set(-4,3,-2); scene.add(fillL);
 const rageLight=new THREE.PointLight(col('#FF2A2A'),0,14,1.6); rageLight.position.set(0,2.4,3.2); scene.add(rageLight);   // super-hard: a red throb on the scene
+const emberL=[[-3.4,0.5,2.4],[3.4,0.5,2.4]].map(([x,y,z])=>{ const l=new THREE.PointLight(col('#FF7A2A'),0,7.5,1.4); l.position.set(x,y,z); scene.add(l); return l; });   // the embers' own light, from where they rise
 function woodCanvas(){   // light oak planks: staggered boards, soft grain, darker joints
   const S=2048,c=cv(S,S),g=c.getContext('2d'),rows=10,ph=S/rows;
   for(let r=0;r<rows;r++){
@@ -3190,8 +3191,9 @@ const fx=(()=>{
   function ember(p,q){
     const fl=0.72+0.28*Math.sin(p.t*(18+p.seed%9)+p.seed)*Math.sin(p.t*7.3+p.seed*1.7), al=(q<0.12?q/0.12:1-Math.pow((q-0.12)/0.88,1.6))*fl;
     if(al<=0.01) return; const [r,gg,b]=emberCol(p.c,q), s=p.s*(1-q*0.45);
-    const gr=g.createRadialGradient(p.x,p.y,0,p.x,p.y,s*4.2); gr.addColorStop(0,'rgba('+r+','+gg+','+b+','+(0.5*al).toFixed(3)+')'); gr.addColorStop(1,'rgba('+r+','+gg+','+b+',0)');
-    g.globalCompositeOperation='lighter'; g.globalAlpha=1; g.fillStyle=gr; g.beginPath(); g.arc(p.x,p.y,s*4.2,0,Math.PI*2); g.fill();
+    const R=s*9, gr=g.createRadialGradient(p.x,p.y,0,p.x,p.y,R), c='rgba('+r+','+gg+','+b+',';   // the ember lights the air round it: a bright core glow and a wide soft one
+    gr.addColorStop(0,c+(0.55*al).toFixed(3)+')'); gr.addColorStop(0.22,c+(0.24*al).toFixed(3)+')'); gr.addColorStop(1,c+'0)');
+    g.globalCompositeOperation='lighter'; g.globalAlpha=1; g.fillStyle=gr; g.beginPath(); g.arc(p.x,p.y,R,0,Math.PI*2); g.fill();
     g.globalAlpha=al; g.fillStyle='rgb('+Math.min(255,r+30)+','+Math.min(255,gg+40)+','+Math.min(255,b+40)+')'; g.beginPath(); g.ellipse(p.x,p.y,s*0.75,s,Math.atan2(p.vy,p.vx)+Math.PI/2,0,Math.PI*2); g.fill();
     g.globalCompositeOperation='source-over'; }
   function step(dt){
@@ -4312,6 +4314,9 @@ function loop(t){
       cov=!!(near&&((cur&&cur.covered)||patrol.preHidden)), want=!!(near&&(cov||(patrol.phase==='warn'&&exposed())));
     if(want===hb.hidden||cov!==hb.classList.contains('undo')){ hb.hidden=!want; hb.classList.toggle('undo',cov); $('hideLab').textContent=TX(cov?'unhideBtn':'hideBtn');
       if(want){ hb.classList.remove('pop-in'); void hb.offsetWidth; hb.classList.add('pop-in'); woodblock(cov?72:84,{vol:0.12}); } } }
+  { const on=((rage&&state!=='idle'&&state!=='over')||document.body.classList.contains('titleFx'))&&!LOW.on;   // the ember lights flicker like the embers themselves
+    emberL.forEach((l,i)=>{ const f=on?(0.75+0.25*Math.sin(now*(11+i*3.7)+i)*Math.sin(now*4.3+i*2.1)+0.12*(rnd()-0.5))*(nightmare?0.9:1):0;
+      l.intensity+=(f*1.1-l.intensity)*Math.min(1,rdt*(on?14:4)); if(on) l.color.set(nightmare?'#A84CFF':'#FF7A2A'); }); }
   { const want=((rage&&state!=='idle'&&state!=='over')||document.body.classList.contains('titleFx'))&&!reduceMotion; const ph=(now%1.25)/1.25, beat=ph<0.1?ph/0.1:ph<0.2?1-(ph-0.1)/0.1*0.5:ph<0.3?0.5+(ph-0.2)/0.1*0.4:Math.max(0,0.9-(ph-0.3)/0.4*0.9);
     rageLight.intensity+=((want?(0.55+0.55*beat)*(nightmare?1.15:1):0)-rageLight.intensity)*Math.min(1,rdt*10); rageLight.color.set(nightmare?'#A040FF':'#FF2A2A');
     if(want&&!paused&&rnd()<rdt*9){ const left=rnd()<0.5, x=left?rnd()*innerWidth*0.22:innerWidth*(0.78+rnd()*0.22);
