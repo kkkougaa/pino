@@ -2338,7 +2338,6 @@ function makeBox(){
     const isL=lucky&&lucky.idx===n;
     const p=mesh(isL?G[lucky.kind]:G.pino,M.choco,x,0.06,z,g);
     p.rotation.y=isL?(rnd()-0.5)*0.3:rnd()*6;
-    if(rage&&!isL&&rnd()<0.5){ p.rotation.order='ZYX'; p.rotation.z=(rnd()<0.5?-1:1)*(0.6+rnd()*0.2); p.position.y+=0.05; }   // angry Kouga's boxes come knocked about: some pinos lean ~40° left or right
     p.userData={eaten:false,lucky:isL?lucky.kind:null};
     pinos.push(p); n++;
   }
@@ -2685,7 +2684,7 @@ function shovePizza(dir){
   const sp=toScreen(b.group.position.clone().setY(0.6)); pop(say('pizza_away'),sp.x,sp.y,'good');
   later(()=>{ playOnce('pkShove'); whoosh(2400,500,0.22,0.16,{pan:0.6}); thump(80,0.32,{delay:0.08,pan:0.4}); },120);
   const x0=b.group.position.x;
-  tween(0.45,k=>{ const e=k*k; b.group.position.x=x0+dir*9*e; b.group.rotation.y=dir*-0.9*e; b.group.position.y=0.3*Math.sin(Math.PI*k); },
+  tween(0.45,k=>{ const e=k*k; b.group.position.x=x0+dir*9*e; b.group.rotation.y=(b.yaw||0)+dir*-0.9*e; b.group.position.y=0.3*Math.sin(Math.PI*k); },
     ()=>{ scene.remove(b.group); nextBox(); });
 }
 function openPizza(){
@@ -2713,13 +2712,14 @@ function nextBox(){
     return;
   }
   const b=makeBox(); cur=b; scene.add(b.group); boxNo++; b.covered=false; b.meltT=meltTime();
+  b.yaw=rage&&rnd()<0.5?(rnd()<0.5?-1:1)*(0.6+rnd()*0.1):0;   // angry Kouga: half the boxes land turned ~35-40° (seen from above) to the left or right
   if(kougaAround){   // he's here: the decoy sits on the table, the pino waits below until he's gone
-    patrol.preHidden=false; b.covered=true; b.homePos=new V3(0,0,0); b.group.position.set(0,-0.5,4.6); b.group.rotation.x=0.35; b.group.visible=false;
+    patrol.preHidden=false; b.covered=true; b.homePos=new V3(0,0,0); b.group.position.set(0,-0.5,4.6); b.group.rotation.x=0.35; b.group.rotation.y=b.yaw; b.group.visible=false;
     state='film'; setGuide('film'); if(!(DECOY&&DECOY.visible)) decoyIn(); return;
   }
   b.group.position.set(6,0,0); b.group.rotation.y=-0.4;
   state='arrive'; setGuide(null);
-  tween(0.46,k=>{ const e=easeOut(k), arc=Math.sin(Math.PI*Math.min(1,k*1.08)); b.group.position.x=6*(1-e); b.group.position.y=0.55*arc*(1-k*0.4); b.group.rotation.y=-0.4*(1-e); b.group.rotation.x=-0.22*arc; },   // hops in, leaning forward
+  tween(0.46,k=>{ const e=easeOut(k), arc=Math.sin(Math.PI*Math.min(1,k*1.08)); b.group.position.x=6*(1-e); b.group.position.y=0.55*arc*(1-k*0.4); b.group.rotation.y=-0.4*(1-e)+b.yaw*e; b.group.rotation.x=-0.22*arc; },   // hops in, leaning forward
     ()=>{ b.group.position.y=0; b.group.rotation.x=0; thump(64,0.16,{dur:0.16}); if(state!=='arrive') return; state='film'; setGuide('film');
       [-1,1].forEach(sx=>{ const q=toScreen(b.group.localToWorld(new V3(sx*W/2,0,D/2))); fx.burst(q.x,q.y,{n:3,dir:sx>0?-0.2:Math.PI+0.2,spread:0.7,speed:150,gravity:-40,drag:4.5,size:15,life:0.5,shape:'puff',colors:['#fff']}); });
       tween(0.34,k=>{ const w=(1-k)*Math.cos(k*Math.PI*2.4); b.group.scale.set(1+0.08*w,1-0.15*w,1+0.08*w); },()=>b.group.scale.set(1,1,1)); });
