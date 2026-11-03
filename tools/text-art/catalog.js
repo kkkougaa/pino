@@ -52,7 +52,7 @@ window.CATALOG = {
     { key: 'melt_over',     ko: '피노가 녹았다!',   ja: 'ピノが溶けた！',      style: 'melt',  size: 31, plate: 'melt' },
     // ranking event (the start screen's notice and the board's title)
     { key: 'rank_live',     ko: '랭킹전 진행 중!',  ja: 'ランキング開催中！',  style: 'warn',  size: 21, icon: 'trophy', straight: true },
-    { key: 'rank_soon',     ko: '랭킹전 곧 시작!',  ja: 'ランキングまもなく！', style: 'warn',  size: 21, icon: 'trophy', straight: true },
+    { key: 'rank_soon',     ko: '랭킹전 곧 시작!',  ja: 'ランキングまもなく開催！', style: 'warn',  size: 21, icon: 'trophy', straight: true },
     { key: 'rank_end',      ko: '랭킹전 종료',      ja: 'ランキング終了',      style: 'bad',   size: 21, icon: 'trophy', straight: true },
     // in-run rank chase (the ranking event): '9위까지 1,240' under the gauge, and a call-out at each rank passed
     { key: 'w_rankto',      ko: '위까지',           ja: '位まで',              style: 'hud',   size: 15 },   // after a digit: '9위까지'
