@@ -374,10 +374,10 @@ body.hard .hardtag{display:inline-block}
 #patrol.warn .pk{transform:translateX(105%)}
 #patrol.watch .pk{transform:translateX(42%) rotate(-6deg);filter:none}
 /* what he says when he comes back for another look: a speech bubble from his side */
-#patrol .pksay{position:absolute;right:calc(min(46vw,230px)*.6);bottom:calc(22% + min(46vw,230px)*.6);max-width:min(58vw,240px);margin:0;padding:9px 13px 8px;
-  background:#FFFBEF;border:3px solid #3A2416;border-radius:16px;box-shadow:0 4px 0 rgba(58,36,22,.3);font-family:var(--hand);font-size:clamp(15px,4.2vw,18px);line-height:1.25;color:#C0141C;
-  text-align:center;word-break:keep-all;animation:bubIn2 .28s cubic-bezier(.2,1.6,.4,1) both}
-#patrol .pksay::after{content:"";position:absolute;left:100%;top:50%;margin:-7px 0 0 -1px;border:solid transparent;border-width:7px 0 7px 13px;border-left-color:#3A2416}   /* the tail points at him */
+#patrol .pksay{position:absolute;right:10px;bottom:calc(22% + min(46vw,230px)*1.12);max-width:min(48vw,220px);margin:0;padding:9px 13px 8px;
+  background:#FFFBEF;border:3px solid #3A2416;border-radius:16px;box-shadow:0 4px 0 rgba(58,36,22,.45),0 0 26px 14px rgba(14,6,24,.5);font-family:var(--hand);font-size:clamp(16px,4.5vw,19px);line-height:1.25;color:#B0101A;
+  text-align:center;   /* the soft dark halo lets the line read over the box */word-break:keep-all;animation:bubIn2 .28s cubic-bezier(.2,1.6,.4,1) both}
+#patrol .pksay::after{content:"";position:absolute;right:34%;top:100%;margin-top:-1px;border:solid transparent;border-width:13px 4px 0 10px;border-top-color:#3A2416}   /* the tail points down at him */
 #patrol .pksay[hidden]{display:none}
 @keyframes bubIn2{from{opacity:0;transform:scale(.6) translateY(8px)}to{opacity:1;transform:none}}
 /* nightmare feint: he starts to leave (half out, the hush fades)... then slams back in */
@@ -866,7 +866,7 @@ body.nmMax #sus .sus-g>i{border-radius:999px}
 .dbgbtn{top:calc(env(safe-area-inset-top,0px) + 118px)!important}
 #autoBadge{top:auto!important;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);left:16px;transform:none;background:rgba(20,140,90,.88)}   /* TEST ONLY */
 /* ===== hands off while he looks ===== */
-#patrol .nohand{display:none;position:absolute;left:50%;top:calc(var(--midY,240px) + 104px);width:68px;height:68px;margin-left:-34px;filter:drop-shadow(0 4px 0 rgba(58,36,22,.35))}
+#patrol .nohand{display:none;position:absolute;left:50%;top:calc(var(--midY,240px) + 52px);width:68px;height:68px;margin-left:-34px;filter:drop-shadow(0 4px 0 rgba(58,36,22,.35))}
 #patrol .nohand svg{width:100%;height:100%}
 #patrol.watch .nohand{display:block;animation:noHand .5s ease-in-out infinite alternate}
 @keyframes noHand{from{transform:scale(1) rotate(-6deg)}to{transform:scale(1.1) rotate(6deg)}}
@@ -3214,7 +3214,7 @@ const NM_MAX=()=>nightmare&&NM_STEP()>=4;   // every nightmare ramp at its limit
 const NM_MIN=()=>Math.floor(nmT/60), RAGE_MIN=()=>Math.floor(rageT/60), NM_STEP=()=>Math.floor(nmT/30);   // NM_STEP: every 30 s survived in nightmare
 function patrolGap(){
   if(nightmare){ let g=Math.max(5,6-0.5*NM_STEP())+rnd();   // 6~7 s, -0.5 s every 30 s, down to 5~6 s
-    if(NM_MAX()) g-=0.5;   // at the limit: 4.5~5.5 s
+    if(NM_MAX()) g-=1;   // at the limit: 4~5 s
     patrol.nmLeft=(patrol.nmLeft||(2+Math.floor(rnd()*2)))-1; if(patrol.nmLeft<=0){ g*=2; patrol.nmLeft=2+Math.floor(rnd()*2); }   // a breather now and then
     return g; }
   if(rage) return 7+rnd()*2;                                   // 7~9 s
