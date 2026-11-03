@@ -381,7 +381,7 @@ body.hard .hardtag{display:inline-block}
 #patrol .pksay::after{content:"";position:absolute;right:34%;top:100%;margin-top:-1px;border:solid transparent;border-width:13px 4px 0 10px;border-top-color:#3A2416}   /* the tail points down at him */
 #patrol .pksay[hidden]{display:none}
 #patrol .pksay{overflow-wrap:anywhere}
-html[lang="ja"] #patrol .pksay{word-break:normal;line-break:strict}   /* no spaces in Japanese: keep-all made a whole line one word that ran out of the bubble */
+html[lang="ja"] #patrol .pksay,html[lang="ja"] #tutTxt,html[lang="ja"] #coach .co-bub p,html[lang="ja"] .unlockcard p,html[lang="ja"] .askcard p,html[lang="ja"] #tui .lead,html[lang="ja"] #tui .hardnote{word-break:normal;line-break:strict}   /* no spaces in Japanese: keep-all made a whole line one word that ran out of the bubble */
 @keyframes bubIn2{from{opacity:0;transform:scale(.6) translateY(8px)}to{opacity:1;transform:none}}
 /* nightmare feint: he starts to leave (half out, the hush fades)... then slams back in */
 #patrol.watch.feint .pk{transform:translateX(71%) rotate(4deg);transition:transform .55s cubic-bezier(.4,0,.7,.7)}   /* about half of him off screen */
@@ -775,7 +775,6 @@ body.fever-on::after{content:none}
 #tutTxt{flex:1;min-width:0;margin:0;font-family:var(--ui);font-weight:800;font-size:16px;line-height:1.35;color:#3A2416;word-break:keep-all}
 #tutSkip{flex:none;appearance:none;border:2px solid #3A2416;background:#fff;color:#3A2416;border-radius:999px;font-family:var(--ui);font-weight:800;font-size:13px;line-height:1;padding:7px 10px;cursor:pointer}
 #tutSkip:focus-visible{outline:3px solid var(--pick);outline-offset:2px}
-.btn.ghost.tutbtn{font-size:calc(var(--k,1)*(17px));padding:8px;margin-top:10px}
 @media (prefers-reduced-motion: reduce){.tut-card.bump{animation:none}}
 /* ===== type roles ===== */
 /* Kouga's own words on the memo (and his shouting) stay handwritten */
@@ -786,7 +785,6 @@ body.fever-on::after{content:none}
 .btn.ghost{font-size:17px}
 .two .btn.ghost,.share .btn.ghost{font-size:15px}
 .card .two .btn.xbtn{font-size:16px}
-.btn.ghost.tutbtn{font-size:15px}
 .mode button{font-size:16px;font-weight:700;padding:9px 18px}
 .lang button{font-size:13px;font-weight:600}
 .lead{font-size:15px;line-height:1.6;font-weight:500}
@@ -1142,7 +1140,6 @@ bootStep(0.1);</script>
     <div class="mode"><div class="seg" role="group" aria-label="Mode"><button type="button" data-mode="normal" data-i18n="modeNormal"></button><button type="button" data-mode="hard" data-i18n="modeHard"></button><button type="button" data-mode="super" data-i18n="modeSuper" hidden></button></div></div>
     <p class="hardnote" id="hardNote" data-i18n="hardNote"></p>
     <button class="btn" id="go" data-i18n="start">시작!</button>
-    <button class="btn ghost tutbtn" id="tutBtn" type="button" data-i18n="tutAgain"></button>
     <div class="evcard" id="evCard" hidden><div class="evbtns"><button type="button" class="chip" id="evJoin"></button><button type="button" class="chip" id="boardBtn" data-i18n="rankView"></button></div></div>
     <button class="btn ghost bgmset" id="bgmSetBtn" type="button" data-i18n="bgmSet" hidden></button>
     <p class="legal" data-i18n="legal"></p>
@@ -3933,7 +3930,6 @@ function tutPoint(){   // show where to touch for the current step
 }
 $('tutSkip').addEventListener('click',e=>{ e.stopPropagation(); tutEnd(); startGame(); });
 $('tutGo').addEventListener('click',()=>{ $('tutDone').hidden=true; paused=false; document.body.classList.remove('paused'); audio(); startGame(); });
-$('tutBtn').addEventListener('click',()=>{ if(irisBusy||introOpen||flickWait) return; audio(); setMode('normal'); awaitFlick(()=>beginRun(true)); });
 function beginRun(tut){ irisBusy=true;
   iris.close(innerWidth/2,innerHeight/2,380,()=>{ tut?startTutorial():startGame(); setTimeout(()=>iris.open(innerWidth/2,innerHeight*0.55,480,()=>{ irisBusy=false; }),80); }); }
 $('go').addEventListener('click',()=>{ if(irisBusy||introOpen||flickWait) return; audio();
