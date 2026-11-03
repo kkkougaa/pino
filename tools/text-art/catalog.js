@@ -19,7 +19,6 @@ window.CATALOG = {
     { key: 'fx_star',     ko: '별',             ja: 'ほし',             style: 'lucky', size: 24, icon: 'star' },
     { key: 'w_combo',     x: 'COMBO!',                                  style: 'combo', size: 34 },
     { key: 'fx_break',    ko: '콤보 끊김…',     ja: 'コンボ切れ…',    style: 'bad',   size: 19 },
-    { key: 'fx_snap',     ko: '띠 끊김!',       ja: '帯が切れた！',     style: 'alert', size: 29 },
     { key: 'w_safe',      ko: '안 들켰다!',     ja: 'バレなかった！',   style: 'good',  size: 20 },
     { key: 'w_streak',    ko: '연속!',          ja: '連続！',           style: 'good',  size: 20 },
     { key: 'w_calm',      ko: '침착!',          ja: '冷静！',           style: 'lucky', size: 24 },
@@ -31,7 +30,6 @@ window.CATALOG = {
     { key: 'hint_film',   ko: '띠를 쭉 당겨요!', ja: '帯をひっぱって！', style: 'hint',  size: 17 },
     { key: 'hint_tear',   ko: '위로 쭉 열어요!', ja: '上にグイッとあけて！', style: 'hint', size: 17 },
     { key: 'hint_flick',  ko: '무시하고 먹어버리기!', ja: '無視して食べちゃえ！', style: 'hint', size: 19 },   // flick the post-it off
-    { key: 'hint_snap',   ko: '다시 잡기',      ja: 'つかみ直す',       style: 'hint',  size: 15 },
     { key: 'hint_cover',  ko: '↓ 쓸어서 상자 덮기!', ja: '↓ スワイプでフタを閉める！', style: 'warn', size: 19 },
     { key: 'thud',        ko: '쿵',             ja: 'ドスッ',           style: 'thud',  size: 58 },
     { key: 'q',           x: '…?',                                      style: 'bad',   size: 22 },
