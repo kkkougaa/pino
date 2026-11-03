@@ -89,7 +89,8 @@ async function board(url, env) {
   const xid = cleanXid(url.searchParams.get('xid'));
   let me = null;
   if (xid) { const i = all.findIndex((r) => r.xid === xid); if (i >= 0) me = { rank: i + 1, nick: all[i].nick, score: all[i].score, mode: all[i].nightmare ? 'nightmare' : all[i].mode }; }
-  return json({ event: ev, players: all.length, top, me }, 200, env, { 'cache-control': 'no-store' });
+  const cut = all[10] ? all[10].score : null;   // the 11th best: with the player in the top 10, the 10th of everyone else
+  return json({ event: ev, players: all.length, top, me, cut }, 200, env, { 'cache-control': 'no-store' });
 }
 
 const isAdmin = (req, env) => !!env.ADMIN_KEY && req.headers.get('x-admin-key') === env.ADMIN_KEY;

@@ -9,7 +9,7 @@ import { REF_CURVE } from './ref_curve.js';
 export const RULES = {
   MIN_BOX_SEC: 1.2,        // fastest possible box (peel, open, pick, six pinos, toss) in game seconds, fever included
   BONUS_SEC: { lucky: 2 },   // normal mode: time a heart / star adds to the 60 s clock
-  STAGE_SEC: { hardRage: 30, nightmareAfterRage: 30 },   // the quickest a hard run can anger him / tip him into nightmare
+  STAGE_SEC: { hardRage: 30, nightmareAfterRage: 20 },   // the quickest a hard run can anger him / tip him into nightmare (the fury gauge fills 1.5x faster now)
   PATROL_MIN_GAP: 4,       // the shortest gap between his visits (nightmare at its limit)
   // per-item maxima, before the stage multiplier
   PINO_MAX: 100 * 4 * 2,   // combo tier x4, fever x2
