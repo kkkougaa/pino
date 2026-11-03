@@ -882,12 +882,13 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 #chase .ch-in{position:relative;display:flex;align-items:center;gap:7px;padding:6px 12px 6px 6px;border-radius:999px;background:rgba(26,14,8,.62);border:2px solid #FFFBEF;box-shadow:0 3px 0 rgba(0,0,0,.25);transform-origin:50% 50%;perspective:200px}
 #chase .ch-rk{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#FFFBEF;border:2px solid #3A2416;font:900 14px/1 var(--sys);color:#3A2416;font-variant-numeric:tabular-nums}
 #chase .ch-rk.r1{background:#FFD447}#chase .ch-rk.r2{background:#D9E1E8}#chase .ch-rk.r3{background:#E9A774}
-#chase .ch-main{display:flex;align-items:center;gap:4px;min-height:28px}
+#chase .ch-col{display:flex;flex-direction:column;align-items:stretch;gap:3px}   /* text and its bar as one block, centred in the pill */
+#chase .ch-main{display:flex;align-items:center;gap:4px;min-height:26px}
 #chase .ch-lab{display:flex;align-items:center;font:800 13px/1 var(--sys);color:#FFFBEF}
 #chase .ch-lab img{display:block}
 #chase .ch-lab>span{display:flex;align-items:center;white-space:nowrap}
 #chase .ch-num{font-size:23px;line-height:1;color:#FFFBEF;font-weight:800;font-variant-numeric:tabular-nums}
-#chase .ch-bar{position:absolute;left:44px;right:14px;bottom:3px;height:2px;border-radius:2px;background:rgba(255,251,239,.22);overflow:hidden}
+#chase .ch-bar{display:block;position:relative;height:3px;border-radius:2px;background:rgba(255,251,239,.22);overflow:hidden}
 #chase .ch-bar b{display:block;height:100%;width:100%;transform-origin:left center;background:#FFE45C;transition:transform .15s linear}
 #chase .ch-in.beat{animation:chBeat .3s cubic-bezier(.3,1.6,.5,1)}
 #chase .ch-in.near{border-color:#FF8D78;box-shadow:0 3px 0 rgba(0,0,0,.25),0 0 0 3px rgba(255,90,70,.35)}
@@ -1085,7 +1086,7 @@ bootStep(0.1);</script>
 </header>
 
 <div id="sus" hidden><span class="sus-ico" aria-hidden="true"><svg viewBox="0 0 40 40"><g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"><path d="M16 6 C16 13 13 16 6 16"/><path d="M24 6 C24 13 27 16 34 16"/><path d="M16 34 C16 27 13 24 6 24"/><path d="M24 34 C24 27 27 24 34 24"/></g></svg></span><div class="sus-g"><i id="susFill"></i></div><span class="sus-chip"><span id="susLab"></span></span></div>
-<div id="chase" hidden><div class="ch-in" id="chIn"><span class="ch-rk" id="chRk"><b></b></span><span class="ch-main"><span class="ch-lab" id="chLab"></span><span class="ch-num" id="chNum"></span></span><i class="ch-bar"><b id="chBar"></b></i></div></div>
+<div id="chase" hidden><div class="ch-in" id="chIn"><span class="ch-rk" id="chRk"><b></b></span><span class="ch-col"><span class="ch-main"><span class="ch-lab" id="chLab"></span><span class="ch-num" id="chNum"></span></span><i class="ch-bar"><b id="chBar"></b></i></span></div></div>
 <div id="chFx" aria-hidden="true"></div>
 <div class="meter" id="meter">
 <div class="combo off" id="combo"><svg class="ring" viewBox="0 0 80 80" aria-hidden="true"><circle class="out" cx="40" cy="40" r="34"/><circle class="trk" cx="40" cy="40" r="34"/><circle class="val" id="comboRing" cx="40" cy="40" r="34"/></svg><div class="cin"><b id="comboNum">0</b><span id="comboWord"></span></div><span class="cmult" id="comboMult" hidden></span><i id="comboG" hidden></i></div>
@@ -2711,7 +2712,7 @@ function nextBox(){
     return;
   }
   const b=makeBox(); cur=b; scene.add(b.group); boxNo++; b.covered=false; b.meltT=meltTime();
-  b.yaw=rage&&rnd()<0.5?(rnd()<0.5?-1:1)*(0.6+rnd()*0.1):0;   // angry Kouga: half the boxes land turned ~35-40° (seen from above) to the left or right
+  b.yaw=rage?(rnd()<0.5?-1:1)*rnd()*0.61:0;   // angry Kouga: each box lands turned 0-35° (seen from above), left or right at random
   if(kougaAround){   // he's here: the decoy sits on the table, the pino waits below until he's gone
     patrol.preHidden=false; b.covered=true; b.homePos=new V3(0,0,0); b.group.position.set(0,-0.5,4.6); b.group.rotation.x=0.35; b.group.rotation.y=b.yaw; b.group.visible=false;
     state='film'; setGuide('film'); if(!(DECOY&&DECOY.visible)) decoyIn(); return;
