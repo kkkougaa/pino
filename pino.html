@@ -1017,6 +1017,9 @@ body.nmMax #sus .sus-g>i{border-radius:999px}
 @media (prefers-reduced-motion: reduce){#cutin.go,#cutin.go .ci-face{animation:none}}
 /* ===== start screen: Kouga's post-it lives on the 3D box; the game UI sits on a dark gradient below it ===== */
 #start{display:block;padding:0;background:none;pointer-events:none}
+#start.leaving #tlogo{transition:transform .34s cubic-bezier(.5,0,.8,.4),opacity .3s .04s;transform:translateY(-150%) rotate(-6deg);opacity:0}
+#start.leaving #tlang,#start.leaving #evTop,#start.leaving #setBtn{transition:transform .3s cubic-bezier(.5,0,.8,.4),opacity .25s;transform:translateY(-24px);opacity:0}
+#start.leaving #tui{transition:transform .34s cubic-bezier(.5,0,.8,.4),opacity .3s .04s;transform:translateY(45%);opacity:0}
 #start[hidden]{display:none}
 #start>*{pointer-events:auto}
 body.title .hud,body.title #sus,body.title #fever,body.title #mood{visibility:hidden}
@@ -3094,8 +3097,12 @@ function titleOn(){ document.body.classList.add('title'); titleTo=1; if(cur) att
 const LOGOS={}; ['ko','ja'].forEach(l=>{ const im=$(l==='ja'?'bootLogoJa':'bootLogo'); if(im) LOGOS[l]={src:im.src,cells:+im.dataset.cells||im.naturalWidth}; });
 function titleLogo(){ const lg=$('tlogo'), L=LOGOS[LANG]||LOGOS.ko; if(!lg||!L) return; if(lg.getAttribute('src')!==L.src) lg.src=L.src;
   const d=devicePixelRatio||1, per=Math.max(1,Math.round((innerWidth<420||innerHeight<500?2:3)*0.75*d))/d; lg.style.width=(L.cells*per)+'px'; }   // 75%, whole device pixels per cell so the dots stay square   // the loading screen's pixel logo at 75%, rounded to whole device pixels per cell so the dots stay square
+// DRAFT (?cam2 in the address): the start screen's UI leaves (logo up, buttons down) and the camera glides over in 0.9 s, easing in and out
+const CAM2=/[?&]cam2\b/.test(location.search); let camT=-1;
 function awaitFlick(done){   // Start: the in-game UI comes on and the camera settles, but the run only begins when the player flicks the post-it away
-  $('start').hidden=true; document.body.classList.remove('title'); titleTo=0; flickWait=done; later(showFlickHint,700); }
+  if(CAM2&&!reduceMotion){ const st=$('start'); st.classList.add('leaving'); setTimeout(()=>{ st.hidden=true; st.classList.remove('leaving'); },360); camT=0; }
+  else $('start').hidden=true;
+  document.body.classList.remove('title'); titleTo=0; flickWait=done; later(showFlickHint,700); }
 function showFlickHint(){   // a nudge beside the note until it's gone
   if(!flickWait||!postit) return; postit.updateMatrixWorld();
   const sp=toScreen(postit.getWorldPosition(new V3())), el=document.createElement('div'); el.className='openhint flickhint';
@@ -4301,7 +4308,8 @@ function loop(t){
     pk.position.lerp(want,1-Math.exp(-dt*30));
     pk.quaternion.slerp(heldQ,1-Math.exp(-dt*14));
   }
-  if(titleK!==titleTo){ titleK=reduceMotion?titleTo:titleK+(titleTo-titleK)*Math.min(1,rdt*5); if(Math.abs(titleTo-titleK)<0.003) titleK=titleTo; applyTitleCam(); }
+  if(CAM2&&camT>=0&&titleTo===0){ camT+=rdt; const q=Math.min(1,camT/0.9), e=q<0.5?4*q*q*q:1-Math.pow(-2*q+2,3)/2; titleK=1-e; applyTitleCam(); if(q>=1){ camT=-1; titleK=0; kick=Math.max(kick,0.05); } }   // draft: a set move, then a small lean in
+  else if(titleK!==titleTo){ titleK=reduceMotion?titleTo:titleK+(titleTo-titleK)*Math.min(1,rdt*5); if(Math.abs(titleTo-titleK)<0.003) titleK=titleTo; applyTitleCam(); }
   camera.position.copy(camBase);
   { // the camera moves only for Kouga and for the start of a run, so it never fights the hands
     const want=patrol.phase==='warn'?0.04+0.05*Math.min(1,1-patrol.t/patrol.warnT):patrol.phase==='watch'?0.1:0;
