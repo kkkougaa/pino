@@ -3637,7 +3637,7 @@ function cutIn(nm,lineKey){   // Kouga's face, the banner and his line on one st
   cancelLater(cutIn.t); cutIn.t=later(()=>{ el.hidden=true; el.classList.remove('go'); },2900); }
 function enterNightmare(){
   patrol.nmFeintDue=true;
-  if(nightmare||!rage) return; queueIntro('nm'); nightmare=true; nightmareReached=true; bgm.nightmare(); fury=100; document.body.classList.add('nightmare'); moodBadge();
+  if(nightmare||!rage) return; nightmare=true; nightmareReached=true; bgm.nightmare(); fury=100; document.body.classList.add('nightmare'); moodBadge();
   cutIn(true,'shout_nm');
   thump(34,0.6,{dur:1.2,send:0.5}); [37,38,43,44].forEach((n,i)=>bell(n,{vol:0.06,delay:i*0.015,dur:2.4})); whoosh(200,3000,0.6,0.12); sNoise(600,0.6,0.25,1,'lowpass',0,{send:0.6});
   buzz([80,40,80,40,200]); shake=0.45;
@@ -3973,7 +3973,7 @@ $('go').addEventListener('click',()=>{ if(irisBusy||introOpen||flickWait) return
   if(rankOpen()&&!RANK.who){ askShow(goRun); return; }   // ranking event on and no name yet: register, or play without a record
   goRun(); });
 function goRun(){
-  const tut=!HARD&&!tutSeen(), l=[]; if(HARD&&!introSeen('hard')) l.push('hard'); if(SUPER&&!introSeen('super')) l.push('super');
+  const tut=!HARD&&!tutSeen(), l=[];   // no rule cards before a run any more: the tutorial and the in-game guides explain things as they happen
   if(tut){ awaitFlick(()=>beginRun(true)); return; }   // first normal run: the tutorial, once the note is off
   if(!l.length){ awaitFlick(()=>startGame(true)); return; }   // the box under the post-it is the first one
   $('start').hidden=true; runIntros(l,()=>awaitFlick(()=>startGame(true))); }   // first time in a mode: its rules, then the flick
