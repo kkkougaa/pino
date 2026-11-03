@@ -444,17 +444,16 @@ body.hard .gauges .mood .g{height:18px}
 #nmAura{position:fixed;inset:-4%;pointer-events:none;z-index:2;opacity:0;transition:opacity .8s;
   background:radial-gradient(ellipse 72% 64% at 50% 50%,transparent 60%,rgba(150,60,255,.18) 76%,rgba(110,20,220,.4) 91%,rgba(70,0,160,.56) 100%)}
 body.nmMax #nmAura{opacity:1;animation:auraBeat .95s ease-out infinite}
-#c{transition:filter 4s ease-in-out}
-body.nightmare #c{filter:brightness(.5)}   /* nightmare: the room at half its light, so the embers' glow stands out */
-body.nmMax #c{filter:brightness(.375)}   /* at its limit: a quarter darker again, sinking slowly */
+#nmDim{position:fixed;inset:0;pointer-events:none;z-index:1;background:#000;opacity:0;transition:opacity 4s ease-in-out}   /* a plain dark sheet over the 3D room only (cheaper than a filter on the canvas) */
+body.nightmare #nmDim{opacity:.5}   /* nightmare: the room at half its light, so the embers' glow stands out */
+body.nmMax #nmDim{opacity:.625}   /* at its limit: a quarter darker again, sinking slowly */
 #nmAura i{position:absolute;inset:0;
   background:radial-gradient(40% 26% at 10% 20%,rgba(190,110,255,.5),transparent 70%),radial-gradient(36% 24% at 92% 34%,rgba(170,80,255,.45),transparent 70%),
     radial-gradient(42% 28% at 16% 86%,rgba(200,120,255,.45),transparent 70%),radial-gradient(38% 26% at 86% 80%,rgba(160,70,255,.5),transparent 70%);
   -webkit-mask-image:radial-gradient(ellipse 70% 62% at 50% 50%,transparent 55%,#000 82%);mask-image:radial-gradient(ellipse 70% 62% at 50% 50%,transparent 55%,#000 82%);
-  filter:blur(14px);animation:auraFlow 5.2s ease-in-out infinite alternate}
+  animation:auraFlow 5.2s ease-in-out infinite alternate}   /* the gradients are soft already: no blur filter (the costliest effect on phones) */
 @keyframes auraBeat{0%{transform:scale(1);opacity:.8}12%{transform:scale(.975);opacity:1}24%{transform:scale(.995);opacity:.88}36%{transform:scale(.982);opacity:1}100%{transform:scale(1);opacity:.8}}   /* lub ... dub, then rest */
 @keyframes auraFlow{0%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(1.5%,-2%) rotate(3deg)}100%{transform:translate(-2%,1.5%) rotate(-2deg)}}
-body.lowspec #nmAura i{filter:none}
 body.rage #rageFx,body.titleFx #rageFx{opacity:1;animation:rageBeat 1.25s ease-in-out infinite}
 @keyframes rageBeat{0%{opacity:.72}10%{opacity:1}20%{opacity:.84}30%{opacity:.97}62%,100%{opacity:.72}}
 #rageFx::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(190,15,25,.26),transparent 32%),linear-gradient(to bottom,rgba(110,0,10,.22),transparent 22%)}
@@ -1127,6 +1126,7 @@ bootStep(0.1);</script>
 <canvas id="fx" aria-hidden="true"></canvas>
 <div id="iris" hidden></div>
 <div id="flash" aria-hidden="true"></div>
+<div id="nmDim" aria-hidden="true"></div>
 <div id="rageFx" aria-hidden="true"></div>
 <div id="nmAura" aria-hidden="true"><i></i></div>
 <img id="pkShove" alt="" aria-hidden="true"><img id="pkLaugh" alt="" aria-hidden="true">
