@@ -305,8 +305,8 @@ html[lang="ko"] .card{word-break:keep-all}
 .rhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .grade{display:flex;flex-direction:column;align-items:center;gap:0;margin:0}
 .grade img{display:block}
-.grade.go img{animation:gradeIn .7s cubic-bezier(.2,.9,.3,1.35) both}
-@keyframes gradeIn{0%{opacity:0;transform:scale(2.2) rotate(-12deg)}60%{opacity:1;transform:scale(.92) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+.grade.go img{animation:gradeIn .42s cubic-bezier(.3,0,.5,1) both}
+@keyframes gradeIn{0%{opacity:0;transform:scale(2.8) rotate(-16deg)}55%{opacity:1;transform:scale(.86) rotate(2deg)}75%{transform:scale(1.04) rotate(-1deg)}100%{transform:scale(1) rotate(0)}}   /* a rubber stamp coming down */
 .btn[disabled]{opacity:.6;cursor:default}
 .res.small{font-size:calc(var(--k,1)*(16px));margin:0 0 10px;min-height:1.2em;opacity:.85}
 .two{display:flex;gap:10px;margin-bottom:10px}
@@ -374,6 +374,8 @@ body.hard .hardtag{display:inline-block}
 #patrol .pk{position:absolute;right:0;bottom:22%;width:min(46vw,230px);height:auto;transform:translateX(105%);transition:transform .5s cubic-bezier(.3,1.2,.5,1),filter .3s}
 #patrol.warn .pk{transform:translateX(105%)}
 #patrol.watch .pk{transform:translateX(42%) rotate(-6deg);filter:none}
+#patrol.lean .pk{transform:translateX(18%) rotate(-1deg) scale(1.28);transform-origin:100% 100%;transition:transform .32s cubic-bezier(.2,1.4,.4,1)}   /* caught: he leans right in */
+#patrol.lean .pt,#patrol.lean .nohand,#patrol.lean .pksay{display:none}
 /* what he says when he comes back for another look: a speech bubble from his side */
 #patrol .pksay{position:absolute;right:10px;bottom:calc(22% + min(46vw,230px)*1.12);max-width:min(48vw,220px);margin:0;padding:9px 13px 8px;
   background:#FFFBEF;border:3px solid #3A2416;border-radius:16px;box-shadow:0 4px 0 rgba(58,36,22,.45),0 0 26px 14px rgba(14,6,24,.5);font-family:var(--hand);font-size:clamp(16px,4.5vw,19px);line-height:1.25;color:#B0101A;
@@ -481,6 +483,10 @@ body.rage .mood .g{box-shadow:0 0 0 3px rgba(224,65,94,.55),0 2px 0 rgba(58,36,2
 @keyframes btnSweep{0%,62%{left:-60%}100%{left:130%}}
 /* memo cards drop in, flick away */
 .overlay:not([hidden]) .card{animation:cardIn .55s cubic-bezier(.2,1.45,.4,1) both,sway 3.4s ease-in-out .55s infinite alternate}
+#result.slam:not([hidden]) .card{animation:cardSlam .46s cubic-bezier(.2,1.5,.4,1) both,sway 3.4s ease-in-out .46s infinite alternate}
+@keyframes cardSlam{0%{opacity:0;transform:scale(1.4) rotate(calc(var(--rot) - 7deg))}50%{opacity:1;transform:scale(.96) rotate(calc(var(--rot) + .6deg))}100%{opacity:1;transform:rotate(var(--rot))}}
+#result.jolt{animation:jolt .32s ease-out}
+@keyframes jolt{0%{translate:0 0}25%{translate:0 5px}55%{translate:0 -2px}100%{translate:0 0}}
 @keyframes cardIn{0%{opacity:0;transform:translateY(-70px) rotate(calc(var(--rot) - 8deg)) scale(.92)}55%{opacity:1}100%{opacity:1;transform:rotate(var(--rot))}}
 @keyframes sway{from{transform:rotate(var(--rot))}to{transform:rotate(calc(var(--rot) + .9deg))}}
 #start.leaving .card{animation:cardOut .24s cubic-bezier(.5,0,.9,.5) forwards}
@@ -3105,7 +3111,7 @@ function startGame(keep){   // keep: the start screen's box (its post-it just fl
   audio(); if(HARD) bgm.stop(0.2); if(SUPER) decodeCBGM(['rage']); document.body.classList.remove('resultFx','paused'); decoyAway(true); fx.clear(); shownScore=0; hitStop=0; kick=0;
   const keepBox=keep===true&&cur&&state==='idle'?cur:null; if(!keepBox) disposeCur();
   for(const p of parts) scene.remove(p.mesh); parts.length=0; tweens.length=0;
-  cur=null; pickHeld=false; timeLeft=60; endCause=null; rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0; heartCount=0; starCount=0;
+  cur=null; pickHeld=false; timeLeft=60; endCause=null; caughtFx(false); $('patrol').classList.remove('lean'); rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0; heartCount=0; starCount=0;
   while(pile.children.length) pile.remove(pile.children[0]); pileCount=0;
   combo=0; maxCombo=0; comboT=0; lastTier=1; charge=0; endFever(); renderCombo(); addScore(0);
   $('fever').classList.remove('off');
@@ -3590,7 +3596,14 @@ function placeFace(){
   const fl=Math.max(Ww*0.07,Ww*0.89-tw-fw*0.9); $('ciFace').style.left=fl.toFixed(1)+'px';
   const ax=fl+fw*0.47-Ww/2, ay=-0.44*H+1.5*H*0.68-H/2, s=Math.sin(-5*Math.PI/180), c=Math.cos(-5*Math.PI/180);   // the mouth, turned with the strip (-5deg about its middle)
   return { x:vw/2+ax*c-ay*s, y:H/2+ax*s+ay*c, fw, H }; }
+// Kouga's cut-in: the room drops into slow motion as the strip slams in, then eases back. Only the game slows:
+// the strip, his line and the timers (later()) keep real time, so the cut-in plays at its own speed.
+const SLOW={at:-1e9};
+function slowMo(){ SLOW.at=performance.now(); }
+function slowK(t){ const e=(t-SLOW.at)/1000, lo=reduceMotion?0.6:0.18;
+  if(e<0||e>2.6) return 1; if(e<0.1) return 1-(1-lo)*e/0.1; if(e<1.5) return lo; const q=(e-1.5)/1.1; return lo+(1-lo)*q*q*(3-2*q); }
 function cutIn(nm,lineKey){   // Kouga's face, the banner and his line on one strip that slams across the screen
+  slowMo();
   const el=$('cutin'); $('ciFace').src=YELL_IMG; fitBg($('ciBg'),TX(nm?'nm_on':'rage_on'));   // the banner is printed on the strip, behind Kouga
   $('ciPaper').style.clipPath=tornClip(9,0); $('ciBand').style.clipPath=tornClip(9,7);
   $('ciLine').textContent=''; el.classList.toggle('nm',!!nm); el.hidden=false; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
@@ -3809,11 +3822,14 @@ function chaseUp(r,first){   // a rank passed (or the top 10 reached): the badge
 const eatenStr=()=>TX('eatenVal').replace('{b}',boxesDone).replace('{n}',totalEaten), luckyStr=()=>TX('luckyVal').replace('{h}',heartCount).replace('{s}',starCount);
 let superJust=false;   // super-hard opened during this run: explain it on the result screen
 function unlockShow(){ artInto($('unlockTitle'),'superUnlock',TX('superUnlock')); $('unlockOv').hidden=false; woodblock(84,{vol:0.12}); sfx.lucky(); }
+let caughtAt=0;
+function caughtFx(on){ const c=renderer.domElement; c.style.transition=on?'filter .25s ease-out':'filter .4s'; c.style.filter=on&&!reduceMotion?'saturate(.3) contrast(1.12) brightness(.92)':''; }
 let endCause=null;   // why the run ended, shown under the result title
 function patrolCaught(){   // spotted: that's the end of the night
   if(!HARD){ caughtLate(); return; }
-  caughtEnd=true; breakCombo(); shake=0.55; buzz([90,60,180]); scareHit(); flash('#FF1E1E',0.4,0.55); impact(0.12,0.07);
-  later(()=>pop(say('patrol_caught'),innerWidth/2,innerHeight*0.2,'alert'),190); startSwat();   // the banner lands on the big boom
+  caughtEnd=true; breakCombo(); shake=0.55; buzz([90,60,180]); scareHit(); flash('#FF1E1E',0.4,0.55); impact(0.2,0.1);   // a beat of frozen time on the boom
+  caughtFx(true); $('patrol').classList.add('lean'); caughtAt=now;   // the room drains of colour, Kouga leans right in, the camera tips
+  later(()=>pop(say('patrol_caught'),innerWidth/2,innerHeight*0.2,'alert'),190); startSwat(null,520);   // the banner lands on the big boom
 }
 // normal mode's last 30 s: Kouga is up and about. Being seen costs time instead of the run
 let lateOn=false;
@@ -3833,8 +3849,8 @@ function patrolFizzle(key){   // the same little let-down either way: steps stop
   later(()=>{ popCenter(say(key),'lucky'); kalimba(79,{vol:0.07}); kalimba(76,{vol:0.06,delay:0.09}); },200);
   later(()=>{ uncoverBox(); coach('fake',{tap:true}); },650);
 }
-function startSwat(yellKey){
-  patrolSet('none');
+function startSwat(yellKey,keepK){
+  if(keepK) later(()=>{ if(state==='swat') patrolSet('none'); },keepK); else patrolSet('none');   // caught: he stays a moment, leaning in
   state='swat'; setGuide(null); pickHeld=false; down=null; tweens.length=0;
   const b=cur;
   if(b&&b.pick&&b.pick.parent!==b.group) b.group.attach(b.pick);
@@ -3843,7 +3859,10 @@ function startSwat(yellKey){
   showYell(yellKey);
   tween(1.5,()=>{},()=>endGame());
 }
+function cardDust(el,n){ const r=el.getBoundingClientRect(); [[r.left+14,r.bottom-6,Math.PI*0.85],[r.right-14,r.bottom-6,Math.PI*0.15]].forEach(([x,y,d])=>fx.burst(x,y,{n:n||3,dir:d,spread:0.8,speed:170,gravity:-30,drag:4.5,size:16,life:0.55,shape:'puff',colors:['#fff']})); }
+function jolt(){ const o=$('result'); o.classList.remove('jolt'); void o.offsetWidth; o.classList.add('jolt'); }
 function revealResult(){
+  if($('result').classList.contains('slam')) setTimeout(()=>{ jolt(); thump(55,0.4,{dur:0.3}); cardDust($('result').querySelector('.card'),3); },200);   // caught: the memo slaps down
   fx.clear(); document.body.classList.add('resultFx');   // leftover crumbs and confetti shouldn't sit on top of the memo
   const el=$('rScore'), target=score, t0=performance.now(), dur=reduceMotion?1:900;
   (function tick(){ const q=Math.min(1,(performance.now()-t0)/dur), e=1-Math.pow(1-q,3);
@@ -3856,9 +3875,10 @@ function stampGrade(){
   if(nightmareReached) setTimeout(()=>{ const c=$('rCrown'); c.classList.remove('go'); void c.getBoundingClientRect(); c.classList.add('go'); [84,88,91,96].forEach((n,i)=>bell(n,{vol:0.05,delay:i*0.06})); },420);
   setTimeout(()=>{ const r=ge.getBoundingClientRect(), x=r.left+r.width/2, y=r.top+r.height/2, top=gradeOf(score)[0];
     const cols=top==='S'?GOLD:top==='A'?['#FF7AA8','#FFC2D6','#fff']:['#fff','#FFE9B8'];
+    jolt(); [-1,1].forEach(sx=>fx.burst(x+sx*r.width*0.3,r.bottom-4,{n:2,dir:sx>0?-0.25:Math.PI+0.25,spread:0.7,speed:120,gravity:-20,drag:5,size:11,life:0.45,shape:'puff',colors:['#fff']}));   // the stamp lands: the memo jolts, a puff of paper dust
     fx.ring(x,y,{r0:24,r1:84,life:0.38,color:'#FFFFFF',width:6,style:'tick'}); fx.burst(x,y,{n:top==='S'?8:6,even:true,speed:240,gravity:0,drag:5,size:12,life:0.55,shape:'star5',colors:[cols[0]]});
     thump(65,0.4,{dur:0.3}); ({S:[72,76,79,83,88],A:[72,76,79,84],B:[72,77,79],C:[69,72,76],F:[57,60,63]}[top]||[72]).forEach((n,i)=>(top==='F'?marimba:kalimba)(n,{vol:0.1,delay:0.03+i*0.035}));
-    if(top==='S'||top==='A'){ bell(96,{vol:0.06,delay:0.2}); bell(100,{vol:0.05,delay:0.28}); } },260);
+    if(top==='S'||top==='A'){ bell(96,{vol:0.06,delay:0.2}); bell(100,{vol:0.05,delay:0.28}); } },230);
 }
 function endGame(){
   if(cur&&cur.pick&&cur.pick.parent&&cur.pick.parent!==cur.group&&cur.group.parent) cur.group.attach(cur.pick);
@@ -3878,7 +3898,7 @@ function endGame(){
   ge.classList.remove('go');
   $('shareMsg').textContent='';
   shareFile=null; updateShareLink();
-  const showRes=()=>{ $('result').hidden=false; const rc=$('result').querySelector('.card'); rc.scrollTop=0; $('result').scrollTop=0; fitScore(); fitTitle(); requestAnimationFrame(()=>{ rc.scrollTop=0; }); $('again').focus({preventScroll:true}); revealResult(); makeShareImage().then(f=>shareFile=f).catch(()=>{}); };
+  const showRes=()=>{ caughtFx(false); const ro=$('result'); ro.classList.toggle('slam',!!caughtEnd); $('result').hidden=false; const rc=$('result').querySelector('.card'); rc.scrollTop=0; $('result').scrollTop=0; fitScore(); fitTitle(); requestAnimationFrame(()=>{ rc.scrollTop=0; }); $('again').focus({preventScroll:true}); revealResult(); makeShareImage().then(f=>shareFile=f).catch(()=>{}); };
   const cpos=cur&&cur.group.parent?toScreen(cur.group.position.clone().setY(0.4)):{x:innerWidth/2,y:innerHeight/2};
   setTimeout(()=>{
     iris.shrinkTo(cpos.x,cpos.y,Math.min(innerWidth,innerHeight)*0.24,420,()=>setTimeout(()=>{
@@ -4227,7 +4247,7 @@ let last=performance.now();
 const tmp=new V3();
 function loop(t){
   requestAnimationFrame(loop);
-  let dt=paused?0:Math.min(0.05,(t-last)/1000)*COACH.ts; last=t; const rdt=dt; coachTick(); stepLater(rdt); if(hitStop>0&&dt>0){ hitStop-=dt; dt=0; } now+=dt;
+  let dt=paused?0:Math.min(0.05,(t-last)/1000)*COACH.ts; last=t; const rdt=dt; coachTick(); stepLater(rdt); if(hitStop>0&&dt>0){ hitStop-=dt; dt=0; } dt*=slowK(t); now+=dt;
   const active=state!=='idle'&&state!=='over'; watchFps(rdt,active);
   if(active){
     if(readyT>0) readyT-=rdt;
@@ -4293,6 +4313,7 @@ function loop(t){
   if(kick>0.0005){ camera.position.lerp(lookAt,kick); kick*=Math.exp(-rdt*14); }
   if(titleK>0.0005) camera.position.sub(lookAt).applyAxisAngle(UP,0.3*titleK).add(lookAt);   // start screen: swung round to the right, looking across the box
   camera.lookAt(lookAt); if(patrol.phase==='watch'&&!reduceMotion) camera.rotateZ(Math.sin(now*1.3)*0.012);   // holding your breath
+  if(caughtEnd&&state==='swat'&&!reduceMotion){ const q=Math.min(1,(now-caughtAt)*5); camera.rotateZ(-0.045*q*(2-q)); }   // caught: the shot tips over
   if(titleK>0.0005) camera.rotateZ(-0.07*titleK);   // and a slight lean
   followFridge();
   if(!glLost) renderer.render(scene,camera);
