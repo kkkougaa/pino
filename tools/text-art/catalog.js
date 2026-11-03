@@ -62,6 +62,12 @@ window.CATALOG = {
     { key: 'rank_live',     ko: '랭킹전 진행 중!',  ja: 'ランキング開催中！',  style: 'warn',  size: 21, icon: 'trophy' },
     { key: 'rank_soon',     ko: '랭킹전 곧 시작!',  ja: 'ランキングまもなく！', style: 'warn',  size: 21, icon: 'trophy' },
     { key: 'rank_end',      ko: '랭킹전 종료',      ja: 'ランキング終了',      style: 'bad',   size: 21, icon: 'trophy' },
+    // in-run rank chase (the ranking event): '9위까지 1,240' under the gauge, and a call-out at each rank passed
+    { key: 'w_rankto',      ko: '위까지',           ja: '位まで',              style: 'hud',   size: 15 },   // after a digit: '9위까지'
+    { key: 'rk_lead',       ko: '1위 독주 중!',     ja: '1位 独走中！',        style: 'warn',  size: 15 },
+    { key: 'rk_top10',      ko: 'TOP 10 진입!',     ja: 'TOP10入り！',         style: 'score', size: 30, icon: 'trophy' },
+    { key: 'w_rankup',      ko: '위 달성!',         ja: '位 達成！',           style: 'score', size: 30 },   // after a digit: '8위 달성!'
+    { key: 'rk_first',      ko: '1위 달성!',        ja: '1位 達成！',          style: 'gS',    size: 36, icon: 'trophy' },
     { key: 'rank_title',    ko: '랭킹',             ja: 'ランキング',          style: 'score', size: 34, icon: 'trophy' },
     { key: 'pizza_hint',    ko: '피자?! 치워버려!', ja: 'ピザ？！どかしちゃえ！', style: 'pizza', size: 22, plate: 'pizza' },
   ],
