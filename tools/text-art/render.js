@@ -58,7 +58,7 @@
     const tw = adv.reduce((a, b) => a + b, 0);
     const W = tw + pad * 2, H = fs * 1.18 + pad * 2 + shOff, base = pad + fs * 0.92;
     const lay = []; let x = pad;
-    const wave = opts.num ? 0 : 0.05, tilt = (sk.tilt || 1) * (opts.num ? 0 : 0.06);
+    const wave = opts.num || opts.straight ? 0 : 0.05, tilt = (sk.tilt || 1) * (opts.num || opts.straight ? 0 : 0.06);   // straight: no bounce, no lean (labels that sit in the UI)
     chars.forEach((ch, i) => {
       const live = ch.trim() ? 1 : 0;
       lay.push({ ch, x: x + adv[i] / 2, dy: live * (Math.sin(i * 1.7 + rnd() * 2) * fs * wave), rot: live * (rnd() - 0.5) * 2 * tilt });
@@ -270,7 +270,7 @@
   }
   function renderItem(it, lang) {
     const text = it.x != null ? it.x : it[lang];
-    const t = letters(text, it.style, it.size, lang);
+    const t = letters(text, it.style, it.size, lang, { straight: it.straight });
     const c = it.iconOnly ? icon(it.icon, it.size) : it.plate ? PLATES[it.plate](t, rngOf(it.key + lang)) : it.icon ? withIcon(t, it.icon, it.size) : t.c;
     return { key: it.key, lang: it.x != null ? 'x' : lang, c, s: it.size, p: t.pad / R };
   }
