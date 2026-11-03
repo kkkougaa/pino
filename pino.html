@@ -78,7 +78,7 @@ body{
 #hudShade{position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top,0px) + 150px);pointer-events:none;
   background:linear-gradient(rgba(28,18,12,.66),rgba(28,18,12,.42) 50%,rgba(28,18,12,0))}
 .hud{
-  position:fixed;top:0;left:0;right:0;color:#FFF8EC;text-shadow:0 1px 2px rgba(0,0,0,.5);
+  position:fixed;top:0;left:0;right:0;z-index:3;   /* above the rage glow and the nightmare aura */color:#FFF8EC;text-shadow:0 1px 2px rgba(0,0,0,.5);
   padding:calc(env(safe-area-inset-top,0px) + 14px) 20px 0;
   display:flex;justify-content:space-between;align-items:flex-start;
   pointer-events:none;
@@ -95,7 +95,7 @@ body{
 @keyframes beat{0%{transform:scale(1.14)}30%{transform:scale(1)}}
 
 #meter{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;gap:7px;pointer-events:none;z-index:2}
+  display:flex;flex-direction:column;align-items:center;gap:7px;pointer-events:none;z-index:3}   /* above the rage glow and the nightmare aura */
 .combo{display:flex;align-items:center;justify-content:center;gap:10px;pointer-events:none;transition:opacity .15s}
 .combo.off{opacity:0}
 .combo .crow{display:flex;align-items:center;justify-content:center;gap:4px}
@@ -442,7 +442,7 @@ body.hard .gauges .mood .g{height:18px}
   background:radial-gradient(125% 90% at 50% 50%,rgba(220,30,40,0) 48%,rgba(220,30,40,.3) 76%,rgba(200,20,30,.55) 100%)}
 /* nightmare at its limit: a purple aura round the screen that beats like a heart (lub-dub, the nightmare pulse) and flickers like flame */
 #nmAura{position:fixed;inset:-4%;pointer-events:none;z-index:2;opacity:0;transition:opacity .8s;
-  background:radial-gradient(ellipse 72% 64% at 50% 50%,transparent 58%,rgba(150,60,255,.22) 74%,rgba(110,20,220,.5) 90%,rgba(70,0,160,.7) 100%)}
+  background:radial-gradient(ellipse 72% 64% at 50% 50%,transparent 60%,rgba(150,60,255,.18) 76%,rgba(110,20,220,.4) 91%,rgba(70,0,160,.56) 100%)}
 body.nmMax #nmAura{opacity:1;animation:auraBeat .95s ease-out infinite}
 #nmAura i{position:absolute;inset:0;
   background:radial-gradient(40% 26% at 10% 20%,rgba(190,110,255,.5),transparent 70%),radial-gradient(36% 24% at 92% 34%,rgba(170,80,255,.45),transparent 70%),
