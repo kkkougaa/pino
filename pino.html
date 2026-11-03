@@ -440,6 +440,15 @@ body.hard .gauges .mood .g{height:18px}
 @media not all{#melt.hot{animation:none}}
 #rageFx{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity 1.2s;
   background:radial-gradient(125% 90% at 50% 50%,rgba(220,30,40,0) 48%,rgba(220,30,40,.3) 76%,rgba(200,20,30,.55) 100%)}
+#nmSpot{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity .3s;--sx:50vw;--sy:58vh;
+  background:radial-gradient(ellipse min(62vw,270px) min(30vh,230px) at var(--sx) var(--sy),transparent 40%,rgba(8,0,18,.62) 100%)}   /* the room falls dark round the pool of light */
+#nmSpot::before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(255,243,220,.36),rgba(255,243,220,.1) 80%,transparent);
+  clip-path:polygon(calc(var(--sx) - 7vw) 0,calc(var(--sx) + 7vw) 0,calc(var(--sx) + 40vw) calc(var(--sy) + 7vh),calc(var(--sx) - 40vw) calc(var(--sy) + 7vh));
+  mix-blend-mode:screen;filter:blur(6px);animation:spotSway 4s ease-in-out infinite alternate}   /* the beam, from straight above */
+#nmSpot.on{opacity:1;animation:spotOn .6s steps(1) both}
+@keyframes spotOn{0%{opacity:0}12%{opacity:1}26%{opacity:.15}40%{opacity:1}55%{opacity:.45}70%,100%{opacity:1}}   /* a stage light clunking on */
+@keyframes spotSway{from{opacity:.85}to{opacity:1}}
+body.lowspec #nmSpot::before{filter:none}
 body.rage #rageFx,body.titleFx #rageFx{opacity:1;animation:rageBeat 1.25s ease-in-out infinite}
 @keyframes rageBeat{0%{opacity:.72}10%{opacity:1}20%{opacity:.84}30%{opacity:.97}62%,100%{opacity:.72}}
 #rageFx::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(190,15,25,.26),transparent 32%),linear-gradient(to bottom,rgba(110,0,10,.22),transparent 22%)}
@@ -868,7 +877,7 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 #chase{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + var(--chy,84px));transform:translateX(-50%);z-index:4;pointer-events:none;perspective:300px}
 #chase[hidden]{display:none}
 #chase{transition:opacity .2s}
-#chase.dim{opacity:.35}
+#chase.dim{opacity:.45}
 #chase.away{opacity:0}
 #chase .ch-in{position:relative;display:flex;align-items:center;gap:7px;padding:6px 12px 6px 6px;border-radius:999px;background:rgba(26,14,8,.62);border:2px solid #FFFBEF;box-shadow:0 3px 0 rgba(0,0,0,.25);transform-origin:50% 50%;perspective:200px}
 #chase .ch-rk{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#FFFBEF;border:2px solid #3A2416;font:900 14px/1 var(--sys);color:#3A2416;font-variant-numeric:tabular-nums}
@@ -1113,6 +1122,7 @@ bootStep(0.1);</script>
 <div id="iris" hidden></div>
 <div id="flash" aria-hidden="true"></div>
 <div id="rageFx" aria-hidden="true"></div>
+<div id="nmSpot" aria-hidden="true"></div>
 <img id="pkShove" alt="" aria-hidden="true"><img id="pkLaugh" alt="" aria-hidden="true">
 <div id="pops"></div>
 <div id="patrol" hidden aria-live="polite"><div class="vig"></div><div class="tape" aria-hidden="true"></div><img class="pk" id="patrolKouga" alt=""><p class="pksay" id="pkSay" hidden></p><img class="pt" id="patrolTxt" alt=""><div class="nohand" aria-hidden="true"><!-- hand: Font Awesome Free 6.5.2 "hand" (solid) by Fonticons, Inc., CC BY 4.0, https://fontawesome.com/license/free --><svg viewBox="0 0 64 64"><g transform="translate(15.00 15.00) scale(0.0664)"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V336c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64H304c97.2 0 176-78.8 176-176V128c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V32z" fill="#FFFBEF" stroke="#3A2416" stroke-width="45.18" stroke-linejoin="round" paint-order="stroke"/></g><circle cx="32" cy="32" r="27" fill="none" stroke="#3A2416" stroke-width="9"/><circle cx="32" cy="32" r="27" fill="none" stroke="#E0261B" stroke-width="5.5"/><path d="M13 51 51 13" stroke="#3A2416" stroke-width="9" stroke-linecap="round"/><path d="M13 51 51 13" stroke="#E0261B" stroke-width="5.5" stroke-linecap="round"/></svg></div></div>
@@ -1905,6 +1915,7 @@ fridgeLight.shadow.mapSize.set(2048,2048); fridgeLight.shadow.bias=-0.0006; frid
 scene.add(fridgeLight); scene.add(fridgeLight.target);
 const fillL=new THREE.DirectionalLight(col('#F2E6D6'),0.35); fillL.position.set(-4,3,-2); scene.add(fillL);
 const rageLight=new THREE.PointLight(col('#FF2A2A'),0,14,1.6); rageLight.position.set(0,2.4,3.2); scene.add(rageLight);   // super-hard: a red throb on the scene
+const nmSpot=new THREE.SpotLight(col('#FFF3DC'),0,0,0.3,0.55,1.0); nmSpot.position.set(0,9,0.8); nmSpot.target.position.set(0,0,0); scene.add(nmSpot,nmSpot.target);   // nightmare at its limit: one light straight down on the box
 function woodCanvas(){   // light oak planks: staggered boards, soft grain, darker joints
   const S=2048,c=cv(S,S),g=c.getContext('2d'),rows=10,ph=S/rows;
   for(let r=0;r<rows;r++){
@@ -3763,8 +3774,8 @@ function boardLoad(first){
 function boardShow(){ artInto($('bdTitle'),'rank_title',TX('rankTitle')); $('boardOv').hidden=false; boardLoad(true); clearInterval(boardTimer); boardTimer=setInterval(()=>{ if($('boardOv').hidden||document.hidden) return; boardLoad(false); },10000); }   // live: every 10 s while open
 // ---- the rank chase: during an event run, once the score is in the top 10, the next rank to catch sits under the gauge ----
 // The board is read once when the run starts (the player's own best left out, so they race everyone else).
-const CH={on:false,run:0,L:[],need:0,rank:0,last:0,beatT:0,lab:'',pend:null};
-function chaseInit(){ const run=++CH.run; CH.on=false; CH.rank=0; CH.lab=''; CH.pend=null; $('chase').classList.remove('dim','away'); $('chase').hidden=true;
+const CH={on:false,run:0,L:[],need:0,rank:0,last:0,beatT:0,lab:'',pend:null,q:[],qT:0,shown:0};
+function chaseInit(){ const run=++CH.run; CH.on=false; CH.rank=0; CH.lab=''; CH.pend=null; CH.q=[]; CH.qT=0; CH.shown=0; $('chase').classList.remove('dim','away'); $('chase').hidden=true;
   if(!rankOpen()||!RANK.who||TUT) return;
   rankApi('/api/board?xid='+encodeURIComponent(RANK.who.xid)).then(d=>{ if(run!==CH.run||!d||!d.top) return;
     RANK.prev=d.me?{rank:d.me.rank,score:d.me.score}:null;
@@ -3772,7 +3783,7 @@ function chaseInit(){ const run=++CH.run; CH.on=false; CH.rank=0; CH.lab=''; CH.
     CH.L=L; CH.need=others<10?0:L.length>=10?L[9]:me?me.score:L[L.length-1];   // beat this to be in the top 10 (one's own old best is a safe bar when the 11th is unknown)
     CH.on=true; CH.last=score; chaseTick(shownScore); }).catch(()=>{}); }
 function chaseRank(v){ if(v<=CH.need) return 0; let r=1; for(const x of CH.L) if(x>=v) r++; return Math.min(r,10); }
-function chaseHide(){ CH.on=false; CH.pend=null; $('chase').hidden=true; }
+function chaseHide(){ CH.on=false; CH.pend=null; CH.q=[]; $('chase').hidden=true; }
 function chaseTick(v){ if(!CH.on) return; v=Math.round(v); const r=chaseRank(v), box=$('chase'), inn=$('chIn');
   if(!r){ box.hidden=true; CH.rank=0; return; }
   if(box.hidden){ box.hidden=false; box.style.setProperty('--chy',$('sus').hidden?'84px':'116px'); $('chFx').style.setProperty('--chy',$('sus').hidden?'84px':'116px'); }
@@ -3794,10 +3805,13 @@ function chaseTick(v){ if(!CH.on) return; v=Math.round(v); const r=chaseRank(v),
   else CH.last=score; }
 const chaseBusy=()=>!$('cutin').hidden||patrol.phase==='warn'||patrol.phase==='watch';   // Kouga coming / watching, or a cut-in: those come first
 function chaseFlush(){ if(!CH.on) return; const c=$('chase'), cut=!$('cutin').hidden, pat=patrol.phase==='warn'||patrol.phase==='watch';
-  if(c.classList.contains('away')!==cut) c.classList.toggle('away',cut); if(c.classList.contains('dim')!==(pat&&!cut)) c.classList.toggle('dim',pat&&!cut);
-  if(CH.pend&&!chaseBusy()){ const q=CH.pend; CH.pend=null; chaseUp(q.r,q.first); } }   // a rank passed meanwhile: celebrated once he has gone
-function chaseUp(r,first){   // a rank passed (or the top 10 reached): the badge flips, the pill flashes, a call-out pops below it
-  if(chaseBusy()){ CH.pend={r,first:first||!!(CH.pend&&CH.pend.first)}; return; }
+  const dim=patrol.phase==='watch'&&!cut;   // only while he is looking; his footsteps leave it readable
+  if(c.classList.contains('away')!==cut) c.classList.toggle('away',cut); if(c.classList.contains('dim')!==dim) c.classList.toggle('dim',dim);
+  if(CH.q.length&&!chaseBusy()&&performance.now()>=CH.qT){ const q=CH.q.shift(); CH.qT=performance.now()+700; chaseUp(q.r,q.first,true); } }   // ranks passed meanwhile: celebrated one by one once he has gone
+function chaseUp(r,first,fromQ){   // a rank passed (or the top 10 reached): the badge flips, the pill flashes, a call-out pops below it
+  if(!fromQ){ const top=Math.min((CH.q.length?CH.q[CH.q.length-1].r:(CH.shown||11))-1,10);   // every rank passed goes in the queue, in order (10, 9, 8 ...)
+    for(let k=top;k>=r;k--) CH.q.push({r:k,first:first&&k===top}); return; }   // chaseFlush plays them one by one, never over Kouga
+  CH.shown=r;
   const inn=$('chIn'), rk=$('chRk'), el=$('chFx'); el.innerHTML='';
   const k=first&&r>1?'rk_top10':r===1?'rk_first':null, a=k&&artOf(k), sp=say(String(r),'w_rankup');
   const node=k?(a?artImgEl(a,1):null):artLine(sp,30,'score');
@@ -4288,6 +4302,9 @@ function loop(t){
       cov=!!(near&&((cur&&cur.covered)||patrol.preHidden)), want=!!(near&&(cov||(patrol.phase==='warn'&&exposed())));
     if(want===hb.hidden||cov!==hb.classList.contains('undo')){ hb.hidden=!want; hb.classList.toggle('undo',cov); $('hideLab').textContent=TX(cov?'unhideBtn':'hideBtn');
       if(want){ hb.classList.remove('pop-in'); void hb.offsetWidth; hb.classList.add('pop-in'); woodblock(cov?72:84,{vol:0.12}); } } }
+  { const on=document.body.classList.contains('nmMax')&&state!=='idle'&&state!=='over', el=$('nmSpot');   // nightmare at its limit: the spotlight from above
+    nmSpot.intensity+=((on?1.8:0)-nmSpot.intensity)*Math.min(1,rdt*6); if(el.classList.contains('on')!==on) el.classList.toggle('on',on);
+    if(on&&cur&&cur.group.visible){ const q=toScreen(cur.group.position.clone().setY(0.3)); el.style.setProperty('--sx',q.x.toFixed(0)+'px'); el.style.setProperty('--sy',q.y.toFixed(0)+'px'); } }
   { const want=((rage&&state!=='idle'&&state!=='over')||document.body.classList.contains('titleFx'))&&!reduceMotion; const ph=(now%1.25)/1.25, beat=ph<0.1?ph/0.1:ph<0.2?1-(ph-0.1)/0.1*0.5:ph<0.3?0.5+(ph-0.2)/0.1*0.4:Math.max(0,0.9-(ph-0.3)/0.4*0.9);
     rageLight.intensity+=((want?(0.55+0.55*beat)*(nightmare?1.15:1):0)-rageLight.intensity)*Math.min(1,rdt*10); rageLight.color.set(nightmare?'#A040FF':'#FF2A2A');
     if(want&&!paused&&rnd()<rdt*9){ const left=rnd()<0.5, x=left?rnd()*innerWidth*0.22:innerWidth*(0.78+rnd()*0.22);
