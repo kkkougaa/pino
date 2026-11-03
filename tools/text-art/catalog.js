@@ -22,7 +22,7 @@ window.CATALOG = {
     { key: 'recheck',     ko: '…응?!',          ja: '…ん？！',          style: 'warn',  size: 26 },
     { key: 'hint_film',   ko: '띠를 쭉 당겨요!', ja: '帯をひっぱって！', style: 'hint',  size: 17 },
     { key: 'hint_tear',   ko: '위로 쭉 열어요!', ja: '上にグイッとあけて！', style: 'hint', size: 17 },
-    { key: 'hint_flick',  ko: '쓸어서 포스트잇 떼기!', ja: 'スワイプでふせんをはがそう！', style: 'hint', size: 19 },   // flick the post-it off
+    { key: 'hint_flick',  ko: '포스트잇을 날려서 무시하고 먹자!', ja: 'ふせんを飛ばして無視して食べちゃえ！', style: 'hint', size: 18 },   // flick the post-it off
     { key: 'hint_cover',  ko: '↓ 쓸어서 상자 덮기!', ja: '↓ スワイプでフタを閉める！', style: 'warn', size: 19 },
     { key: 'thud',        ko: '쿵',             ja: 'ドスッ',           style: 'thud',  size: 58 },
     { key: 'q',           x: '…?',                                      style: 'bad',   size: 22 },
