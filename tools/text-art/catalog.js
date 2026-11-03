@@ -9,20 +9,14 @@
 window.CATALOG = {
   // ---- judgement & feedback (word parts; numbers are added from the digit sets) ----
   feedback: [
-    { key: 'w_perfect',   x: 'PERFECT!',                                style: 'good',  size: 20 },   // shared English
-    { key: 'fx_nice',     x: 'NICE!',                                   style: 'good',  size: 20 },
     { key: 'fx_miss',     ko: 'MISS −1초',      ja: 'MISS −1秒',        style: 'bad',   size: 19 },
     { key: 'late_pen',    ko: 'MISS −5초',      ja: 'MISS −5秒',        style: 'bad',   size: 22 },   // caught in normal mode's last 30 s
     { key: 'w_miss',      x: 'MISS',                                    style: 'bad',   size: 19 },
-    { key: 'w_speed',     ko: '스피드 보너스',  ja: 'スピードボーナス', style: 'good',  size: 20 },
     { key: 'fx_heart',    ko: '하트',           ja: 'ハート',           style: 'lucky', size: 24, icon: 'heart' },
     { key: 'fx_star',     ko: '별',             ja: 'ほし',             style: 'lucky', size: 24, icon: 'star' },
     { key: 'w_combo',     x: 'COMBO!',                                  style: 'combo', size: 34 },
     { key: 'fx_break',    ko: '콤보 끊김…',     ja: 'コンボ切れ…',    style: 'bad',   size: 19 },
     { key: 'w_safe',      ko: '안 들켰다!',     ja: 'バレなかった！',   style: 'good',  size: 20 },
-    { key: 'w_streak',    ko: '연속!',          ja: '連続！',           style: 'good',  size: 20 },
-    { key: 'w_calm',      ko: '침착!',          ja: '冷静！',           style: 'lucky', size: 24 },
-    { key: 'w_close',     ko: '간발의 차!',     ja: 'ギリギリセーフ！', style: 'lucky', size: 24 },
     { key: 'patrol_fake', ko: '…기분 탓인가?',  ja: '…気のせいか？',    style: 'lucky', size: 22 },   // same look as the dog line: one let-down, two captions
     { key: 'w_pizzaOpen', ko: '앗, 피자잖아!',  ja: 'あっ、ピザだ！',   style: 'alert', size: 29 },
     { key: 'pizza_away',  ko: '휙!',            ja: 'ポイッ！',         style: 'good',  size: 20 },

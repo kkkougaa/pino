@@ -8,14 +8,13 @@ import { REF_CURVE } from './ref_curve.js';
 
 export const RULES = {
   MIN_BOX_SEC: 1.2,        // fastest possible box (peel, open, pick, six pinos, toss) in game seconds, fever included
-  BONUS_SEC: { perfect: 0.5, lucky: 2 },   // normal mode: time a box can add to the 60 s clock
+  BONUS_SEC: { lucky: 2 },   // normal mode: time a heart / star adds to the 60 s clock
   STAGE_SEC: { hardRage: 30, nightmareAfterRage: 30 },   // the quickest a hard run can anger him / tip him into nightmare
   PATROL_MIN_GAP: 4,       // the shortest gap between his visits (nightmare at its limit)
   // per-item maxima, before the stage multiplier
   PINO_MAX: 100 * 4 * 2,   // combo tier x4, fever x2
   DARE_FACTOR: 2.4,        // at most ~35% of pinos can be eaten while he is on his way (x5): 0.65 + 0.35*5
   LUCKY_MAX: 1000 * 4 * 2, // heart / star at x4 combo in fever
-  PERFECT: 200,
   SAFE: 500,               // "not caught" bonus per visit
   // autoplay reference: points per game second at x1 multiplier for a run that never misses and keeps its combo.
   // Measured with the game's autoplay: normal 88,500 in ~72 s of play (60 s + PERFECT time) = ~1,230/s;
@@ -38,7 +37,7 @@ export function judge(mode, score, s, wallSec) {
 
   // time
   if (t > wallSec + 5) return bad(`game time ${t.toFixed(1)}s is longer than the real time ${wallSec.toFixed(1)}s`);
-  if (mode === 'normal' && t > 60 + boxes * R.BONUS_SEC.perfect + lucky * R.BONUS_SEC.lucky + 5) return bad('normal run longer than its clock allows');
+  if (mode === 'normal' && t > 60 + lucky * R.BONUS_SEC.lucky + 5) return bad('normal run longer than its clock allows');
 
   // counts
   if (boxes > Math.floor(t / R.MIN_BOX_SEC) + 1) return bad(`${boxes} boxes in ${t.toFixed(1)}s`);
@@ -57,7 +56,7 @@ export function judge(mode, score, s, wallSec) {
   // score: the absolute ceiling (every pino at x4 in fever, the dare share at x5, every bonus) at the highest multiplier reached
   const sm = nightmare ? R.SM.nightmare : mode === 'super' ? R.SM.super : rage ? R.SM.hardRage : mode === 'hard' ? R.SM.hard : R.SM.normal;
   const dare = mode === 'normal' ? 1 + 4 * 0.2 : R.DARE_FACTOR;
-  const ceiling = sm * (eaten * R.PINO_MAX * dare + lucky * R.LUCKY_MAX + boxes * R.PERFECT + patrols * R.SAFE);
+  const ceiling = sm * (eaten * R.PINO_MAX * dare + lucky * R.LUCKY_MAX + patrols * R.SAFE);
   if (score > ceiling * 1.05) return bad(`score ${score} above the possible ${Math.round(ceiling)}`);
 
   // the softer check: the score autoplay reached at this second while taking every bonus (ref_curve.js),

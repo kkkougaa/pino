@@ -1,6 +1,6 @@
 // Score reference curve for the ranking checks: autoplay a mode taking every bonus, and record the score at each second.
 //   node tools/rank-ref/measure.js <normal|hard|super> [seconds]      (needs Playwright with Chromium)
-// "Every bonus": every box has a heart / star, every pick is a PERFECT (autoplay always is), and when Kouga is on his way
+// "Every bonus": every box has a heart / star, and when Kouga is on his way
 // it keeps eating (the x5 dare) until the last moment before hiding. The result is merged into server/src/ref_curve.js.
 // Runs in a headless browser in game time, so it is slow (a minute of game time can take 10-20 minutes): leave it running.
 const fs = require('fs'), path = require('path');
