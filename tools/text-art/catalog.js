@@ -55,7 +55,7 @@ window.CATALOG = {
     { key: 'late_wake',     ko: '코우가가 깨어났다…!', ja: 'コウガが起きた…！',     style: 'warn',  size: 27 },   // normal mode, last 30 s
     { key: 'cat_pass',      ko: '…지나가던 강아지였잖아!', ja: '…通りすがりの犬だった！', style: 'lucky', size: 22 },   // fake footsteps: just a passing dog
     { key: 'patrol_warn',   ko: '코우가가 온다!',   ja: 'コウガが来る！',      style: 'warn',  size: 29 },
-    { key: 'patrol_watch',  ko: '쉿…',              ja: 'しーっ…',             style: 'hush',  size: 24, plate: 'cloud' },
+    { key: 'patrol_watch',  ko: '쉿…',              ja: 'しーっ…',             style: 'hush',  size: 30 },   // no thought cloud: it read as Kouga talking
     { key: 'patrol_caught', ko: '들켰다!',          ja: 'バレた！',            style: 'alert', size: 36, plate: 'caught' },
     { key: 'melt_over',     ko: '피노가 녹았다!',   ja: 'ピノが溶けた！',      style: 'melt',  size: 31, plate: 'melt' },
     { key: 'pizza_hint',    ko: '피자?! 치워버려!', ja: 'ピザ？！どかしちゃえ！', style: 'pizza', size: 22, plate: 'pizza' },
