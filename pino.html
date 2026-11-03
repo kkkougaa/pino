@@ -2712,7 +2712,7 @@ function nextBox(){
     return;
   }
   const b=makeBox(); cur=b; scene.add(b.group); boxNo++; b.covered=false; b.meltT=meltTime();
-  b.yaw=rage?(rnd()<0.5?-1:1)*rnd()*0.61:0;   // angry Kouga: each box lands turned 0-35° (seen from above), left or right at random
+  b.yaw=rage?(rnd()<0.5?-1:1)*rnd()*0.349:0;   // angry Kouga: each box lands turned 0-20° (seen from above), left or right at random
   if(kougaAround){   // he's here: the decoy sits on the table, the pino waits below until he's gone
     patrol.preHidden=false; b.covered=true; b.homePos=new V3(0,0,0); b.group.position.set(0,-0.5,4.6); b.group.rotation.x=0.35; b.group.rotation.y=b.yaw; b.group.visible=false;
     state='film'; setGuide('film'); if(!(DECOY&&DECOY.visible)) decoyIn(); return;
