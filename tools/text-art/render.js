@@ -56,7 +56,9 @@
     const chars = Array.from(text);
     const adv = chars.map(ch => opts.tab && /[0-9]/.test(ch) ? opts.tab * fs : opts.tab && /[.,]/.test(ch) ? opts.tab * fs * 0.42 : m.measureText(ch).width * (opts.num ? 0.96 : 0.94));   // narrow . and , between equal-width digits
     const tw = adv.reduce((a, b) => a + b, 0);
-    const W = tw + pad * 2, H = fs * 1.18 + pad * 2 + shOff, base = pad + fs * 0.92;
+    // digits share one box built from the font's own '0' (so a number's glyphs line up), with the ink centred top to bottom
+    const dm = m.measureText('0'), dA = dm.actualBoundingBoxAscent || fs * 0.75, dD = dm.actualBoundingBoxDescent || 0;
+    const W = tw + pad * 2, H = opts.num ? dA + dD + (pad + shOff) * 2 : fs * 1.18 + pad * 2 + shOff, base = opts.num ? pad + shOff + dA : pad + fs * 0.92;   // digits: the shadow's room on both sides keeps the sticker body centred
     const lay = []; let x = pad;
     const wave = opts.num || opts.straight ? 0 : 0.05, tilt = (sk.tilt || 1) * (opts.num || opts.straight ? 0 : 0.06);   // straight: no bounce, no lean (labels that sit in the UI)
     chars.forEach((ch, i) => {
@@ -84,6 +86,16 @@
     g.drawImage(f, 0, 0);
     // sparkles on the top edge of a letter or two
     for (let i = 0; i < (opts.num ? 0 : sk.sp || 0); i++) { const L = lay[Math.floor((i + 0.5) / (sk.sp) * lay.length)] || lay[0]; spark(g, L.x + fs * 0.3, base + L.dy - fs * 0.86, fs * 0.17); }
+    if (!opts.num) {   // words: crop to the letters (the shadow aside) with even margins, so the ink sits centred in the picture and on any plate
+      const d = g.getImageData(0, 0, c.width, c.height).data; let top = -1, bot = -1;
+      for (let y = 0; y < c.height && top < 0; y++) for (let x = 0; x < c.width; x++) if (d[(y * c.width + x) * 4 + 3] > 24) { top = y; break; }
+      for (let y = c.height - 1; y >= 0 && bot < 0; y--) for (let x = 0; x < c.width; x++) if (d[(y * c.width + x) * 4 + 3] > 24) { bot = y; break; }
+      if (top >= 0) {
+        const body = bot - shOff, pd = Math.round(fs * 0.04) + Math.ceil(shOff);   // the same room above as the shadow takes below: the sticker body is centred
+        const o = cv(c.width, Math.max(1, body - top + 1 + pd * 2)); o.getContext('2d').drawImage(c, 0, pd - top);
+        return { c: o, pad, edge, fs };
+      }
+    }
     return { c, pad, edge, fs };
   }
   function spark(g, x, y, s) {
