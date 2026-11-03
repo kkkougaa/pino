@@ -16,6 +16,7 @@ swap("const lr=rnd(); if(lr<0.11)", "const lr=rnd()*0.11; if(lr<0.11)");   // ev
 swap("  if(kouga&&exposed()){ if(boxShowing()) coverBox(); else preHide(); return; }",
      "  if(kouga&&exposed()&&!(patrol.phase==='warn'&&patrol.t>0.35&&state==='eat')){ if(boxShowing()) coverBox(); else preHide(); return; }");   // eat on while he comes
 swap("    if(state!=='swat'&&!held){ runT+=dt;", "    if(state!=='swat'&&!held){ runT+=dt; while(window.__rec&&runT>=window.__rec.length) window.__rec.push(score);");
+swap("const RANK_API='local';", "const RANK_API='';");   // no ranking event in the copy: its start popup would hold the run
 swap("fontsReady.then(init,init);", "window.__rec=[]; window.__st=()=>({state,score,runT});fontsReady.then(init,init);");
 const page = path.join(CACHE, 'measure.html'); fs.writeFileSync(page, html);
 
