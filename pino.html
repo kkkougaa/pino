@@ -3584,11 +3584,18 @@ function makeEggplant(){
   for(let i=0;i<pa.count;i++){ const y=pa.getY(i), u=y/L+0.5; pa.setZ(i,pa.getZ(i)+0.18*Math.sin(Math.PI*u)); }   // a gentle bend, flat on the table
   geo.computeVertexNormals();
   const body=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:col('#5A2672'),roughness:0.2}));
-  const green=new THREE.MeshStandardMaterial({color:col('#4F7D2C'),roughness:0.55}), top=-L/2+0.02;
-  const cap=new THREE.Mesh(new THREE.SphereGeometry(0.3,segN(20,10),segN(10,5),0,Math.PI*2,0,Math.PI/2),green); cap.scale.set(1,0.7,1); cap.position.set(0,top+0.02,0); cap.rotation.z=Math.PI; body.add(cap);
-  for(let k=0;k<5;k++){ const a=k/5*Math.PI*2+0.3, sep=new THREE.Mesh(new THREE.ConeGeometry(0.11,0.5,segN(8,4)),green);
-    sep.position.set(cap.position.x+Math.cos(a)*0.2,top+0.22,Math.sin(a)*0.2); sep.rotation.set(Math.sin(a)*0.5,0,-Math.cos(a)*0.5); sep.scale.z=0.45; sep.rotation.order='YXZ'; body.add(sep); }
-  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.09,0.42,segN(10,6)),green); stem.position.set(cap.position.x,top-0.25,0); body.add(stem);
+  const Rb=t=>t<0.8?0.15+0.35*Math.pow(t/0.8,0.8):0.5*Math.sqrt(Math.max(0,1-Math.pow((t-0.8)/0.2,2))), bend=y=>0.18*Math.sin(Math.PI*(y/L+0.5));
+  // the calyx: a green cap hugging the shoulder, its edge drawn out into five pointed lobes lying on the skin
+  const N=segN(60,25), M=segN(10,5), cp=[], ci=[];
+  for(let j=0;j<=N;j++){ const th=j/N*Math.PI*2, te=0.05+0.17*Math.pow(0.5+0.5*Math.cos(5*th),2.4);
+    for(let i=0;i<=M;i++){ const t=-0.035+(te+0.035)*i/M, r=t<0?0.07+0.13*(1+t/0.035):Rb(t)+0.022*(1-0.6*i/M), y=(t-0.5)*L; cp.push(r*Math.cos(th),y,r*Math.sin(th)+bend(y)); } }
+  for(let j=0;j<N;j++) for(let i=0;i<M;i++){ const a=j*(M+1)+i, b=a+M+1; ci.push(a,b,a+1,b,b+1,a+1); }
+  const cg=new THREE.BufferGeometry(); cg.setAttribute('position',new THREE.Float32BufferAttribute(cp,3)); cg.setIndex(ci); cg.computeVertexNormals();
+  const calyx=new THREE.Mesh(cg,new THREE.MeshStandardMaterial({color:col('#3F6B2A'),roughness:0.6,side:THREE.DoubleSide})); body.add(calyx);
+  // the stem: thick, tapering, with a slight curl
+  const sp=[]; for(let i=0;i<=8;i++){ const q=i/8; sp.push(new THREE.Vector2(i===8?0.001:(0.075-0.022*q)*(i===7?0.85:1),-q*0.42)); } sp.reverse();
+  const sg=new THREE.LatheGeometry(sp,segN(14,8)), spa=sg.attributes.position; for(let i=0;i<spa.count;i++){ const q=-spa.getY(i)/0.42; spa.setX(i,spa.getX(i)+0.1*q*q); } sg.computeVertexNormals();
+  const stem=new THREE.Mesh(sg,new THREE.MeshStandardMaterial({color:col('#5C7A32'),roughness:0.65})); stem.position.set(0,-L/2-0.06,bend(-L/2)); body.add(stem);
   body.rotation.z=Math.PI/2; body.position.set(-0.2,0.5,0); body.traverse(o=>{ if(o.isMesh){ o.castShadow=true; o.receiveShadow=true; } }); g.add(body);
   inkify(g); g.visible=false; scene.add(g); return g;
 }
