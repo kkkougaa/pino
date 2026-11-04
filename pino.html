@@ -3613,6 +3613,11 @@ function takoBallCanvas(){   // wraps a ball: sauce over the top with a ragged e
   for(let i=0;i<45;i++){ g.fillStyle=rnd()<0.5?'#3E7A2A':'#5C9A36'; g.fillRect(rnd()*W,rnd()*Hh*0.3,2+rnd()*2,2+rnd()*2); }   // aonori
   return c;
 }
+function mergeGeos(list){   // indexed position-only geometries into one; their normals are worked out afresh
+  let nv=0, ni=0; list.forEach(q=>{ nv+=q.attributes.position.count; ni+=q.index.count; });
+  const pos=new Float32Array(nv*3), idx=new Uint32Array(ni); let ov=0, oi=0;
+  list.forEach(q=>{ pos.set(q.attributes.position.array,ov*3); const ix=q.index.array; for(let i=0;i<ix.length;i++) idx[oi+i]=ix[i]+ov; ov+=q.attributes.position.count; oi+=ix.length; q.dispose(); });
+  const m=new THREE.BufferGeometry(); m.setAttribute('position',new THREE.BufferAttribute(pos,3)); m.setIndex(new THREE.BufferAttribute(idx,1)); m.computeVertexNormals(); return m; }
 function boatCanvas(){   // thin pale wood sheet, the grain running the length of the boat
   const W=512, Hh=256, c=cv(W,Hh), g=c.getContext('2d'); g.fillStyle='#EEDDB8'; g.fillRect(0,0,W,Hh);
   for(let i=0;i<70;i++){ const y0=rnd()*Hh, a=1+rnd()*3, f=0.004+rnd()*0.01, ph=rnd()*6;
@@ -3643,11 +3648,13 @@ function makeTakoyaki(){   // a thin wooden boat with six balls, sauce, squiggle
       if(k<3) for(let i=1;i<6;i++){ const q=i/6*Math.PI; P(dir*(am+0.03*Math.sin(q)),b0+0.0675*(1-Math.cos(q))); } }
     g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),segN(110,50),0.036,segN(8,5),false),mayoMat)); });
   const flakes=['#E6C4A6','#D9AC8C','#EED6BC','#C99474'].map(h=>new THREE.MeshStandardMaterial({color:col(h),roughness:0.8,side:THREE.DoubleSide}));
+  const fl=[[],[],[],[]];
   for(let k=0;k<150;k++){   // a heap of bonito flakes over each ball: thin ragged shavings, curled
     const p=tops[k%6], ra=0.34*Math.sqrt(rnd()), an=rnd()*6.3, x=p.x+ra*Math.cos(an), z=p.z+0.06+ra*Math.sin(an), w=0.09+rnd()*0.08, h=0.05+rnd()*0.04, sh=new THREE.Shape();
     for(let i=0;i<10;i++){ const q=i/10*Math.PI*2, j=0.7+rnd()*0.5; if(i) sh.lineTo(Math.cos(q)*w*j,Math.sin(q)*h*j); else sh.moveTo(Math.cos(q)*w*j,0); }
     const fg=new THREE.ShapeGeometry(sh), fp=fg.attributes.position, cu=4+rnd()*8; for(let i=0;i<fp.count;i++) fp.setZ(i,cu*fp.getX(i)*fp.getX(i));
-    const f=new THREE.Mesh(fg,flakes[k%4]); f.position.set(x,onTop(x,z)+0.03+rnd()*0.06,z); f.rotation.set(-Math.PI/2+(rnd()-0.5)*1.4,rnd()*6.3,(rnd()-0.5)*0.9); f.userData.ink=true; g.add(f); }
+    const o=new THREE.Object3D(); o.position.set(x,onTop(x,z)+0.03+rnd()*0.06,z); o.rotation.set(-Math.PI/2+(rnd()-0.5)*1.4,rnd()*6.3,(rnd()-0.5)*0.9); o.updateMatrix(); fg.applyMatrix4(o.matrix); fl[k%4].push(fg); }
+  fl.forEach((list,i)=>{ const f=new THREE.Mesh(mergeGeos(list),flakes[i]); f.userData.ink=true; g.add(f); });   // one draw per colour instead of one per flake
   inkify(g); g.visible=false; scene.add(g); return g;
 }
 function crumbCanvas(){   // golden panko, lumpy: used as colour and as the bump
