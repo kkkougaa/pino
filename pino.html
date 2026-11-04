@@ -1292,7 +1292,7 @@ var I18N={
     say_C:'흥, 한두개쯤이야. 이번만 봐준다.',
     say_F:'뭐야, 먹긴 한 거냐?',
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.', intro2Rank:'1등은 좋은 일이 생길지도…',
-    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tDraft:'시안 연출 (간발·안도)', tEgg:'이스터에그 보기', tEggGo:'보기', eggNames:'기본 (모찌 아이스)|붕어빵|가지|계란|생선뼈|타코야끼|새우튀김|포션|메론빵', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
+    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tDraft:'시안 연출 (간발·안도)', tEgg:'이스터에그 보기', tEggGo:'보기', eggNames:'기본 (모찌 아이스)|붕어빵|가지|계란|생선뼈|타코야끼|새우튀김|포션|메론빵|포장 햄버거', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
     fx_miss:'MISS −1초', 
     ready:'준비~', go_:'START!', modeNormal:'보통', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
@@ -1350,7 +1350,7 @@ var I18N={
     say_C:'フン、1つや2つくらいどうってことねぇぜ。今回だけは見逃してやるぜ。',
     say_F:'なんだ、ほんとに食ったのか？',
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。', intro2Rank:'1位にはいいことがあるかも…',
-    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tDraft:'試作演出', tEgg:'イースターエッグを見る', tEggGo:'見る', eggNames:'いつもの（もちアイス）|たい焼き|なす|たまご|魚の骨|たこ焼き|エビフライ|ポーション|メロンパン', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
+    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tDraft:'試作演出', tEgg:'イースターエッグを見る', tEggGo:'見る', eggNames:'いつもの（もちアイス）|たい焼き|なす|たまご|魚の骨|たこ焼き|エビフライ|ポーション|メロンパン|包みバーガー', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
     fx_miss:'MISS −1秒', 
     ready:'よーい…', go_:'START!', modeNormal:'ふつう', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
@@ -3693,12 +3693,12 @@ function makePotion(){   // a round fantasy flask lying on its side, glowing gre
   const g=new THREE.Group(), fl=new THREE.Group(), R=0.6, cy=R, lvl=0.12;
   const glassPts=[]; for(let i=0;i<=20;i++){ const a=Math.PI*(i/20)*0.86; glassPts.push(new THREE.Vector2(Math.max(0.001,R*Math.sin(a)),cy-R*Math.cos(a))); }   // bottom up to the shoulder
   glassPts.push(new THREE.Vector2(0.19,cy+R*0.98),new THREE.Vector2(0.17,cy+R+0.45),new THREE.Vector2(0.23,cy+R+0.5),new THREE.Vector2(0.23,cy+R+0.56),new THREE.Vector2(0.17,cy+R+0.58));   // neck and lip
-  const glass=new THREE.Mesh(new THREE.LatheGeometry(glassPts,segN(32,14)),new THREE.MeshStandardMaterial({color:col('#E8FFF2'),roughness:0.08,transparent:true,opacity:0.28,depthWrite:false,side:THREE.DoubleSide}));
+  const glass=new THREE.Mesh(new THREE.LatheGeometry(glassPts,segN(32,14)),new THREE.MeshStandardMaterial({color:col('#D8FFE8'),roughness:0.08,transparent:true,opacity:0.12,depthWrite:false,side:THREE.DoubleSide}));
   const ink=new THREE.Mesh(glass.geometry.clone(),INK_MAT); inkNormals(ink.geometry); ink.userData.ink=true; glass.add(ink); fl.add(glass);   // glass is see-through, so its outline is added by hand
-  const th=Math.acos(lvl/R), liq=new THREE.Mesh(new THREE.SphereGeometry(R*0.94,segN(32,14),segN(16,8),0,Math.PI*2,th,Math.PI-th),new THREE.MeshStandardMaterial({color:col('#22B84C'),emissive:col('#12922F'),emissiveIntensity:0.6,roughness:0.3}));
-  liq.position.y=cy; liq.castShadow=true; g.add(liq);
-  const top=new THREE.Mesh(new THREE.CircleGeometry(R*0.94*Math.sin(th),segN(32,14)),new THREE.MeshStandardMaterial({color:col('#2FC458'),emissive:col('#139A34'),emissiveIntensity:0.55,roughness:0.25})); top.rotation.x=-Math.PI/2; top.position.y=cy+lvl*0.94; top.userData.ink=true; g.add(top);
-  const bub=new THREE.MeshStandardMaterial({color:col('#C8FFD6'),emissive:col('#7CF29A'),emissiveIntensity:0.7,roughness:0.2});
+  const th=Math.acos(lvl/R), liq=new THREE.Mesh(new THREE.SphereGeometry(R*0.94,segN(32,14),segN(16,8),0,Math.PI*2,th,Math.PI-th),new THREE.MeshStandardMaterial({color:col('#2DFF7A'),emissive:col('#14E060'),emissiveIntensity:1.0,roughness:0.15,transparent:true,opacity:0.8}));   // clear, glowing, a little minty
+  liq.position.y=cy; g.add(liq);
+  const top=new THREE.Mesh(new THREE.CircleGeometry(R*0.94*Math.sin(th),segN(32,14)),new THREE.MeshStandardMaterial({color:col('#5CFF9A'),emissive:col('#22E870'),emissiveIntensity:0.8,roughness:0.1,transparent:true,opacity:0.85})); top.rotation.x=-Math.PI/2; top.position.y=cy+lvl*0.94; top.userData.ink=true; g.add(top);
+  const bub=new THREE.MeshStandardMaterial({color:col('#E6FFF2'),emissive:col('#A8FFD4'),emissiveIntensity:0.9,roughness:0.1});
   [[0.18,-0.05,0.2,0.07],[-0.2,-0.18,0.15,0.05],[0.05,-0.3,-0.22,0.06],[-0.1,0.02,-0.1,0.04]].forEach(([x,y,z,r])=>{ const b=new THREE.Mesh(new THREE.SphereGeometry(r,segN(10,6),segN(8,4)),bub); b.position.set(x,cy+y,z); b.userData.ink=true; g.add(b); });
   const cork=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.16,0.3,segN(16,8)),new THREE.MeshStandardMaterial({color:col('#C49A62'),roughness:0.9})); cork.position.y=cy+R+0.62; cork.castShadow=true; fl.add(cork);
   fl.position.y=cy; fl.rotation.set(0,-0.5,Math.PI/2+0.12); fl.children.forEach(o=>o.position.y-=cy); g.add(fl);
@@ -3706,16 +3706,20 @@ function makePotion(){   // a round fantasy flask lying on its side, glowing gre
   g.children.forEach(o=>o.position.x+=0.3);   // the flask turned over around the bulb's centre (the liquid stays level); all of it nudged so the bottle sits centred
   inkify(g); g.visible=false; scene.add(g); return g;
 }
-function melonCanvas(){   // the cookie crust seen from above: a diamond grid of grooves, sugar on top; returns colour and height
-  const W=512, c=cv(W,W), g=c.getContext('2d'); g.fillStyle='rgb(150,150,150)'; g.fillRect(0,0,W,W);
-  g.save(); g.translate(W/2,W/2); g.rotate(Math.PI/4); g.strokeStyle='rgb(60,60,60)'; g.lineWidth=9;
-  for(let k=-6;k<=6;k++){ const o=k*W/8.5; g.beginPath(); g.moveTo(o,-W); g.lineTo(o,W); g.stroke(); g.beginPath(); g.moveTo(-W,o); g.lineTo(W,o); g.stroke(); }
-  g.restore();
-  const cc=cv(W,W), cg=cc.getContext('2d'), src=g.getImageData(0,0,W,W), out=cg.createImageData(W,W);
-  for(let i=0;i<src.data.length;i+=4){ const h=src.data[i]/255, px=(i/4)%W, py=Math.floor(i/4/W), d=Math.hypot(px-W/2,py-W/2)/(W/2), e=Math.min(1,Math.max(0,(d-0.75)/0.25));
-    const A=[196,128,44], B=[246,214,126]; out.data[i]=A[0]+(B[0]-A[0])*h*(1-0.35*e); out.data[i+1]=A[1]+(B[1]-A[1])*h*(1-0.35*e); out.data[i+2]=A[2]+(B[2]-A[2])*h*(1-0.4*e); out.data[i+3]=255; }
-  cg.putImageData(out,0,0);
-  for(let i=0;i<500;i++){ cg.fillStyle='rgba(255,252,238,'+(0.5+rnd()*0.5).toFixed(2)+')'; cg.fillRect(rnd()*W,rnd()*W,2,2); }   // sugar
+function melonCanvas(){   // the cookie crust seen from above: puffy diamonds split by cracked grooves, sugar on top, bread showing at the rim; colour and height
+  const W=512, c=cv(W,W), g=c.getContext('2d'), hd=g.createImageData(W,W), cc=cv(W,W), cg=cc.getContext('2d'), out=cg.createImageData(W,W), N=7.5, sq=Math.SQRT1_2;
+  const sm=(a,b,x)=>{ const t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t); }, mix=(a,b,t)=>a+(b-a)*t;
+  for(let py=0;py<W;py++) for(let px=0;px<W;px++){ const x=px/W-0.5, y=py/W-0.5, d=Math.hypot(x,y)*2;
+    const u=(x+y)*sq*N+0.06*Math.sin(y*31)+0.04*Math.sin(x*57), v=(x-y)*sq*N+0.06*Math.sin(x*29)+0.04*Math.sin(y*61);   // a slightly wandering diamond grid
+    const fu=Math.abs(u-Math.round(u)), fv=Math.abs(v-Math.round(v)), e=Math.min(fu,fv);
+    let h=0.25+0.75*sm(0.03,0.22,e)*(0.85+0.15*Math.cos(Math.min(fu,0.5)*Math.PI)*Math.cos(Math.min(fv,0.5)*Math.PI));   // each diamond swells up from its grooves
+    const crack=Math.abs(Math.sin(px*0.13+Math.sin(py*0.05)*3)*Math.sin(py*0.11+Math.sin(px*0.07)*2)); if(crack<0.05&&e>0.08) h-=0.18;   // fine cracks in the crust
+    const rim=sm(0.8,0.97,d); h=mix(h,0.45,rim);
+    const i=(py*W+px)*4, hv=Math.round(Math.max(0,Math.min(1,h))*255); hd.data[i]=hd.data[i+1]=hd.data[i+2]=hv; hd.data[i+3]=255;
+    const k=Math.max(0,Math.min(1,h)), top=[mix(190,250,k),mix(120,222,k),mix(44,150,k)], bread=[208,142,62];   // grooves golden brown, tops pale butter
+    out.data[i]=mix(top[0],bread[0],rim); out.data[i+1]=mix(top[1],bread[1],rim); out.data[i+2]=mix(top[2],bread[2],rim); out.data[i+3]=255; }
+  g.putImageData(hd,0,0); cg.putImageData(out,0,0);
+  for(let i=0;i<1400;i++){ const a=rnd()*6.3, r=Math.sqrt(rnd())*W*0.42; cg.fillStyle='rgba(255,253,244,'+(0.55+rnd()*0.45).toFixed(2)+')'; cg.fillRect(W/2+Math.cos(a)*r,W/2+Math.sin(a)*r,1.5+rnd()*1.5,1.5+rnd()*1.5); }   // granulated sugar
   return {color:cc,height:c};
 }
 function makeMelonPan(){   // a domed bun under a cracked-grid cookie crust
@@ -3728,9 +3732,41 @@ function makeMelonPan(){   // a domed bun under a cracked-grid cookie crust
   const g=new THREE.Group(), bun=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({map,bumpMap:bump,bumpScale:0.07,roughness:0.9})); bun.castShadow=true; bun.receiveShadow=true; g.add(bun);
   inkify(g); g.visible=false; scene.add(g); return g;
 }
+function kraft(g,W,Hh){   // brown wrapping paper: fibres, a grease spot or two
+  g.fillStyle='#C7A777'; g.fillRect(0,0,W,Hh);
+  for(let i=0;i<900;i++){ g.fillStyle=rnd()<0.5?'rgba(120,86,48,.10)':'rgba(240,222,190,.12)'; g.fillRect(rnd()*W,rnd()*Hh,1+rnd()*5,1); }
+  for(let i=0;i<3;i++){ const x=rnd()*W, y=rnd()*Hh, r=14+rnd()*26, gr=g.createRadialGradient(x,y,2,x,y,r); gr.addColorStop(0,'rgba(140,100,50,.22)'); gr.addColorStop(1,'rgba(140,100,50,0)'); g.fillStyle=gr; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); }
+}
+function burgerTopCanvas(){   // our own print: big lettering, tick circles, a row of ingredient icons and a box to write in
+  const W=512, c=cv(W,W), g=c.getContext('2d'); kraft(g,W,W); const ink='#4A2C20'; g.fillStyle=g.strokeStyle=ink; g.textAlign='center'; g.lineJoin='round';
+  g.font='900 30px "M PLUS Rounded 1c","Jua",sans-serif'; g.fillText('★ PINO DINER ★',W/2,78);
+  g.font='900 86px "M PLUS Rounded 1c","Jua",sans-serif'; g.fillText('BIG',W/2,168); g.fillText('BURGER',W/2,250);
+  g.font='800 30px "M PLUS Rounded 1c","Jua",sans-serif'; g.lineWidth=3; [['치즈',92],['불고기',250],['새우',410]].forEach(([t,x])=>{ g.beginPath(); g.arc(x-48,300,12,0,7); g.stroke(); g.textAlign='left'; g.fillText(t,x-30,311); g.textAlign='center'; });
+  [60,112,164,216,268,320,372,424].forEach((x,i)=>{ g.beginPath(); if(i%4===0){ g.arc(x,358,17,0,7); } else if(i%4===1){ g.ellipse(x,358,20,12,0.5,0,7); } else if(i%4===2){ g.moveTo(x-16,372); g.quadraticCurveTo(x,330,x+16,372); g.closePath(); } else { g.rect(x-10,342,20,32); } g.fill(); });
+  g.lineWidth=5; rr(g,70,394,372,74,12); g.stroke(); g.beginPath(); g.moveTo(256,394); g.lineTo(256,468); g.stroke();
+  return c;
+}
+function burgerSideCanvas(){   // the sides: kraft with a dark band around the middle
+  const W=512, Hh=128, c=cv(W,Hh), g=c.getContext('2d'); kraft(g,W,Hh);
+  g.fillStyle='#4A2C20'; g.fillRect(0,Hh*0.42,W,Hh*0.4); g.fillStyle='#C7A777'; g.font='900 26px "M PLUS Rounded 1c","Jua",sans-serif'; g.textAlign='center'; g.fillText('PINO DINER',W/2,Hh*0.71);
+  return c;
+}
+function makeBurger(){   // a wrapped burger: a soft, crumpled, rounded paper block
+  const A=1.0, Bh=0.48, C=0.9, rad=0.2, geo=new THREE.BoxGeometry(2*A,2*Bh,2*C,segN(12,6),segN(6,3),segN(12,6)), pa=geo.attributes.position, v=new V3(), q=new V3();
+  for(let i=0;i<pa.count;i++){ v.fromBufferAttribute(pa,i); q.set(Math.max(-A+rad,Math.min(A-rad,v.x)),Math.max(-Bh+rad,Math.min(Bh-rad,v.y)),Math.max(-C+rad,Math.min(C-rad,v.z)));
+    const n=v.clone().sub(q); if(n.lengthSq()>1e-9) n.setLength(rad); v.copy(q).add(n);   // rounded edges
+    const top=Math.max(0,v.y/Bh); v.y+=0.1*top*(1-(v.x/A)**2)*(1-(v.z/C)**2);   // the bun pushes the top up
+    const w=0.025*Math.sin(v.x*9.1+v.z*3.3)*Math.sin(v.z*7.7-v.y*5.1)+0.015*Math.sin(v.x*17+v.y*13); v.multiplyScalar(1+w);   // crumples
+    pa.setXYZ(i,v.x,v.y+Bh,v.z); }
+  geo.computeVertexNormals();
+  const tt=new THREE.CanvasTexture(burgerTopCanvas()), st=new THREE.CanvasTexture(burgerSideCanvas()); tt.encoding=st.encoding=THREE.sRGBEncoding; tt.anisotropy=4;
+  const top=new THREE.MeshStandardMaterial({map:tt,roughness:0.92}), side=new THREE.MeshStandardMaterial({map:st,roughness:0.92}), base=new THREE.MeshStandardMaterial({color:col('#B8986A'),roughness:0.95});
+  const m=new THREE.Mesh(geo,[side,side,top,base,side,side]); m.rotation.y=0.12; m.castShadow=true; m.receiveShadow=true;
+  const g=new THREE.Group(); g.add(m); inkify(g); g.visible=false; scene.add(g); return g;
+}
 const DECOYS={};   // built on first use
-const DECOY_MAKE={daifuku:()=>makeDecoy(),taiyaki:()=>makeTaiyaki(),eggplant:()=>makeEggplant(),egg:()=>makeEgg(),fishbone:()=>makeFishBone(),takoyaki:()=>makeTakoyaki(),ebifry:()=>makeEbiFry(),potion:()=>makePotion(),melonpan:()=>makeMelonPan()};
-function pickDecoy(){ const r=rnd(), e=['taiyaki','eggplant','egg','fishbone','takoyaki','ebifry','potion','melonpan'], k=r<0.32?e[Math.floor(r/0.04)]:'daifuku';   // 68% the mochi-ice pack, 4% each easter egg
+const DECOY_MAKE={daifuku:()=>makeDecoy(),taiyaki:()=>makeTaiyaki(),eggplant:()=>makeEggplant(),egg:()=>makeEgg(),fishbone:()=>makeFishBone(),takoyaki:()=>makeTakoyaki(),ebifry:()=>makeEbiFry(),potion:()=>makePotion(),melonpan:()=>makeMelonPan(),burger:()=>makeBurger()};
+function pickDecoy(){ const r=rnd(), e=['taiyaki','eggplant','egg','fishbone','takoyaki','ebifry','potion','melonpan','burger'], k=r<0.36?e[Math.floor(r/0.04)]:'daifuku';   // 64% the mochi-ice pack, 4% each easter egg
   return DECOYS[k]||(DECOYS[k]=DECOY_MAKE[k]()); }
 function decoyIn(kind){   // kind: a set one (the test viewer); otherwise picked by chance
   if(kind){ decoyAway(true); DECOY=DECOYS[kind]||(DECOYS[kind]=DECOY_MAKE[kind]()); } else if(!(DECOY&&DECOY.visible)) DECOY=pickDecoy(); const g=DECOY, tok=g.userData.mv=(g.userData.mv||0)+1; g.visible=true; g.position.set(0,3.2,0); g.rotation.set(0,(rnd()-0.5)*0.18,0); g.scale.set(1,1,1); g.userData.out=false;
@@ -4213,7 +4249,7 @@ addEventListener('resize',placeSetBtn);
 $('setBtn').addEventListener('click',()=>{ audio(); setLabels(); $('setOv').hidden=false; });
 $('setClose').addEventListener('click',()=>{ $('setOv').hidden=true; });
 // TEST ONLY: look at every cover-up in turn, on the table, from the start screen
-const EGG={i:0,keys:['daifuku','taiyaki','eggplant','egg','fishbone','takoyaki','ebifry','potion','melonpan']};
+const EGG={i:0,keys:['daifuku','taiyaki','eggplant','egg','fishbone','takoyaki','ebifry','potion','melonpan','burger']};
 function eggShow(){ $('eggName').textContent=TX('eggNames').split('|')[EGG.i]+'  '+(EGG.i+1)+'/'+EGG.keys.length; decoyIn(EGG.keys[EGG.i]); }
 $('eggBtn').addEventListener('click',()=>{ if(state!=='idle') return; $('setOv').hidden=true; $('start').style.visibility='hidden'; if(cur) cur.group.visible=false; titleTo=0; $('eggOv').hidden=false; eggShow(); });
 $('eggPrev').addEventListener('click',()=>{ EGG.i=(EGG.i+EGG.keys.length-1)%EGG.keys.length; eggShow(); });
