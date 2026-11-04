@@ -3769,8 +3769,10 @@ function makeUdon(){   // kake udon, after a photo: a white porcelain bowl with 
   const line=new THREE.Mesh(new THREE.TorusGeometry(rIn(HB-0.07)-0.004,0.006,4,segN(64,24)).rotateX(Math.PI/2),blue); line.position.y=HB-0.07; line.userData.ink=true; g.add(line);
   const band=new THREE.Mesh(new THREE.TorusGeometry(0.64,0.012,4,segN(64,24)).rotateX(Math.PI/2),blue); band.position.y=0.24; band.userData.ink=true; g.add(band);
   // the broth: clear, light golden
-  const broth=new THREE.Mesh(new THREE.CircleGeometry(rIn(LV)-0.01,segN(48,20)),new THREE.MeshBasicMaterial({color:col('#C9733A'),transparent:true,premultipliedAlpha:true,blending:THREE.MultiplyBlending,depthWrite:false}));   // tsuyu: it tints what's under it, like coloured glass, so the white bowl and noodles show through soy-red
+  const broth=new THREE.Mesh(new THREE.CircleGeometry(rIn(LV)-0.01,segN(48,20)),new THREE.MeshBasicMaterial({color:col('#A2582A'),transparent:true,premultipliedAlpha:true,blending:THREE.MultiplyBlending,depthWrite:false}));   // tsuyu: it tints what's under it, like coloured glass, so the white bowl and noodles show through soy-red
   broth.rotation.x=-Math.PI/2; broth.position.y=LV; broth.userData.ink=true; broth.renderOrder=1; g.add(broth);
+  const deep=new THREE.Mesh(new THREE.CircleGeometry(rIn(LV-0.11)-0.01,segN(48,20)),new THREE.MeshBasicMaterial({color:col('#5A2E16'),transparent:true,premultipliedAlpha:true,blending:THREE.MultiplyBlending,depthWrite:false}));
+  deep.rotation.x=-Math.PI/2; deep.position.y=LV-0.11; deep.userData.ink=true; deep.renderOrder=1; g.add(deep);   // a second, darker layer lower down: deep broth goes nearly black, noodles near the top stay amber
   // the noodles: strands curling the same way round the bowl, but each its own length, radius and wobble, some crossing, rising over and dipping under the broth
   const nd=[];
   for(let s=0;s<12;s++){ const pts=[], a0=s/12*6.3+rnd()*0.4, span=Math.PI*(0.9+rnd()*1.0), r0=0.5+rnd()*0.36, r1=0.1+rnd()*0.45, cx=(rnd()-0.5)*0.16, cz=(rnd()-0.5)*0.16, w1=rnd()*6.3, w2=2+rnd()*3, n=20, lift=rnd()*0.03;
