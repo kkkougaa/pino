@@ -3693,10 +3693,10 @@ function makePotion(){   // a round fantasy flask lying on its side, glowing gre
   const g=new THREE.Group(), fl=new THREE.Group(), R=0.6, cy=R, lvl=0.12;
   const glassPts=[]; for(let i=0;i<=20;i++){ const a=Math.PI*(i/20)*0.86; glassPts.push(new THREE.Vector2(Math.max(0.001,R*Math.sin(a)),cy-R*Math.cos(a))); }   // bottom up to the shoulder
   glassPts.push(new THREE.Vector2(0.19,cy+R*0.98),new THREE.Vector2(0.17,cy+R+0.45),new THREE.Vector2(0.23,cy+R+0.5),new THREE.Vector2(0.23,cy+R+0.56),new THREE.Vector2(0.17,cy+R+0.58));   // neck and lip
-  const glass=new THREE.Mesh(new THREE.LatheGeometry(glassPts,segN(32,14)),new THREE.MeshStandardMaterial({color:col('#D8FFE8'),roughness:0.08,transparent:true,opacity:0.1,side:THREE.DoubleSide})); glass.renderOrder=2;
+  const glass=new THREE.Mesh(new THREE.LatheGeometry(glassPts,segN(32,14)),new THREE.MeshStandardMaterial({color:col('#D8FFE8'),roughness:0.08,transparent:true,opacity:0.1,side:THREE.DoubleSide})); glass.renderOrder=2; glass.castShadow=true;   // a plain solid shadow, glass or not
   const ink=new THREE.Mesh(glass.geometry.clone(),Object.assign(INK_MAT.clone(),{transparent:true,onBeforeCompile:INK_MAT.onBeforeCompile})); inkNormals(ink.geometry); ink.userData.ink=true; ink.renderOrder=3; glass.add(ink); fl.add(glass);   // glass is see-through, so its outline is added by hand, drawn after the glass so only the rim shows (not the dark shell through it)
   const th=Math.acos(lvl/R), liq=new THREE.Mesh(new THREE.SphereGeometry(R*0.94,segN(32,14),segN(16,8),0,Math.PI*2,th,Math.PI-th),new THREE.MeshStandardMaterial({color:col('#22C81E'),emissive:col('#119A0E'),emissiveIntensity:0.55,roughness:0.15,transparent:true,opacity:0.9}));   // clear, glowing, a little minty
-  liq.position.y=cy; liq.renderOrder=1; g.add(liq);
+  liq.position.y=cy; liq.renderOrder=1; liq.castShadow=true; g.add(liq);
   const top=new THREE.Mesh(new THREE.CircleGeometry(R*0.94*Math.sin(th),segN(32,14)),new THREE.MeshStandardMaterial({color:col('#5FE02A'),emissive:col('#2BB012'),emissiveIntensity:0.55,roughness:0.1,transparent:true,opacity:0.9})); top.rotation.x=-Math.PI/2; top.position.y=cy+lvl*0.94; top.userData.ink=true; top.renderOrder=1; g.add(top);
   const bub=new THREE.MeshStandardMaterial({color:col('#EFFFD8'),emissive:col('#B8F27A'),emissiveIntensity:0.7,roughness:0.1});
   [[0.18,-0.05,0.2,0.07],[-0.2,-0.18,0.15,0.05],[0.05,-0.3,-0.22,0.06],[-0.1,0.02,-0.1,0.04]].forEach(([x,y,z,r])=>{ const b=new THREE.Mesh(new THREE.SphereGeometry(r,segN(10,6),segN(8,4)),bub); b.position.set(x,cy+y,z); b.userData.ink=true; g.add(b); });
@@ -3718,10 +3718,10 @@ function melonCanvas(R){
   const W=512, cc=cv(W,W), cg=cc.getContext('2d'), out=cg.createImageData(W,W), mix=(a,b,t)=>a+(b-a)*t;
   for(let py=0;py<W;py++) for(let px=0;px<W;px++){ const x=(px/W-0.5)*2*R, z=(py/W-0.5)*2*R, d=Math.min(1,Math.hypot(x,z)/R), f=melonField(x,z), gr=rnd();
     const toast=Math.pow(f.pillow,0.7)*(0.35+0.5*(1-d*d))*(1-f.groove);   // the raised tops brown first
-    let r=mix(242,236,toast), g=mix(224,182,toast), b=mix(134,108,toast); r=mix(r,246,f.groove*0.7); g=mix(g,232,f.groove*0.7); b=mix(b,160,f.groove*0.7);   // grooves stay pale lemon
+    let r=mix(212,206,toast), g=mix(188,150,toast), b=mix(102,78,toast); r=mix(r,218,f.groove*0.7); g=mix(g,198,f.groove*0.7); b=mix(b,122,f.groove*0.7);   // grooves stay pale lemon; kept below white so it doesn't glow under the lights
     const i=(py*W+px)*4; out.data[i]=r+(gr-0.5)*12; out.data[i+1]=g+(gr-0.5)*12; out.data[i+2]=b+(gr-0.5)*10; out.data[i+3]=255; }
   cg.putImageData(out,0,0);
-  for(let i=0;i<2600;i++){ cg.fillStyle='rgba(255,253,246,'+(0.55+rnd()*0.45).toFixed(2)+')'; const s=1+rnd()*1.8; cg.fillRect(rnd()*W,rnd()*W,s,s); }   // granulated sugar
+  for(let i=0;i<1800;i++){ cg.fillStyle='rgba(240,234,214,'+(0.3+rnd()*0.35).toFixed(2)+')'; const s=1+rnd()*1.8; cg.fillRect(rnd()*W,rnd()*W,s,s); }   // granulated sugar
   const gc=cv(128,128), gg=gc.getContext('2d'), gd=gg.createImageData(128,128); for(let i=0;i<gd.data.length;i+=4){ const v=100+rnd()*60; gd.data[i]=gd.data[i+1]=gd.data[i+2]=v; gd.data[i+3]=255; } gg.putImageData(gd,0,0);   // a sandy grain for the bump
   return {color:cc,grain:gc};
 }
@@ -3735,7 +3735,7 @@ function makeMelonPan(){
     sp.setXYZ(i,x0*R*lump*1.012,(H*Math.pow(Math.max(0,y0),0.75))*1.035+0.02,z0*R*lump*1.012); pa.setXYZ(i,x,y+0.02,z); uv.setXY(i,x/(2*R)+0.5,0.5-z/(2*R)); }   // the outline dome a touch bigger than the pillows' tops
   geo.computeVertexNormals(); smooth.computeVertexNormals(); inkNormals(smooth);
   const art=melonCanvas(R), map=new THREE.CanvasTexture(art.color), bump=new THREE.CanvasTexture(art.grain); map.encoding=THREE.sRGBEncoding; map.anisotropy=4; bump.wrapS=bump.wrapT=THREE.RepeatWrapping; bump.repeat.set(6,6);
-  const g=new THREE.Group(), bun=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({map,bumpMap:bump,bumpScale:0.01,roughness:0.92})); bun.castShadow=true; bun.receiveShadow=true; bun.userData.ink=true; g.add(bun);
+  const g=new THREE.Group(), bun=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({map,bumpMap:bump,bumpScale:0.01,roughness:0.95,shadowSide:THREE.DoubleSide})); bun.castShadow=true; bun.receiveShadow=true; bun.userData.ink=true; g.add(bun);   // open underneath: cast from both sides so the shadow is solid
   const ink=new THREE.Mesh(smooth,INK_MAT); ink.userData.ink=true; ink.raycast=()=>{}; bun.add(ink);
   inkify(g); g.visible=false; scene.add(g); return g;
 }
