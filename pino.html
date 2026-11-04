@@ -1182,6 +1182,7 @@ bootStep(0.1);</script>
       <div class="setrow"><span data-i18n="tAuto"></span><button class="tog" type="button" data-test="auto"></button></div>
       <div class="setrow"><span data-i18n="tNm"></span><button class="tog" type="button" data-test="nm"></button></div>
       <div class="setrow"><span data-i18n="tCoach"></span><button class="tog" type="button" data-test="coach"></button></div>
+      <div class="setrow"><span data-i18n="tDraft"></span><button class="tog" type="button" data-test="draft"></button></div>
     </div>
     <button class="btn" id="setClose" type="button" data-i18n="close" style="margin-top:18px"></button>
   </div>
@@ -1286,7 +1287,7 @@ var I18N={
     say_C:'흥, 한두개쯤이야. 이번만 봐준다.',
     say_F:'뭐야, 먹긴 한 거냐?',
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.', intro2Rank:'1등은 좋은 일이 생길지도…',
-    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
+    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tDraft:'시안 연출 (간발·안도)', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
     fx_miss:'MISS −1초', 
     ready:'준비~', go_:'START!', modeNormal:'보통', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
@@ -1344,7 +1345,7 @@ var I18N={
     say_C:'フン、1つや2つくらいどうってことねぇぜ。今回だけは見逃してやるぜ。',
     say_F:'なんだ、ほんとに食ったのか？',
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。', intro2Rank:'1位にはいいことがあるかも…',
-    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
+    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tDraft:'試作演出', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
     fx_miss:'MISS −1秒', 
     ready:'よーい…', go_:'START!', modeNormal:'ふつう', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
@@ -1995,7 +1996,7 @@ canvas.addEventListener('webglcontextrestored',()=>{ glLost=false; clearTimeout(
 // 2 = full; 1 = 1.5x pixels, 1024 shadows; 0 = 1x pixels, 512 shadows, no ink outlines, fewer embers
 // ===== TEST ONLY: switches in Settings > 테스트. For release set TEST_MENU=false (the section disappears and every switch is off) =====
 const TEST_MENU=true;
-const TEST=(()=>{ const d={super:true,auto:true,nm:true,coach:false,low:false}; if(!TEST_MENU) return {super:false,auto:false,nm:false,coach:false,low:false};
+const TEST=(()=>{ const d={super:true,auto:true,nm:true,coach:false,draft:false}; if(!TEST_MENU) return {super:false,auto:false,nm:false,coach:false,draft:false};
   try{ return Object.assign(d,JSON.parse(localStorage.getItem('kouga-test')||'{}')); }catch(e){ return d; } })();
 function testSave(){ try{ localStorage.setItem('kouga-test',JSON.stringify(TEST)); }catch(e){} }
 // ===== low-spec mode: chosen while loading (device check, or a slow earlier run), or switched on when frames drop.
@@ -3355,7 +3356,7 @@ function footstep(i,n){
 }
 function patrolSet(phase){
   if(phase==='warn') midY();
-  const el=$('patrol'); patrol.phase=phase; bgm.duck(phase==='watch'?0.25:phase==='warn'?0.25:1,DRAFT&&performance.now()-RELIEF.at<200?0.9:0);   // DRAFT: the music swells back slowly on relief patrol.hb=0; el.hidden=phase==='none'; el.className=phase==='none'?'':'on '+phase;
+  const el=$('patrol'); patrol.phase=phase; bgm.duck(phase==='watch'?0.25:phase==='warn'?0.25:1,DRAFT&&performance.now()-RELIEF.at<200?0.9:0); patrol.hb=0; el.hidden=phase==='none'; el.className=phase==='none'?'':'on '+phase;   // DRAFT: the music swells back slowly on relief
   if(phase==='warn'){ const m=mood/100; $('patrolKouga').src=YELL_IMG;
     // super-hard (rage) only: no "he's coming" caption, shadow-only visits, double checks, 0.8 s warning
     $('patrolTxt').style.visibility=''; setArt($('patrolTxt'),'patrol_warn',29,'warn');
@@ -3626,8 +3627,8 @@ function placeFace(){
 // Kouga's cut-in: the room drops into slow motion as the strip slams in, then eases back. Only the game slows:
 // the strip, his line and the timers (later()) keep real time, so the cut-in plays at its own speed.
 const SLOW={at:-1e9};
-// DRAFT (?draft in the address): a near-miss beat when you hide at the last moment, and a relief beat when he leaves
-const DRAFT=/[?&]draft\b/.test(location.search), NEAR={at:-1e9}, RELIEF={at:-1e9};
+// DRAFT (Settings > 테스트 > 시안 연출): a near-miss beat when you hide at the last moment, and a relief beat when he leaves
+let DRAFT=!!TEST.draft; const NEAR={at:-1e9}, RELIEF={at:-1e9};   // switched in Settings > 테스트 (no address parameter)
 function nearK(t){ const e=(t-NEAR.at)/1000; if(e<0||e>0.85) return 1; if(e<0.05) return 1-0.75*e/0.05; if(e<0.35) return 0.25; const q=(e-0.35)/0.5; return 0.25+0.75*q*q*(3-2*q); }
 function nearBump(t){ const e=(t-NEAR.at)/1000; if(e<0||e>0.9) return 0; return e<0.15?e/0.15:1-(e-0.15)/0.75; }
 function reliefK(t){ const e=(t-RELIEF.at)/1000; if(e<0||e>1.1) return 0; const q=e/1.1; return 1-q*q*(3-2*q); }
@@ -3994,6 +3995,7 @@ $('setClose').addEventListener('click',()=>{ $('setOv').hidden=true; });
 document.querySelectorAll('#setOv .tog[data-test]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.test; TEST[k]=!TEST[k]; testSave();   // TEST ONLY
   if(k==='super'){ let st=false; try{ st=localStorage.getItem('kouga-super')==='1'; }catch(e){} superOpen=TEST.super||st; setMode(MODE==='super'&&!superOpen?'hard':MODE); }
   if(k==='auto'){ $('autoBtn').hidden=!TEST.auto; if(!TEST.auto&&AUTO.on) setAuto(false); }
+  if(k==='draft'){ DRAFT=!!TEST.draft; if(!DRAFT){ const v=$('draftFx'); v.style.opacity='0'; v._o=0; } }
   setLabels(); }));
 document.querySelectorAll('#setOv .tog[data-set]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.set;
   if(k==='bgm'){ audio(); bgm.toggle(); bgmLabel(); }
