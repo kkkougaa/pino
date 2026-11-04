@@ -3642,10 +3642,12 @@ function makeTakoyaki(){   // a thin wooden boat with six balls, sauce, squiggle
       for(let i=0;i<=10;i++){ const a=dir*(-am+2*am*i/10); P(a,b0+0.012*Math.sin(i*1.3+k)); }
       if(k<3) for(let i=1;i<6;i++){ const q=i/6*Math.PI; P(dir*(am+0.03*Math.sin(q)),b0+0.0675*(1-Math.cos(q))); } }
     g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),segN(110,50),0.036,segN(8,5),false),mayoMat)); });
-  const flake=new THREE.MeshStandardMaterial({color:col('#DDB599'),roughness:0.8,side:THREE.DoubleSide});
-  for(let k=0;k<26;k++){ const x=(rnd()-0.5)*1.5, z=(rnd()-0.5)*0.7, fg=new THREE.PlaneGeometry(0.1+rnd()*0.1,0.07+rnd()*0.05,3,1), fp=fg.attributes.position;
-    for(let i=0;i<fp.count;i++) fp.setZ(i,0.6*fp.getX(i)*fp.getX(i)*10);
-    const f=new THREE.Mesh(fg,flake); f.position.set(x,onTop(x,z)+0.02,z); f.rotation.set(-Math.PI/2+(rnd()-0.5)*1.2,rnd()*6.3,(rnd()-0.5)*0.8); f.userData.ink=true; g.add(f); }
+  const flakes=['#E6C4A6','#D9AC8C','#EED6BC','#C99474'].map(h=>new THREE.MeshStandardMaterial({color:col(h),roughness:0.8,side:THREE.DoubleSide}));
+  for(let k=0;k<150;k++){   // a heap of bonito flakes over each ball: thin ragged shavings, curled
+    const p=tops[k%6], ra=0.34*Math.sqrt(rnd()), an=rnd()*6.3, x=p.x+ra*Math.cos(an), z=p.z+0.06+ra*Math.sin(an), w=0.09+rnd()*0.08, h=0.05+rnd()*0.04, sh=new THREE.Shape();
+    for(let i=0;i<10;i++){ const q=i/10*Math.PI*2, j=0.7+rnd()*0.5; if(i) sh.lineTo(Math.cos(q)*w*j,Math.sin(q)*h*j); else sh.moveTo(Math.cos(q)*w*j,0); }
+    const fg=new THREE.ShapeGeometry(sh), fp=fg.attributes.position, cu=4+rnd()*8; for(let i=0;i<fp.count;i++) fp.setZ(i,cu*fp.getX(i)*fp.getX(i));
+    const f=new THREE.Mesh(fg,flakes[k%4]); f.position.set(x,onTop(x,z)+0.03+rnd()*0.06,z); f.rotation.set(-Math.PI/2+(rnd()-0.5)*1.4,rnd()*6.3,(rnd()-0.5)*0.9); f.userData.ink=true; g.add(f); }
   inkify(g); g.visible=false; scene.add(g); return g;
 }
 function crumbCanvas(){   // golden panko, lumpy: used as colour and as the bump
