@@ -1057,6 +1057,9 @@ html[lang="ja"] #tui .legal{word-break:normal;line-break:strict}
   border:2px solid #FFFBEF;background:rgba(26,14,8,.55);color:#FFFBEF;cursor:pointer}
 #start .setbtn svg{display:block;width:100%;height:100%;fill:currentColor}
 #setOv{z-index:60}
+#eggOv{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);z-index:61;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+#eggOv[hidden]{display:none}
+#eggName{min-width:9em;text-align:center;font:800 18px var(--ui),sans-serif;color:#3A2E28;background:#FFFDF2;border:2px solid #3A2E28;border-radius:999px;padding:6px 14px}
 .setcard{width:min(100%,320px)}
 .setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px dashed rgba(58,36,22,.2);font-size:calc(var(--k,1)*(19px))}
 .tog{appearance:none;min-width:84px;padding:7px 12px;border:2px solid #3A2E28;border-radius:999px;background:#FFFBEF;color:#3A2E28;font:700 15px/1 var(--sys);cursor:pointer}
@@ -1183,11 +1186,13 @@ bootStep(0.1);</script>
       <div class="setrow"><span data-i18n="tNm"></span><button class="tog" type="button" data-test="nm"></button></div>
       <div class="setrow"><span data-i18n="tCoach"></span><button class="tog" type="button" data-test="coach"></button></div>
       <div class="setrow"><span data-i18n="tDraft"></span><button class="tog" type="button" data-test="draft"></button></div>
+      <div class="setrow"><span data-i18n="tEgg"></span><button class="tog" type="button" id="eggBtn" data-i18n="tEggGo"></button></div>
     </div>
     <button class="btn" id="setClose" type="button" data-i18n="close" style="margin-top:18px"></button>
   </div>
 </div>
 
+<div id="eggOv" hidden><button class="chip" type="button" id="eggPrev" aria-label="Previous">◀</button><span id="eggName"></span><button class="chip" type="button" id="eggNext" aria-label="Next">▶</button><button class="chip" type="button" id="eggClose" data-i18n="close"></button></div>   <!-- TEST ONLY: the easter-egg viewer -->
 <div class="overlay" id="rankOv" hidden>
   <div class="card rankcard">
     <h2 data-i18n="rankJoin"></h2>
@@ -1287,7 +1292,7 @@ var I18N={
     say_C:'흥, 한두개쯤이야. 이번만 봐준다.',
     say_F:'뭐야, 먹긴 한 거냐?',
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.', intro2Rank:'1등은 좋은 일이 생길지도…',
-    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tDraft:'시안 연출 (간발·안도)', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
+    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tDraft:'시안 연출 (간발·안도)', tEgg:'이스터에그 보기', tEggGo:'보기', eggNames:'기본 (모찌 아이스)|붕어빵|가지|계란|생선뼈|타코야끼|새우튀김', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
     fx_miss:'MISS −1초', 
     ready:'준비~', go_:'START!', modeNormal:'보통', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
@@ -1345,7 +1350,7 @@ var I18N={
     say_C:'フン、1つや2つくらいどうってことねぇぜ。今回だけは見逃してやるぜ。',
     say_F:'なんだ、ほんとに食ったのか？',
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。', intro2Rank:'1位にはいいことがあるかも…',
-    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tDraft:'試作演出', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
+    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tDraft:'試作演出', tEgg:'イースターエッグを見る', tEggGo:'見る', eggNames:'いつもの（もちアイス）|たい焼き|なす|たまご|魚の骨|たこ焼き|エビフライ', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
     fx_miss:'MISS −1秒', 
     ready:'よーい…', go_:'START!', modeNormal:'ふつう', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
@@ -3681,8 +3686,8 @@ const DECOYS={};   // built on first use
 const DECOY_MAKE={daifuku:()=>makeDecoy(),taiyaki:()=>makeTaiyaki(),eggplant:()=>makeEggplant(),egg:()=>makeEgg(),fishbone:()=>makeFishBone(),takoyaki:()=>makeTakoyaki(),ebifry:()=>makeEbiFry()};
 function pickDecoy(){ const r=rnd(), e=['taiyaki','eggplant','egg','fishbone','takoyaki','ebifry'], k=r<0.3?e[Math.floor(r/0.05)]:'daifuku';   // 70% the mochi-ice pack, 5% each easter egg
   return DECOYS[k]||(DECOYS[k]=DECOY_MAKE[k]()); }
-function decoyIn(){
-  if(!(DECOY&&DECOY.visible)) DECOY=pickDecoy(); const g=DECOY, tok=g.userData.mv=(g.userData.mv||0)+1; g.visible=true; g.position.set(0,3.2,0); g.rotation.set(0,(rnd()-0.5)*0.18,0); g.scale.set(1,1,1); g.userData.out=false;
+function decoyIn(kind){   // kind: a set one (the test viewer); otherwise picked by chance
+  if(kind){ decoyAway(true); DECOY=DECOYS[kind]||(DECOYS[kind]=DECOY_MAKE[kind]()); } else if(!(DECOY&&DECOY.visible)) DECOY=pickDecoy(); const g=DECOY, tok=g.userData.mv=(g.userData.mv||0)+1; g.visible=true; g.position.set(0,3.2,0); g.rotation.set(0,(rnd()-0.5)*0.18,0); g.scale.set(1,1,1); g.userData.out=false;
   g.position.z=0; tween(0.26,k=>{ if(g.userData.mv!==tok) return; g.position.y=3.2*(1-k*k); },()=>{ if(g.userData.mv!==tok) return; g.position.y=0; thump(90,0.3,{dur:0.18}); pop(500,240,0.12,0.1);
     tween(0.28,k=>{ const w=(1-k)*Math.cos(k*Math.PI*2.4); g.scale.set(1+0.06*w,1-0.14*w,1+0.06*w); },()=>g.scale.set(1,1,1)); });
 }
@@ -4161,6 +4166,13 @@ function placeSetBtn(){ const l=$('tlang'); if(l&&l.offsetWidth) $('setBtn').sty
 addEventListener('resize',placeSetBtn);
 $('setBtn').addEventListener('click',()=>{ audio(); setLabels(); $('setOv').hidden=false; });
 $('setClose').addEventListener('click',()=>{ $('setOv').hidden=true; });
+// TEST ONLY: look at every cover-up in turn, on the table, from the start screen
+const EGG={i:0,keys:['daifuku','taiyaki','eggplant','egg','fishbone','takoyaki','ebifry']};
+function eggShow(){ $('eggName').textContent=TX('eggNames').split('|')[EGG.i]+'  '+(EGG.i+1)+'/'+EGG.keys.length; decoyIn(EGG.keys[EGG.i]); }
+$('eggBtn').addEventListener('click',()=>{ if(state!=='idle') return; $('setOv').hidden=true; $('start').style.visibility='hidden'; if(cur) cur.group.visible=false; titleTo=0; $('eggOv').hidden=false; eggShow(); });
+$('eggPrev').addEventListener('click',()=>{ EGG.i=(EGG.i+EGG.keys.length-1)%EGG.keys.length; eggShow(); });
+$('eggNext').addEventListener('click',()=>{ EGG.i=(EGG.i+1)%EGG.keys.length; eggShow(); });
+$('eggClose').addEventListener('click',()=>{ $('eggOv').hidden=true; decoyAway(true); $('start').style.visibility=''; if(cur) cur.group.visible=true; titleTo=1; });
 document.querySelectorAll('#setOv .tog[data-test]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.test; TEST[k]=!TEST[k]; testSave();   // TEST ONLY
   if(k==='super'){ let st=false; try{ st=localStorage.getItem('kouga-super')==='1'; }catch(e){} superOpen=TEST.super||st; setMode(MODE==='super'&&!superOpen?'hard':MODE); }
   if(k==='auto'){ $('autoBtn').hidden=!TEST.auto; if(!TEST.auto&&AUTO.on) setAuto(false); }
