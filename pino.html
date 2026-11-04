@@ -3523,7 +3523,7 @@ function fishPath(P,S){   // the taiyaki outline (nose at -x, tail at +x; +y = f
   q(0.72,-0.5,0.64,-0.68); l(0.56,-0.62); l(0.5,-0.72); l(0.42,-0.64); l(0.34,-0.72); q(0.3,-0.66,0.22,-0.66);   // the little fin underneath
   b(-0.05,-0.8,-0.5,-0.8,-0.82,-0.62); b(-1.1,-0.48,-1.32,-0.32,-1.36,-0.06); }
 function taiyakiArt(){   // a height map (the mould's relief) and the colour drawn from it: ridges light, grooves dark, all matte
-  const S=360, W=1024, Hh=560, c=cv(W,Hh), g=c.getContext('2d'); g.translate(W/2,Hh/2); g.scale(1,-1);
+  const S=360, W=1024, Hh=560, Q=LOW.on?0.5:0.75, CW=Math.round(W*Q), CH=Math.round(Hh*Q), c=cv(CW,CH), g=c.getContext('2d'); g.translate(CW/2,CH/2); g.scale(Q,-Q);   // drawn in 1024-wide units, stored at 3/4 size (half in low-spec)
   const P=(x,y)=>[x*S,y*S], gray=v=>'rgb('+v+','+v+','+v+')';
   g.fillStyle=gray(110); g.fillRect(-W/2,-Hh/2,W,Hh);
   g.beginPath(); fishPath(g,S); g.closePath(); g.save(); g.clip(); g.fillStyle=gray(128); g.fillRect(-W/2,-Hh/2,W,Hh);
@@ -3558,7 +3558,7 @@ function taiyakiArt(){   // a height map (the mould's relief) and the colour dra
   g.restore();
   g.strokeStyle=gray(165); g.lineWidth=12; g.beginPath(); fishPath(g,S); g.closePath(); g.stroke();   // the raised rim
   // colour from height: grooves deep brown, flats tan, ridges pale gold
-  const cc=cv(W,Hh), cg=cc.getContext('2d'), src=g.getImageData(0,0,W,Hh), out=cg.createImageData(W,Hh), A=[128,84,34], B=[201,155,82], C=[234,200,128];
+  const cc=cv(CW,CH), cg=cc.getContext('2d'), src=g.getImageData(0,0,CW,CH), out=cg.createImageData(CW,CH), A=[128,84,34], B=[201,155,82], C=[234,200,128];
   for(let i=0;i<src.data.length;i+=4){ const h=src.data[i]/255, lo=h<0.5, t=lo?h/0.5:(h-0.5)/0.5, a=lo?A:B, b2=lo?B:C;
     out.data[i]=a[0]+(b2[0]-a[0])*t; out.data[i+1]=a[1]+(b2[1]-a[1])*t; out.data[i+2]=a[2]+(b2[2]-a[2])*t; out.data[i+3]=255; }
   cg.putImageData(out,0,0); return {height:c,color:cc};
@@ -3567,7 +3567,7 @@ function makeTaiyaki(){
   const g=new THREE.Group(), S=1.05, sh=new THREE.Shape(); fishPath(sh,S); const art=taiyakiArt(), W=1024/360*S, Hh=560/360*S;
   const tx=cv0=>{ const t=new THREE.CanvasTexture(cv0); t.repeat.set(1/W,1/Hh); t.offset.set(0.5,0.5); t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping; t.anisotropy=4; return t; };
   const map=tx(art.color); map.encoding=THREE.sRGBEncoding; const bump=tx(art.height);
-  const fish=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:0.12,bevelEnabled:true,bevelThickness:0.1,bevelSize:0.07,bevelSegments:segN(4,2),curveSegments:segN(16,6)}),
+  const fish=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:0.12,bevelEnabled:true,bevelThickness:0.1,bevelSize:0.07,bevelSegments:segN(3,2),curveSegments:segN(8,4)}),
     [new THREE.MeshStandardMaterial({map,bumpMap:bump,bumpScale:0.05,roughness:0.95,metalness:0}),new THREE.MeshStandardMaterial({color:col('#C28E48'),roughness:0.95,metalness:0})]);
   fish.rotation.x=-Math.PI/2; fish.position.y=0.1; fish.castShadow=true; fish.receiveShadow=true; g.add(fish);
   inkify(g); g.visible=false; scene.add(g); return g;
