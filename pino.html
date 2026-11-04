@@ -3769,7 +3769,7 @@ function makeUdon(){   // kake udon, after a photo: a white porcelain bowl with 
   const line=new THREE.Mesh(new THREE.TorusGeometry(rIn(HB-0.07)-0.004,0.006,4,segN(64,24)).rotateX(Math.PI/2),blue); line.position.y=HB-0.07; line.userData.ink=true; g.add(line);
   const band=new THREE.Mesh(new THREE.TorusGeometry(0.64,0.012,4,segN(64,24)).rotateX(Math.PI/2),blue); band.position.y=0.24; band.userData.ink=true; g.add(band);
   // the broth: clear, light golden
-  const broth=new THREE.Mesh(new THREE.CircleGeometry(rIn(LV)-0.01,segN(48,20)),new THREE.MeshStandardMaterial({color:col('#C2701C'),emissive:col('#3A1A04'),roughness:0.04,transparent:true,opacity:0.56}));   // clear amber soy-dashi
+  const broth=new THREE.Mesh(new THREE.CircleGeometry(rIn(LV)-0.01,segN(48,20)),new THREE.MeshBasicMaterial({color:col('#C9733A'),transparent:true,premultipliedAlpha:true,blending:THREE.MultiplyBlending,depthWrite:false}));   // tsuyu: it tints what's under it, like coloured glass, so the white bowl and noodles show through soy-red
   broth.rotation.x=-Math.PI/2; broth.position.y=LV; broth.userData.ink=true; broth.renderOrder=1; g.add(broth);
   // the noodles: strands curling the same way round the bowl, but each its own length, radius and wobble, some crossing, rising over and dipping under the broth
   const nd=[];
