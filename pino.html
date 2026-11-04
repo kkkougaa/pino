@@ -3512,8 +3512,56 @@ function makeDecoy(){
   lid.rotation.x=-Math.PI/2; lid.position.y=CUP_H+0.05; lid.castShadow=true; g.add(lid);
   inkify(g); g.visible=false; scene.add(g); return g;
 }
+// easter eggs: now and then the cover-up on the table is a taiyaki or an eggplant instead of the mochi-ice pack
+function fishPath(P,S){   // the taiyaki outline (nose at -x, tail at +x; +y = far side); P = a Shape or a 2D context path, S = scale
+  const m=(x,y)=>P.moveTo(x*S,y*S), b=(a,c,d,e,f,h)=>P.bezierCurveTo(a*S,c*S,d*S,e*S,f*S,h*S), q=(a,c,d,e)=>P.quadraticCurveTo(a*S,c*S,d*S,e*S);
+  m(-1.34,0.02); b(-1.32,0.42,-0.95,0.66,-0.45,0.66); b(-0.15,0.8,0.22,0.8,0.46,0.56); q(0.66,0.36,0.8,0.2);
+  q(1.0,0.5,1.36,0.64); q(1.2,0.0,1.36,-0.62); q(1.0,-0.48,0.8,-0.2);
+  q(0.62,-0.5,0.3,-0.62); b(0.05,-0.74,-0.2,-0.74,-0.42,-0.64); b(-0.95,-0.62,-1.32,-0.4,-1.34,0.02); }
+function taiyakiCanvas(){
+  const S=360, W=1024, Hh=560, c=cv(W,Hh), g=c.getContext('2d'); g.translate(W/2,Hh/2); g.scale(1,-1);   // shape units, +y up
+  g.fillStyle='#A9561C'; g.fillRect(-W/2,-Hh/2,W,Hh);
+  g.beginPath(); fishPath(g,S); g.closePath(); g.save(); g.clip();
+  const gr=g.createRadialGradient(-0.25*S,0.08*S,20,-0.1*S,0,1.25*S); gr.addColorStop(0,'#F2B95E'); gr.addColorStop(0.55,'#DE9440'); gr.addColorStop(1,'#A9561C'); g.fillStyle=gr; g.fillRect(-W/2,-Hh/2,W,Hh);
+  g.strokeStyle='rgba(120,52,12,.55)'; g.lineWidth=7; g.lineCap='round';
+  for(let r=-3;r<=3;r++) for(let k=0;k<6;k++){ const x=(-0.42+k*0.19+(r&1?0.095:0))*S, y=r*0.15*S; if(x>0.7*S) continue; g.beginPath(); g.arc(x,y,0.085*S,Math.PI*0.25,Math.PI*0.75+Math.PI); g.stroke(); }   // the scales
+  g.lineWidth=9; [-0.45,-0.2,0.05,0.3].forEach(t=>{ g.beginPath(); g.moveTo(0.86*S,0.06*S*Math.sign(t||1)); g.lineTo(1.28*S,t*1.8*S*0.9); g.stroke(); });   // tail fan
+  [0,1,2].forEach(i=>{ g.beginPath(); g.moveTo((-0.1+i*0.17)*S,0.6*S); g.lineTo((-0.06+i*0.2)*S,0.74*S); g.stroke(); });   // dorsal fin
+  g.lineWidth=10; g.beginPath(); g.arc(-0.92*S,0.0,0.36*S,-0.95,0.95); g.stroke();   // gill
+  g.fillStyle='#7A3A10'; g.beginPath(); g.arc(-1.08*S,0.2*S,0.075*S,0,7); g.fill(); g.fillStyle='rgba(255,236,190,.85)'; g.beginPath(); g.arc(-1.1*S,0.22*S,0.025*S,0,7); g.fill();   // eye
+  g.lineWidth=8; g.beginPath(); g.moveTo(-1.33*S,-0.02*S); g.quadraticCurveTo(-1.24*S,-0.1*S,-1.16*S,-0.08*S); g.stroke();   // mouth
+  g.fillStyle='rgba(255,240,200,.35)'; g.beginPath(); g.ellipse(-0.35*S,0.32*S,0.42*S,0.12*S,0.1,0,7); g.fill();   // shine
+  g.restore(); return c;
+}
+function makeTaiyaki(){
+  const g=new THREE.Group(), S=1.05, sh=new THREE.Shape(); fishPath(sh,S);
+  const tex=new THREE.CanvasTexture(taiyakiCanvas()); tex.encoding=THREE.sRGBEncoding; tex.anisotropy=4;
+  const W=1024/360*S, Hh=560/360*S; tex.repeat.set(1/W,1/Hh); tex.offset.set(0.5,0.5); tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
+  const fish=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:0.16,bevelEnabled:true,bevelThickness:0.16,bevelSize:0.1,bevelSegments:segN(5,2),curveSegments:segN(20,8)}),
+    [new THREE.MeshStandardMaterial({map:tex,roughness:0.6}),new THREE.MeshStandardMaterial({color:col('#B8641F'),roughness:0.65})]);
+  fish.rotation.x=-Math.PI/2; fish.position.y=0.16; fish.castShadow=true; fish.receiveShadow=true; g.add(fish);
+  inkify(g); g.visible=false; scene.add(g); return g;
+}
+function makeEggplant(){
+  const g=new THREE.Group(), L=2.5, pts=[];
+  for(let i=0;i<=24;i++){ const t=i/24, r=t<0.8?0.15+0.35*Math.pow(t/0.8,0.8):0.5*Math.sqrt(Math.max(0,1-Math.pow((t-0.8)/0.2,2))); pts.push(new THREE.Vector2(i===24?0.001:r,(t-0.5)*L)); }   // a slim neck swelling to a round bottom
+  const geo=new THREE.LatheGeometry(pts,segN(36,14)), pa=geo.attributes.position;
+  for(let i=0;i<pa.count;i++){ const y=pa.getY(i), u=y/L+0.5; pa.setZ(i,pa.getZ(i)+0.18*Math.sin(Math.PI*u)); }   // a gentle bend, flat on the table
+  geo.computeVertexNormals();
+  const body=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:col('#5A2672'),roughness:0.2}));
+  const green=new THREE.MeshStandardMaterial({color:col('#4F7D2C'),roughness:0.55}), top=-L/2+0.02;
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(0.3,segN(20,10),segN(10,5),0,Math.PI*2,0,Math.PI/2),green); cap.scale.set(1,0.7,1); cap.position.set(0,top+0.02,0); cap.rotation.z=Math.PI; body.add(cap);
+  for(let k=0;k<5;k++){ const a=k/5*Math.PI*2+0.3, sep=new THREE.Mesh(new THREE.ConeGeometry(0.11,0.5,segN(8,4)),green);
+    sep.position.set(cap.position.x+Math.cos(a)*0.2,top+0.22,Math.sin(a)*0.2); sep.rotation.set(Math.sin(a)*0.5,0,-Math.cos(a)*0.5); sep.scale.z=0.45; sep.rotation.order='YXZ'; body.add(sep); }
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.09,0.42,segN(10,6)),green); stem.position.set(cap.position.x,top-0.25,0); body.add(stem);
+  body.rotation.z=Math.PI/2; body.position.set(-0.2,0.5,0); body.traverse(o=>{ if(o.isMesh){ o.castShadow=true; o.receiveShadow=true; } }); g.add(body);
+  inkify(g); g.visible=false; scene.add(g); return g;
+}
+const DECOYS={};   // built on first use: daifuku / taiyaki / eggplant
+function pickDecoy(){ const r=rnd(), k=r<0.1?'taiyaki':r<0.2?'eggplant':'daifuku';   // 80% the mochi-ice pack, 10% each easter egg
+  return DECOYS[k]||(DECOYS[k]=k==='taiyaki'?makeTaiyaki():k==='eggplant'?makeEggplant():makeDecoy()); }
 function decoyIn(){
-  if(!DECOY) DECOY=makeDecoy(); const g=DECOY, tok=g.userData.mv=(g.userData.mv||0)+1; g.visible=true; g.position.set(0,3.2,0); g.rotation.set(0,(rnd()-0.5)*0.18,0); g.scale.set(1,1,1); g.userData.out=false;
+  if(!(DECOY&&DECOY.visible)) DECOY=pickDecoy(); const g=DECOY, tok=g.userData.mv=(g.userData.mv||0)+1; g.visible=true; g.position.set(0,3.2,0); g.rotation.set(0,(rnd()-0.5)*0.18,0); g.scale.set(1,1,1); g.userData.out=false;
   g.position.z=0; tween(0.26,k=>{ if(g.userData.mv!==tok) return; g.position.y=3.2*(1-k*k); },()=>{ if(g.userData.mv!==tok) return; g.position.y=0; thump(90,0.3,{dur:0.18}); pop(500,240,0.12,0.1);
     tween(0.28,k=>{ const w=(1-k)*Math.cos(k*Math.PI*2.4); g.scale.set(1+0.06*w,1-0.14*w,1+0.06*w); },()=>g.scale.set(1,1,1)); });
 }
@@ -4363,8 +4411,8 @@ function loop(t){
 function prewarm(){   // compile the shaders and upload the textures of things that only appear later (pizza, decoy, Kouga's shadow, bitten pinos)
   try{ const tmp=new THREE.Group(); try{ tmp.add(makePizza().group); }catch(e){}
     try{ ['pino','heart','star'].forEach(k=>{ if(G.bit&&G.bit[k]) tmp.add(new THREE.Mesh(G.bit[k],M.bitten)); }); }catch(e){}
-    if(!DECOY) DECOY=makeDecoy(); if(!kougaShade) kougaShade=makeKougaShade();
-    const hid=[DECOY,kougaShade].filter(Boolean).map(o=>[o,o.visible]); hid.forEach(([o])=>o.visible=true); scene.add(tmp);
+    ['daifuku','taiyaki','eggplant'].forEach(k=>{ if(!DECOYS[k]) DECOYS[k]=k==='taiyaki'?makeTaiyaki():k==='eggplant'?makeEggplant():makeDecoy(); }); if(!kougaShade) kougaShade=makeKougaShade();
+    const hid=[...Object.values(DECOYS),kougaShade].filter(Boolean).map(o=>[o,o.visible]); hid.forEach(([o])=>o.visible=true); scene.add(tmp);
     renderer.compile(scene,camera); renderer.render(scene,camera);
     scene.remove(tmp); hid.forEach(([o,v])=>o.visible=v); } catch(e){} }
 function lowCheck(){ if(LOW_PREF!=null) return; setTimeout(()=>{ let n=0; const t0=performance.now(); (function f(){ n++; const e=performance.now()-t0; if(e<2000) requestAnimationFrame(f); else if(n/(e/1000)<28&&!document.hidden) setLow(); })(); },2500); }   // once the start screen has settled: under 28 fps -> low-spec for this visit
