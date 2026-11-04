@@ -3770,8 +3770,8 @@ function makeUdon(){   // udon, after a photo: a white porcelain bowl with a blu
   const rOut=y=>{ let r=0.56; for(let i=0;i<prof.length-1;i++){ const a=prof[i], b=prof[i+1]; if(b.y>a.y&&y>=a.y&&y<=b.y&&b.x>=a.x){ r=a.x+(b.x-a.x)*(y-a.y)/(b.y-a.y); break; } } return r; };
   const band=new THREE.Mesh(new THREE.TorusGeometry(rOut(0.24)+0.004,0.012,4,segN(64,24)).rotateX(Math.PI/2),blue); band.position.y=0.24;   // on the outside wall band.userData.ink=true; g.add(band);
   // a very shallow broth: a light soy tint, just reaching the lowest noodles
-  const broth=new THREE.Mesh(new THREE.CircleGeometry(rIn(LV-0.06)-0.01,segN(48,20)),new THREE.MeshBasicMaterial({color:col('#D29660'),transparent:true,premultipliedAlpha:true,blending:THREE.MultiplyBlending,depthWrite:false}));
-  broth.rotation.x=-Math.PI/2; broth.position.y=LV-0.06; broth.userData.ink=true; broth.renderOrder=1; g.add(broth);
+  const broth=new THREE.Mesh(new THREE.CircleGeometry(rIn(LV-0.095)-0.01,segN(48,20)),new THREE.MeshBasicMaterial({color:col('#EDCDA6'),transparent:true,premultipliedAlpha:true,blending:THREE.MultiplyBlending,depthWrite:false}));
+  broth.rotation.x=-Math.PI/2; broth.position.y=LV-0.095; broth.userData.ink=true; broth.renderOrder=1; g.add(broth);
   // the noodles: strands curling the same way round the bowl, but each its own length, radius and wobble, some crossing, rising over and dipping under the broth
   const nd=[];
   for(let s=0;s<12;s++){ const pts=[], a0=s/12*6.3+rnd()*0.4, span=Math.PI*(0.9+rnd()*1.0), r0=0.5+rnd()*0.36, r1=0.1+rnd()*0.45, cx=(rnd()-0.5)*0.16, cz=(rnd()-0.5)*0.16, w1=rnd()*6.3, w2=2+rnd()*3, n=20, lift=rnd()*0.03;
