@@ -3635,12 +3635,13 @@ function makeTakoyaki(){   // a thin wooden boat with six balls, sauce, squiggle
   [-0.82,0,0.82].forEach(x=>[-0.4,0.4].forEach(z=>{ const b=new THREE.Mesh(ballGeo,ballMat), y=0.04+R*0.92+(rnd()-0.5)*0.03;
     b.position.set(x+(rnd()-0.5)*0.05,y,z+(rnd()-0.5)*0.05); b.rotation.set((rnd()-0.5)*0.4,rnd()*6.3,(rnd()-0.5)*0.4); b.castShadow=true; b.receiveShadow=true; g.add(b); tops.push(b.position); }));
   const onTop=(x,z)=>{ let y=0.5; tops.forEach(p=>{ const d2=(x-p.x)**2+(z-p.z)**2, k=1-d2/(1.3*R)**2; if(k>0) y=Math.max(y,p.y+R*Math.sqrt(k)); }); return y+0.02; };   // over a ball, and only a shallow dip between them
-  const mayoMat=new THREE.MeshStandardMaterial({color:col('#FBF7EC'),roughness:0.45});
-  [[0,1.15,0.42],[2.1,0.9,-0.3]].forEach(([ph,len,zc])=>{   // two thin strands, each a loose run of loops
-    const pts=[]; for(let i=0;i<=150;i++){ const t=i/150, w=t*Math.PI*2;
-      const x=-len+2*len*t+0.07*Math.cos(w*6+ph), z=zc*0.4+0.4*Math.sin(w*1.6+ph)+0.07*Math.sin(w*6+ph)+0.02*Math.sin(w*17);
-      pts.push(new V3(x,onTop(x,z),z)); }
-    g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),segN(320,120),0.016,segN(6,4),false),mayoMat)); });
+  const mayoMat=new THREE.MeshStandardMaterial({color:col('#FBF7EC'),roughness:0.35});
+  tops.forEach(p=>{   // each ball: a thick zigzag of mayo, laid back and forth across it at a slant
+    const th=0.65+(rnd()-0.5)*0.4, c=Math.cos(th), sn=Math.sin(th), pts=[], P=(a,b)=>{ const x=p.x+a*c-b*sn, z=p.z+a*sn+b*c, d2=(x-p.x)**2+(z-p.z)**2; pts.push(new V3(x,p.y+Math.sqrt(Math.max(0,R*R-d2))+0.03,z)); };
+    for(let k=0;k<4;k++){ const b0=-0.2+k*0.135, am=Math.sqrt(Math.max(0,0.8*R*R-b0*b0)), dir=k&1?-1:1;
+      for(let i=0;i<=10;i++){ const a=dir*(-am+2*am*i/10); P(a,b0+0.012*Math.sin(i*1.3+k)); }
+      if(k<3) for(let i=1;i<6;i++){ const q=i/6*Math.PI; P(dir*(am+0.03*Math.sin(q)),b0+0.0675*(1-Math.cos(q))); } }
+    g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),segN(110,50),0.036,segN(8,5),false),mayoMat)); });
   const flake=new THREE.MeshStandardMaterial({color:col('#DDB599'),roughness:0.8,side:THREE.DoubleSide});
   for(let k=0;k<26;k++){ const x=(rnd()-0.5)*1.5, z=(rnd()-0.5)*0.7, fg=new THREE.PlaneGeometry(0.1+rnd()*0.1,0.07+rnd()*0.05,3,1), fp=fg.attributes.position;
     for(let i=0;i<fp.count;i++) fp.setZ(i,0.6*fp.getX(i)*fp.getX(i)*10);
