@@ -3734,19 +3734,26 @@ function makeMelonPan(){   // a low dome: bread below, the cookie crust over the
   const g=new THREE.Group(), bun=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({map,bumpMap:bump,bumpScale:0.07,roughness:0.9})); bun.castShadow=true; bun.receiveShadow=true; g.add(bun);
   inkify(g); g.visible=false; scene.add(g); return g;
 }
-function kraft(g,W,Hh){   // brown wrapping paper: fibres, a grease spot or two
-  g.fillStyle='#C7A777'; g.fillRect(0,0,W,Hh);
-  for(let i=0;i<900;i++){ g.fillStyle=rnd()<0.5?'rgba(120,86,48,.10)':'rgba(240,222,190,.12)'; g.fillRect(rnd()*W,rnd()*Hh,1+rnd()*5,1); }
-  for(let i=0;i<3;i++){ const x=rnd()*W, y=rnd()*Hh, r=14+rnd()*26, gr=g.createRadialGradient(x,y,2,x,y,r); gr.addColorStop(0,'rgba(140,100,50,.22)'); gr.addColorStop(1,'rgba(140,100,50,0)'); g.fillStyle=gr; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); }
+function kraft(g,W,Hh){   // thin waxed wrapping paper, pale tan: fibres, faint crinkle lines, grease blotches soaked through
+  g.fillStyle='#BF9F6E'; g.fillRect(0,0,W,Hh);
+  for(let i=0;i<1400;i++){ g.fillStyle=rnd()<0.5?'rgba(120,90,54,.08)':'rgba(246,234,210,.12)'; g.fillRect(rnd()*W,rnd()*Hh,1+rnd()*6,1); }
+  for(let i=0;i<40;i++){ g.strokeStyle=rnd()<0.5?'rgba(250,240,220,.18)':'rgba(110,80,46,.10)'; g.lineWidth=1+rnd(); g.beginPath(); let x=rnd()*W, y=rnd()*Hh; g.moveTo(x,y); for(let k=0;k<4;k++){ x+=(rnd()-0.5)*90; y+=(rnd()-0.5)*90; g.lineTo(x,y); } g.stroke(); }
+  for(let i=0;i<7;i++){ const x=rnd()*W, y=rnd()*Hh, r=8+rnd()*34; g.save(); g.translate(x,y); g.scale(1,0.6+rnd()*0.6); const gr=g.createRadialGradient(0,0,1,0,0,r); gr.addColorStop(0,'rgba(150,112,62,.32)'); gr.addColorStop(0.7,'rgba(150,112,62,.18)'); gr.addColorStop(1,'rgba(150,112,62,0)'); g.fillStyle=gr; g.beginPath(); g.arc(0,0,r,0,7); g.fill(); g.restore(); }
+}
+function crinkleCanvas(){   // the paper's fine creases, as a bump map
+  const W=256, c=cv(W,W), g=c.getContext('2d'); g.fillStyle='rgb(128,128,128)'; g.fillRect(0,0,W,W);
+  for(let i=0;i<60;i++){ const v=rnd()<0.5?90:170; g.strokeStyle='rgb('+v+','+v+','+v+')'; g.lineWidth=1+rnd()*1.5; g.beginPath(); let x=rnd()*W, y=rnd()*W; g.moveTo(x,y); for(let k=0;k<3;k++){ x+=(rnd()-0.5)*80; y+=(rnd()-0.5)*80; g.lineTo(x,y); } g.stroke(); }
+  return c;
 }
 function burgerTopCanvas(){   // the wrapper print, after the photo: the bun badge, PREMIUM WHOPPER, tick circles, the icon row and the DV box
-  const W=512, c=cv(W,W), g=c.getContext('2d'); kraft(g,W,W); g.translate(W/2,W/2+6); g.scale(0.8,0.8); g.translate(-W/2,-W/2);   // kept clear of the rounded edges
-  const ink='#4A2C20'; g.fillStyle=g.strokeStyle=ink; g.textAlign='center'; g.lineJoin='round'; g.lineCap='round';
+  const W=512, c=cv(W,W), g=c.getContext('2d'); kraft(g,W,W); g.translate(W/2,W/2+6); g.scale(0.9,0.9); g.translate(-W/2,-W/2);   // kept clear of the rounded edges
+  const ink='#4E3226'; g.globalAlpha=0.9; g.fillStyle=g.strokeStyle=ink; g.textAlign='center'; g.lineJoin='round'; g.lineCap='round';
   g.beginPath(); g.ellipse(W/2,58,54,22,0,Math.PI,0); g.fill(); g.beginPath(); g.ellipse(W/2,108,54,14,0,0,Math.PI); g.fill();   // the bun halves
   g.font='900 24px "Arial Black","Helvetica Neue",Arial,sans-serif'; g.fillText('BURGER',W/2,82); g.fillText('KING',W/2,104);
   g.font='900 66px "Rockwell","Georgia","Times New Roman",serif'; g.fillText('PREMIUM',W/2,178); g.fillText('WHOPPER',W/2-6,246);
   g.font='700 16px Arial,sans-serif'; g.fillText('®',W/2+168,206);
   g.font='800 27px "M PLUS Rounded 1c","Jua",sans-serif'; g.lineWidth=2.5; g.textAlign='left'; [['통새우',62],['스태커',204],['기간한정',338]].forEach(([t,x])=>{ g.beginPath(); g.arc(x,284,11,0,7); g.stroke(); g.fillText(t,x+16,294); }); g.textAlign='center';
+  g.save(); g.lineCap='round'; for(let k=0;k<3;k++){ g.strokeStyle='rgba(212,36,32,'+(0.6+0.15*k)+')'; g.lineWidth=3.5+k*1.2; const o=k*1.4-1.4; g.beginPath(); g.moveTo(48+o,276); g.quadraticCurveTo(56+o,288,62+o,298); g.quadraticCurveTo(78+o,262,100+o,226+o); g.stroke(); } g.restore();   // ticked in red pencil: 통새우
   const ic=[(x,y)=>{ g.beginPath(); g.moveTo(x-13,y+12); g.lineTo(x-13,y-6); g.lineTo(x+3,y-14); g.lineTo(x+13,y-8); g.lineTo(x+13,y+12); g.closePath(); g.fill(); },   // cheese
     (x,y)=>{ g.lineWidth=7; g.beginPath(); g.moveTo(x-14,y+10); g.bezierCurveTo(x-6,y-6,x+2,y+14,x+14,y-10); g.stroke(); },   // bacon
     (x,y)=>{ g.beginPath(); g.ellipse(x,y,15,12,0,0,7); g.fill(); },   // patty
@@ -3767,17 +3774,18 @@ function burgerSideCanvas(){   // the sides: plain kraft
   const W=512, Hh=128, c=cv(W,Hh), g=c.getContext('2d'); kraft(g,W,Hh);
     return c;
 }
-function makeBurger(){   // a wrapped burger: a soft, crumpled, rounded paper block
-  const A=1.0, Bh=0.52, C=0.95, rad=0.5, geo=new THREE.BoxGeometry(2*A,2*Bh,2*C,segN(12,6),segN(6,3),segN(12,6)), pa=geo.attributes.position, v=new V3(), q=new V3();
+function makeBurger(){   // a wrapped burger: a neat, rounded paper block, a soft dome on top
+  const A=1.0, Bh=0.5, C=0.92, rad=0.3, geo=new THREE.BoxGeometry(2*A,2*Bh,2*C,segN(12,6),segN(6,3),segN(12,6)), pa=geo.attributes.position, v=new V3(), q=new V3();
   for(let i=0;i<pa.count;i++){ v.fromBufferAttribute(pa,i); q.set(Math.max(-A+rad,Math.min(A-rad,v.x)),Math.max(-Bh+rad,Math.min(Bh-rad,v.y)),Math.max(-C+rad,Math.min(C-rad,v.z)));
     const n=v.clone().sub(q); if(n.lengthSq()>1e-9) n.setLength(rad); v.copy(q).add(n);   // rounded edges
-    const top=Math.max(0,v.y/Bh); v.y+=0.28*top*(1-(v.x/A)**2)*(1-(v.z/C)**2);   // the bun pushes the top up into a dome
-    const w=0.025*Math.sin(v.x*9.1+v.z*3.3)*Math.sin(v.z*7.7-v.y*5.1)+0.015*Math.sin(v.x*17+v.y*13); v.multiplyScalar(1+w);   // crumples
+    const top=Math.max(0,v.y/Bh); v.y+=0.12*top*(1-(v.x/A)**2)*(1-(v.z/C)**2);   // the bun pushes the top up a little
+    const lo=Math.max(0,-v.y/Bh), w=0.006*Math.sin(v.x*5.1+v.z*2.3)+0.02*lo*Math.sin(Math.atan2(v.z,v.x)*9); v.x*=1+w; v.z*=1+w;   // barely uneven; the folds tucked in round the bottom
     pa.setXYZ(i,v.x,v.y+Bh,v.z); }
   geo.computeVertexNormals();
   const tt=new THREE.CanvasTexture(burgerTopCanvas()), st=new THREE.CanvasTexture(burgerSideCanvas()); tt.encoding=st.encoding=THREE.sRGBEncoding; tt.anisotropy=4;
-  const top=new THREE.MeshStandardMaterial({map:tt,roughness:0.92}), side=new THREE.MeshStandardMaterial({map:st,roughness:0.92}), base=new THREE.MeshStandardMaterial({color:col('#B8986A'),roughness:0.95});
-  const m=new THREE.Mesh(geo,[side,side,top,base,side,side]); m.rotation.y=0.12; m.castShadow=true; m.receiveShadow=true;
+  const bm=new THREE.CanvasTexture(crinkleCanvas()); bm.wrapS=bm.wrapT=THREE.RepeatWrapping;
+  const top=new THREE.MeshStandardMaterial({map:tt,bumpMap:bm,bumpScale:0.015,roughness:0.7}), side=new THREE.MeshStandardMaterial({map:st,bumpMap:bm,bumpScale:0.015,roughness:0.7}), base=new THREE.MeshStandardMaterial({color:col('#AE8D5E'),roughness:0.75});   // waxed paper: a little sheen
+  const m=new THREE.Mesh(geo,[side,side,top,base,side,side]); m.rotation.y=0.08; m.castShadow=true; m.receiveShadow=true;
   const g=new THREE.Group(); g.add(m); inkify(g); g.visible=false; scene.add(g); return g;
 }
 const DECOYS={};   // built on first use
