@@ -3514,32 +3514,62 @@ function makeDecoy(){
 }
 // easter eggs: now and then the cover-up on the table is a taiyaki or an eggplant instead of the mochi-ice pack
 function fishPath(P,S){   // the taiyaki outline (nose at -x, tail at +x; +y = far side); P = a Shape or a 2D context path, S = scale
-  const m=(x,y)=>P.moveTo(x*S,y*S), b=(a,c,d,e,f,h)=>P.bezierCurveTo(a*S,c*S,d*S,e*S,f*S,h*S), q=(a,c,d,e)=>P.quadraticCurveTo(a*S,c*S,d*S,e*S);
-  m(-1.34,0.02); b(-1.32,0.42,-0.95,0.66,-0.45,0.66); b(-0.15,0.8,0.22,0.8,0.46,0.56); q(0.66,0.36,0.8,0.2);
-  q(1.0,0.5,1.36,0.64); q(1.2,0.0,1.36,-0.62); q(1.0,-0.48,0.8,-0.2);
-  q(0.62,-0.5,0.3,-0.62); b(0.05,-0.74,-0.2,-0.74,-0.42,-0.64); b(-0.95,-0.62,-1.32,-0.4,-1.34,0.02); }
-function taiyakiCanvas(){
-  const S=360, W=1024, Hh=560, c=cv(W,Hh), g=c.getContext('2d'); g.translate(W/2,Hh/2); g.scale(1,-1);   // shape units, +y up
-  g.fillStyle='#A9561C'; g.fillRect(-W/2,-Hh/2,W,Hh);
-  g.beginPath(); fishPath(g,S); g.closePath(); g.save(); g.clip();
-  const gr=g.createRadialGradient(-0.25*S,0.08*S,20,-0.1*S,0,1.25*S); gr.addColorStop(0,'#F2B95E'); gr.addColorStop(0.55,'#DE9440'); gr.addColorStop(1,'#A9561C'); g.fillStyle=gr; g.fillRect(-W/2,-Hh/2,W,Hh);
-  g.strokeStyle='rgba(120,52,12,.55)'; g.lineWidth=7; g.lineCap='round';
-  for(let r=-3;r<=3;r++) for(let k=0;k<6;k++){ const x=(-0.42+k*0.19+(r&1?0.095:0))*S, y=r*0.15*S; if(x>0.7*S) continue; g.beginPath(); g.arc(x,y,0.085*S,Math.PI*0.25,Math.PI*0.75+Math.PI); g.stroke(); }   // the scales
-  g.lineWidth=9; [-0.45,-0.2,0.05,0.3].forEach(t=>{ g.beginPath(); g.moveTo(0.86*S,0.06*S*Math.sign(t||1)); g.lineTo(1.28*S,t*1.8*S*0.9); g.stroke(); });   // tail fan
-  [0,1,2].forEach(i=>{ g.beginPath(); g.moveTo((-0.1+i*0.17)*S,0.6*S); g.lineTo((-0.06+i*0.2)*S,0.74*S); g.stroke(); });   // dorsal fin
-  g.lineWidth=10; g.beginPath(); g.arc(-0.92*S,0.0,0.36*S,-0.95,0.95); g.stroke();   // gill
-  g.fillStyle='#7A3A10'; g.beginPath(); g.arc(-1.08*S,0.2*S,0.075*S,0,7); g.fill(); g.fillStyle='rgba(255,236,190,.85)'; g.beginPath(); g.arc(-1.1*S,0.22*S,0.025*S,0,7); g.fill();   // eye
-  g.lineWidth=8; g.beginPath(); g.moveTo(-1.33*S,-0.02*S); g.quadraticCurveTo(-1.24*S,-0.1*S,-1.16*S,-0.08*S); g.stroke();   // mouth
-  g.fillStyle='rgba(255,240,200,.35)'; g.beginPath(); g.ellipse(-0.35*S,0.32*S,0.42*S,0.12*S,0.1,0,7); g.fill();   // shine
-  g.restore(); return c;
+  const m=(x,y)=>P.moveTo(x*S,y*S), l=(x,y)=>P.lineTo(x*S,y*S), b=(a,c,d,e,f,h)=>P.bezierCurveTo(a*S,c*S,d*S,e*S,f*S,h*S), q=(a,c,d,e)=>P.quadraticCurveTo(a*S,c*S,d*S,e*S);
+  m(-1.36,-0.06); q(-1.4,0.1,-1.3,0.2); b(-1.2,0.56,-0.75,0.72,-0.32,0.66);   // lips, round forehead
+  q(-0.24,0.8,-0.12,0.76); q(-0.04,0.86,0.06,0.8); q(0.15,0.88,0.25,0.79); q(0.34,0.84,0.42,0.72); q(0.52,0.7,0.56,0.56);   // the ridged dorsal fin
+  q(0.64,0.34,0.76,0.24);   // the narrow before the tail
+  q(0.98,0.5,1.12,0.84); l(1.17,0.66); l(1.25,0.62); l(1.24,0.44); l(1.33,0.38); l(1.3,0.2); l(1.4,0.1); l(1.34,-0.06); l(1.44,-0.18); l(1.38,-0.32); l(1.5,-0.46);   // the big ragged tail
+  q(1.12,-0.44,0.78,-0.3);
+  q(0.72,-0.5,0.64,-0.68); l(0.56,-0.62); l(0.5,-0.72); l(0.42,-0.64); l(0.34,-0.72); q(0.3,-0.66,0.22,-0.66);   // the little fin underneath
+  b(-0.05,-0.8,-0.5,-0.8,-0.82,-0.62); b(-1.1,-0.48,-1.32,-0.32,-1.36,-0.06); }
+function taiyakiArt(){   // a height map (the mould's relief) and the colour drawn from it: ridges light, grooves dark, all matte
+  const S=360, W=1024, Hh=560, c=cv(W,Hh), g=c.getContext('2d'); g.translate(W/2,Hh/2); g.scale(1,-1);
+  const P=(x,y)=>[x*S,y*S], gray=v=>'rgb('+v+','+v+','+v+')';
+  g.fillStyle=gray(110); g.fillRect(-W/2,-Hh/2,W,Hh);
+  g.beginPath(); fishPath(g,S); g.closePath(); g.save(); g.clip(); g.fillStyle=gray(128); g.fillRect(-W/2,-Hh/2,W,Hh);
+  g.lineCap='round'; g.lineJoin='round';
+  const groove=(w,f)=>{ g.strokeStyle=gray(70); g.lineWidth=w; g.beginPath(); f(); g.stroke(); g.strokeStyle=gray(175); g.lineWidth=w*0.45; g.save(); g.translate(-w*0.35,w*0.35); g.beginPath(); f(); g.stroke(); g.restore(); };   // a cut line with a lit lip beside it
+  // scales: rows from the tail toward the head, each one tucked under the next, its rim facing the tail
+  for(let x=0.5;x>=-0.46;x-=0.16) for(let r=-3;r<=3;r++){ const y=r*0.19+((Math.round((0.5-x)/0.16))&1?0.095:0), cx=x*S, cy=y*S, R=0.14*S;
+    if(Math.abs(y)>0.52) continue; const gr=g.createRadialGradient(cx-R*0.4,cy,R*0.2,cx,cy,R); gr.addColorStop(0,gray(118)); gr.addColorStop(0.8,gray(178)); gr.addColorStop(1,gray(190));
+    g.fillStyle=gr; g.beginPath(); g.arc(cx,cy,R,-1.75,1.75); g.closePath(); g.fill();
+    g.strokeStyle=gray(62); g.lineWidth=7; g.beginPath(); g.arc(cx,cy,R,-1.75,1.75); g.stroke(); g.strokeStyle=gray(205); g.lineWidth=4; g.beginPath(); g.arc(cx-3,cy,R-7,-1.6,1.6); g.stroke(); }
+  // the head: smooth, over the front scales
+  g.fillStyle=gray(140); g.beginPath(); g.moveTo(...P(-0.62,0.72)); g.bezierCurveTo(...P(-0.42,0.3),...P(-0.42,-0.3),...P(-0.66,-0.75)); g.lineTo(...P(-1.5,-0.75)); g.lineTo(...P(-1.5,0.75)); g.closePath(); g.fill();
+  groove(10,()=>{ g.moveTo(...P(-0.62,0.66)); g.bezierCurveTo(...P(-0.42,0.3),...P(-0.42,-0.3),...P(-0.66,-0.7)); });   // gill cover
+  groove(7,()=>{ g.moveTo(...P(-0.76,0.5)); g.bezierCurveTo(...P(-0.6,0.2),...P(-0.6,-0.2),...P(-0.78,-0.5)); });
+  // eye: a bump in rings
+  const ex=-0.98*S, ey=0.2*S; g.strokeStyle=gray(80); g.lineWidth=8; g.beginPath(); g.arc(ex,ey,0.17*S,0,7); g.stroke();
+  g.strokeStyle=gray(170); g.lineWidth=7; g.beginPath(); g.arc(ex,ey,0.125*S,0,7); g.stroke();
+  const eg=g.createRadialGradient(ex-10,ey+10,2,ex,ey,0.08*S); eg.addColorStop(0,gray(235)); eg.addColorStop(1,gray(120)); g.fillStyle=eg; g.beginPath(); g.arc(ex,ey,0.08*S,0,7); g.fill();
+  // lips and the cheek line
+  groove(9,()=>{ g.moveTo(...P(-1.37,-0.04)); g.quadraticCurveTo(...P(-1.2,-0.06),...P(-1.08,-0.16)); });
+  groove(6,()=>{ g.moveTo(...P(-1.3,0.16)); g.quadraticCurveTo(...P(-1.22,0.04),...P(-1.12,0.0)); });
+  groove(6,()=>{ g.moveTo(...P(-1.05,-0.28)); g.quadraticCurveTo(...P(-0.86,-0.36),...P(-0.72,-0.24)); });
+  // fins: rays
+  const rays=(x0,y0,pts,w)=>pts.forEach(([x,y])=>groove(w,()=>{ g.moveTo(x0*S,y0*S); g.lineTo(x*S,y*S); }));
+  g.fillStyle=gray(150); g.beginPath(); g.moveTo(...P(0.74,0.22)); g.lineTo(...P(1.1,0.84)); g.lineTo(...P(1.5,-0.46)); g.lineTo(...P(0.76,-0.26)); g.closePath(); g.fill();
+  groove(9,()=>{ g.moveTo(...P(0.72,0.24)); g.quadraticCurveTo(...P(0.8,0),...P(0.74,-0.26)); });
+  rays(0.76,0,[[1.1,0.8],[1.2,0.6],[1.26,0.4],[1.32,0.2],[1.36,0.02],[1.4,-0.16],[1.44,-0.38]],6);
+  rays(0.16,0.5,[[-0.18,0.74],[-0.04,0.8],[0.1,0.8],[0.24,0.76],[0.38,0.7],[0.5,0.6]],5);
+  rays(0.5,-0.5,[[0.62,-0.66],[0.52,-0.7],[0.42,-0.68],[0.32,-0.7]],5);
+  g.fillStyle=gray(160); g.beginPath(); g.moveTo(...P(-0.6,-0.3)); g.quadraticCurveTo(...P(-0.3,-0.18),...P(-0.02,-0.36)); g.lineTo(...P(-0.1,-0.5)); g.quadraticCurveTo(...P(-0.4,-0.56),...P(-0.6,-0.3)); g.fill();   // the side fin
+  g.strokeStyle=gray(80); g.lineWidth=6; g.stroke(); rays(-0.58,-0.32,[[-0.02,-0.38],[-0.06,-0.44],[-0.12,-0.5],[-0.28,-0.5]],4);
+  g.restore();
+  g.strokeStyle=gray(165); g.lineWidth=12; g.beginPath(); fishPath(g,S); g.closePath(); g.stroke();   // the raised rim
+  // colour from height: grooves deep brown, flats tan, ridges pale gold
+  const cc=cv(W,Hh), cg=cc.getContext('2d'), src=g.getImageData(0,0,W,Hh), out=cg.createImageData(W,Hh), A=[128,84,34], B=[201,155,82], C=[234,200,128];
+  for(let i=0;i<src.data.length;i+=4){ const h=src.data[i]/255, lo=h<0.5, t=lo?h/0.5:(h-0.5)/0.5, a=lo?A:B, b2=lo?B:C;
+    out.data[i]=a[0]+(b2[0]-a[0])*t; out.data[i+1]=a[1]+(b2[1]-a[1])*t; out.data[i+2]=a[2]+(b2[2]-a[2])*t; out.data[i+3]=255; }
+  cg.putImageData(out,0,0); return {height:c,color:cc};
 }
 function makeTaiyaki(){
-  const g=new THREE.Group(), S=1.05, sh=new THREE.Shape(); fishPath(sh,S);
-  const tex=new THREE.CanvasTexture(taiyakiCanvas()); tex.encoding=THREE.sRGBEncoding; tex.anisotropy=4;
-  const W=1024/360*S, Hh=560/360*S; tex.repeat.set(1/W,1/Hh); tex.offset.set(0.5,0.5); tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
-  const fish=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:0.16,bevelEnabled:true,bevelThickness:0.16,bevelSize:0.1,bevelSegments:segN(5,2),curveSegments:segN(20,8)}),
-    [new THREE.MeshStandardMaterial({map:tex,roughness:0.6}),new THREE.MeshStandardMaterial({color:col('#B8641F'),roughness:0.65})]);
-  fish.rotation.x=-Math.PI/2; fish.position.y=0.16; fish.castShadow=true; fish.receiveShadow=true; g.add(fish);
+  const g=new THREE.Group(), S=1.05, sh=new THREE.Shape(); fishPath(sh,S); const art=taiyakiArt(), W=1024/360*S, Hh=560/360*S;
+  const tx=cv0=>{ const t=new THREE.CanvasTexture(cv0); t.repeat.set(1/W,1/Hh); t.offset.set(0.5,0.5); t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping; t.anisotropy=4; return t; };
+  const map=tx(art.color); map.encoding=THREE.sRGBEncoding; const bump=tx(art.height);
+  const fish=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:0.12,bevelEnabled:true,bevelThickness:0.1,bevelSize:0.07,bevelSegments:segN(4,2),curveSegments:segN(16,6)}),
+    [new THREE.MeshStandardMaterial({map,bumpMap:bump,bumpScale:0.05,roughness:0.95,metalness:0}),new THREE.MeshStandardMaterial({color:col('#C28E48'),roughness:0.95,metalness:0})]);
+  fish.rotation.x=-Math.PI/2; fish.position.y=0.1; fish.castShadow=true; fish.receiveShadow=true; g.add(fish);
   inkify(g); g.visible=false; scene.add(g); return g;
 }
 function makeEggplant(){
