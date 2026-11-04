@@ -3757,7 +3757,7 @@ function makeBurger(){   // a burger in its paper: mostly round with a hint of c
   const g=new THREE.Group(); g.add(m); inkify(g); g.visible=false; scene.add(g); return g;
 }
 function makeUdon(){   // kake udon, after a photo: a white porcelain bowl with a blue line, clear golden broth, a neat swirl of thick glossy noodles, a heap of chopped spring onion
-  const g=new THREE.Group(), RIM=1.15, HB=0.78, LV=0.58, prof=[];
+  const g=new THREE.Group(), RIM=1.15, HB=1.08, LV=0.6, prof=[];   // a deep bowl, the broth well below the rim
   [[0.001,0],[0.48,0],[0.54,0.03],[0.56,0.09]].forEach(p=>prof.push(new THREE.Vector2(...p)));
   for(let i=1;i<=12;i++){ const t=i/12; prof.push(new THREE.Vector2(0.56+(RIM-0.56)*Math.sin(t*Math.PI/2),0.09+(HB-0.09)*t)); }
   prof.push(new THREE.Vector2(RIM-0.015,HB+0.015),new THREE.Vector2(RIM-0.04,HB));
@@ -3767,7 +3767,7 @@ function makeUdon(){   // kake udon, after a photo: a white porcelain bowl with 
   const rIn=y=>{ let r=0.3; for(let i=0;i<prof.length-1;i++){ const a=prof[i], b=prof[i+1]; if(b.y<a.y&&y<=a.y&&y>=b.y) r=a.x+(b.x-a.x)*(a.y-y)/(a.y-b.y); } return r; };
   const blue=new THREE.MeshStandardMaterial({color:col('#3C5C9C'),roughness:0.3});
   const line=new THREE.Mesh(new THREE.TorusGeometry(rIn(HB-0.07)-0.004,0.006,4,segN(64,24)).rotateX(Math.PI/2),blue); line.position.y=HB-0.07; line.userData.ink=true; g.add(line);
-  const band=new THREE.Mesh(new THREE.TorusGeometry(0.66,0.012,4,segN(64,24)).rotateX(Math.PI/2),blue); band.position.y=0.22; band.userData.ink=true; g.add(band);
+  const band=new THREE.Mesh(new THREE.TorusGeometry(0.64,0.012,4,segN(64,24)).rotateX(Math.PI/2),blue); band.position.y=0.24; band.userData.ink=true; g.add(band);
   // the broth: clear, light golden
   const broth=new THREE.Mesh(new THREE.CircleGeometry(rIn(LV)-0.01,segN(48,20)),new THREE.MeshStandardMaterial({color:col('#94561E'),roughness:0.05,transparent:true,opacity:0.72}));
   broth.rotation.x=-Math.PI/2; broth.position.y=LV; broth.userData.ink=true; broth.renderOrder=1; g.add(broth);
