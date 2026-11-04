@@ -3763,25 +3763,43 @@ function makeUdon(){   // kitsune udon: a dark lacquer bowl, amber broth, thick 
   prof.push(new THREE.Vector2(RIM-0.02,HB+0.015),new THREE.Vector2(RIM-0.05,HB));   // the rounded lip
   for(let i=1;i<=10;i++){ const t=i/10; prof.push(new THREE.Vector2((RIM-0.05)-(RIM-0.05-0.3)*(1-Math.cos(t*Math.PI/2)),HB-(HB-0.14)*Math.sin(t*Math.PI/2))); }   // down the inside
   prof.push(new THREE.Vector2(0.001,0.14));
-  const bowl=new THREE.Mesh(new THREE.LatheGeometry(prof,segN(48,20)),new THREE.MeshStandardMaterial({color:col('#3A221C'),roughness:0.3})); bowl.castShadow=true; bowl.receiveShadow=true; g.add(bowl);
+  const bowl=new THREE.Mesh(new THREE.LatheGeometry(prof,segN(48,20)),new THREE.MeshStandardMaterial({color:col('#3B1E18'),roughness:0.22})); bowl.castShadow=true; bowl.receiveShadow=true; g.add(bowl);
   const rIn=y=>{ let r=0.3; for(let i=0;i<prof.length-1;i++){ const a=prof[i], b=prof[i+1]; if(b.y<a.y&&y<=a.y&&y>=b.y){ r=a.x+(b.x-a.x)*(a.y-y)/(a.y-b.y); } } return r; };   // the inside radius at a height
-  const broth=new THREE.Mesh(new THREE.CircleGeometry(rIn(LV)-0.01,segN(48,20)),new THREE.MeshStandardMaterial({color:col('#9A5A1C'),roughness:0.12,transparent:true,opacity:0.8})); broth.rotation.x=-Math.PI/2; broth.position.y=LV; broth.userData.ink=true; g.add(broth);
-  const nd=[]; for(let k=0;k<16;k++){ const pts=[], a0=rnd()*6.3, r0=0.25+rnd()*0.55, sp=(rnd()<0.5?-1:1)*(0.8+rnd()*0.8);
-    for(let i=0;i<14;i++){ const t=i/13, a=a0+sp*t*3.2, r=Math.min(0.88,Math.max(0.12,r0+0.35*Math.sin(t*5+k))); pts.push(new V3(r*Math.cos(a),LV-0.03+0.06*Math.sin(t*9+k*2),r*Math.sin(a))); }   // loose loops, dipping in and out of the broth
-    nd.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),segN(60,24),0.06,segN(8,5),false)); }
-  const noodles=new THREE.Mesh(mergeGeos(nd.map(q=>{ const r=new THREE.BufferGeometry(); r.setAttribute('position',q.attributes.position); r.setIndex(q.index); return r; })),new THREE.MeshStandardMaterial({color:col('#EEE2C4'),roughness:0.5})); noodles.userData.ink=true; g.add(noodles);
-  const tc=cv(128,128), tg=tc.getContext('2d'); tg.fillStyle='#C4802E'; tg.fillRect(0,0,128,128); for(let i=0;i<500;i++){ tg.fillStyle=rnd()<0.5?'rgba(150,88,26,.5)':'rgba(222,160,80,.5)'; tg.beginPath(); tg.arc(rnd()*128,rnd()*128,1+rnd()*2.5,0,7); tg.fill(); }   // the spongy fried skin
+  // broth: amber, darker in the middle, a few drops of oil catching the light; see-through enough to show the noodles under it
+  const bc=cv(256,256), bg=bc.getContext('2d'), grd=bg.createRadialGradient(128,128,10,128,128,128);
+  grd.addColorStop(0,'#6E3812'); grd.addColorStop(0.7,'#8C4E1A'); grd.addColorStop(1,'#A8682A'); bg.fillStyle=grd; bg.fillRect(0,0,256,256);
+  for(let i=0;i<26;i++){ const x=40+rnd()*176, y=40+rnd()*176, r=2+rnd()*7; bg.strokeStyle='rgba(236,180,90,.45)'; bg.lineWidth=1.2; bg.beginPath(); bg.ellipse(x,y,r,r*0.8,rnd()*3,0,7); bg.stroke(); }
+  const btx=new THREE.CanvasTexture(bc); btx.encoding=THREE.sRGBEncoding;
+  const broth=new THREE.Mesh(new THREE.CircleGeometry(rIn(LV)-0.01,segN(48,20)),new THREE.MeshStandardMaterial({map:btx,roughness:0.08,transparent:true,opacity:0.74}));
+  broth.rotation.x=-Math.PI/2; broth.position.y=LV; broth.userData.ink=true; broth.renderOrder=1; g.add(broth);
+  // noodles: thick and many, coiled round the bowl, mostly just under the surface with their backs breaking through
+  const nd=[];
+  for(let k=0;k<26;k++){ const pts=[], a0=rnd()*6.3, r0=0.3+rnd()*0.5, sp=(rnd()<0.5?-1:1)*(0.7+rnd()*0.7), ph=rnd()*6.3;
+    for(let i=0;i<18;i++){ const t=i/17, a=a0+sp*t*4, r=Math.min(0.86,Math.max(0.15,r0+0.3*Math.sin(t*4.5+ph))); pts.push(new V3(r*Math.cos(a),LV-0.075+0.07*Math.max(0,Math.sin(t*7+ph))+0.01*k/26,r*Math.sin(a))); }
+    const q=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),segN(70,28),0.055,segN(8,5),false), r2=new THREE.BufferGeometry(); r2.setAttribute('position',q.attributes.position); r2.setIndex(q.index); nd.push(r2); }
+  const noodles=new THREE.Mesh(mergeGeos(nd),new THREE.MeshStandardMaterial({color:col('#ECDDBC'),roughness:0.38})); noodles.userData.ink=true; g.add(noodles);
+  // aburaage: a thick, soft-edged square of fried tofu, soaked a glossy golden brown, pores on its skin
+  const tc=cv(256,256), tg=tc.getContext('2d'); tg.fillStyle='#C67A2A'; tg.fillRect(0,0,256,256);
+  for(let i=0;i<1600;i++){ tg.fillStyle=rnd()<0.55?'rgba(140,74,20,.45)':'rgba(230,166,82,.4)'; tg.beginPath(); tg.ellipse(rnd()*256,rnd()*256,1+rnd()*3,1+rnd()*2,rnd()*3,0,7); tg.fill(); }
   const tt=new THREE.CanvasTexture(tc); tt.encoding=THREE.sRGBEncoding;
-  const tofuG=new THREE.BoxGeometry(0.95,0.14,0.85,6,1,6), tp=tofuG.attributes.position; for(let i=0;i<tp.count;i++){ const x=tp.getX(i), z=tp.getZ(i); tp.setY(i,tp.getY(i)+0.03*Math.sin(x*4)*Math.cos(z*3.5)); } tofuG.computeVertexNormals();
-  const tofu=new THREE.Mesh(tofuG,new THREE.MeshStandardMaterial({map:tt,roughness:0.8})); tofu.position.set(0.05,LV+0.06,-0.02); tofu.rotation.set(0.04,0.35,-0.03); tofu.castShadow=true; g.add(tofu);
-  const ring=new THREE.TorusGeometry(0.036,0.013,segN(5,3),segN(10,6)).rotateX(Math.PI/2), on=[], wk=[];
-  for(let k=0;k<46;k++){ const onTofu=k<30, a=rnd()*6.3, r=onTofu?Math.sqrt(rnd())*0.33:0.4+rnd()*0.5, q=ring.clone(), o=new THREE.Object3D();
-    o.position.set(onTofu?0.05+Math.cos(a)*r:Math.cos(a)*r,onTofu?LV+0.15:LV+0.03,onTofu?-0.02+Math.sin(a)*r:Math.sin(a)*r); o.rotation.set((rnd()-0.5)*0.8,0,(rnd()-0.5)*0.8); o.updateMatrix(); q.applyMatrix4(o.matrix); const r2=new THREE.BufferGeometry(); r2.setAttribute('position',q.attributes.position); r2.setIndex(q.index); on.push(r2); }
-  const onion=new THREE.Mesh(mergeGeos(on),new THREE.MeshStandardMaterial({color:col('#7DBF3C'),roughness:0.5})); onion.userData.ink=true; g.add(onion);   // chopped spring onion, mostly on the tofu
-  for(let k=0;k<5;k++){ const sh=new THREE.Shape(), a=k/5*6.3+0.5, r=0.62+rnd()*0.2, cx=Math.cos(a)*r, cz=Math.sin(a)*r;
-    for(let i=0;i<9;i++){ const q=i/9*6.3, j=0.1+rnd()*0.08; if(i) sh.lineTo(cx+Math.cos(q)*j*1.4,cz+Math.sin(q)*j); else sh.moveTo(cx+j*1.4,cz); }
-    const w=new THREE.ShapeGeometry(sh); w.rotateX(Math.PI/2); w.translate(0,LV+0.012,0); wk.push(w); }
-  const wakame=new THREE.Mesh(mergeGeos(wk),new THREE.MeshStandardMaterial({color:col('#203F1C'),roughness:0.35,side:THREE.DoubleSide})); wakame.userData.ink=true; g.add(wakame);
+  const TA=0.48, TB=0.08, TC=0.43, TR=0.06, tofuG=new THREE.BoxGeometry(2*TA,2*TB,2*TC,8,2,8), tp=tofuG.attributes.position, v=new V3(), q=new V3();
+  for(let i=0;i<tp.count;i++){ v.fromBufferAttribute(tp,i); q.set(Math.max(-TA+TR,Math.min(TA-TR,v.x)),Math.max(-TB+TR,Math.min(TB-TR,v.y)),Math.max(-TC+TR,Math.min(TC-TR,v.z))); const n=v.clone().sub(q); if(n.lengthSq()>1e-9) n.setLength(TR); v.copy(q).add(n);
+    v.y+=0.03*Math.max(0,v.y/TB)*(1-(v.x/TA)**2)*(1-(v.z/TC)**2)+0.012*Math.sin(v.x*9)*Math.cos(v.z*7); tp.setXYZ(i,v.x,v.y,v.z); }
+  tofuG.computeVertexNormals();
+  const tofu=new THREE.Mesh(tofuG,new THREE.MeshStandardMaterial({map:tt,roughness:0.5})); tofu.position.set(0.05,LV+0.05,-0.02); tofu.rotation.set(0.05,0.32,-0.04); tofu.castShadow=true; g.add(tofu);
+  // spring onion: bright little rings with pale centres, heaped on the tofu, a few in the broth
+  const ring=new THREE.TorusGeometry(0.036,0.012,segN(5,3),segN(12,6)).rotateX(Math.PI/2), core=new THREE.CircleGeometry(0.026,segN(10,6)).rotateX(-Math.PI/2), on=[], oc=[];
+  for(let k=0;k<70;k++){ const onTofu=k<52, a=rnd()*6.3, r=onTofu?Math.sqrt(rnd())*0.3:0.45+rnd()*0.4, o=new THREE.Object3D();
+    o.position.set(onTofu?0.05+Math.cos(a)*r*1.1:Math.cos(a)*r,onTofu?LV+0.16+rnd()*0.05:LV+0.02,onTofu?-0.02+Math.sin(a)*r:Math.sin(a)*r); o.rotation.set((rnd()-0.5)*1.0,0,(rnd()-0.5)*1.0); o.updateMatrix();
+    [[ring,on],[core,oc]].forEach(([src,list])=>{ const c=src.clone(); c.applyMatrix4(o.matrix); const r2=new THREE.BufferGeometry(); r2.setAttribute('position',c.attributes.position); r2.setIndex(c.index); list.push(r2); }); }
+  const onion=new THREE.Mesh(mergeGeos(on),new THREE.MeshStandardMaterial({color:col('#4FA82A'),roughness:0.45})); onion.userData.ink=true; g.add(onion);
+  const onionIn=new THREE.Mesh(mergeGeos(oc),new THREE.MeshStandardMaterial({color:col('#CDE79A'),roughness:0.5,side:THREE.DoubleSide})); onionIn.userData.ink=true; g.add(onionIn);
+  // wakame: dark, glossy, ragged leaves lying in the broth
+  const wk=[];
+  for(let k=0;k<6;k++){ const sh=new THREE.Shape(), a=k/6*6.3+0.4, r=0.6+rnd()*0.22, cx=Math.cos(a)*r, cz=Math.sin(a)*r, rot=rnd()*3;
+    for(let i=0;i<14;i++){ const t=i/14*6.3, j=(0.1+rnd()*0.07)*(i&1?0.75:1), px=Math.cos(t)*j*1.6, pz=Math.sin(t)*j; const x=cx+px*Math.cos(rot)-pz*Math.sin(rot), z=cz+px*Math.sin(rot)+pz*Math.cos(rot); if(i) sh.lineTo(x,z); else sh.moveTo(x,z); }
+    const w=new THREE.ShapeGeometry(sh); w.rotateX(Math.PI/2); w.translate(0,LV+0.03,0); wk.push(w); }
+  const wakame=new THREE.Mesh(mergeGeos(wk),new THREE.MeshStandardMaterial({color:col('#1A3418'),roughness:0.2,side:THREE.DoubleSide})); wakame.userData.ink=true; g.add(wakame);
   inkify(g); g.visible=false; scene.add(g); return g;
 }
 const DECOYS={};   // built on first use
