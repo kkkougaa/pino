@@ -1101,7 +1101,7 @@ body.paused :is(#cutin,#cutin *,#sus,#sus *,#patrol .nohand){animation-play-stat
 /* ---- start screen: the lobby (draft 6). A wall with the fridge, Kouga in front of it, the box on the table, a ranking card beside it, one big button, a tab bar ---- */
 :root{--lob:"Jua","Yusei Magic",var(--sys);--lob-ink:#3A2416;--lob-go:#FF5A3C;--lob-go-d:#D93A2B;--lob-wall:#3C4A63;--lob-wall-d:#2A3447}
 #start #tlang,#start .evtop{display:none!important}
-.lobfloor{position:fixed;left:0;right:0;bottom:0;top:36vh;z-index:0;pointer-events:none;background:#F3C98E repeating-linear-gradient(90deg,rgba(214,160,92,.45) 0 46px,transparent 46px 92px)}
+.lobfloor{position:fixed;left:0;right:0;bottom:0;top:36vh;z-index:0;pointer-events:none;background:linear-gradient(#C98A48 0 8px,rgba(120,70,30,.25) 8px,rgba(120,70,30,0) 22px),#F3C98E repeating-linear-gradient(90deg,rgba(214,160,92,.45) 0 46px,transparent 46px 92px)}   /* the desk: its front edge, then the top */
 .lobframe{position:fixed;z-index:1;pointer-events:none;border:3px solid var(--lob-ink);border-radius:14px;transform:rotate(-4deg);box-shadow:0 6px 0 rgba(58,36,22,.35)}
 body:not(.title) .lobfloor,body:not(.title) .lobframe{display:none}
 body.title #bg{background:#3C4A63 repeating-linear-gradient(90deg,#3C4A63 0 58px,#41506B 58px 60px)} body.title #bg .fridge{visibility:hidden}   /* above the 3D wall's reach, the wall carries on behind the canvas */
@@ -4342,14 +4342,14 @@ function setLabels(){ $('setTest').hidden=!TEST_MENU; document.querySelectorAll(
 function placeSetBtn(){ const l=$('tlang'); if(l&&l.offsetWidth) $('setBtn').style.right=(16+l.offsetWidth+8)+'px'; }   // just left of the language switch
 addEventListener('resize',placeSetBtn);
 // ---- start-screen lobby: a wall with a 3D fridge, drawn into the top band of the canvas (an orthographic shot in CSS px) ----
-const LOBBY={wh:0,scene:new THREE.Scene(),cam:new THREE.OrthographicCamera(0,1,0,-1,1,2000),fridge:null,wall:null,base:null,frame:null};
+const LOBBY={wh:0,scene:new THREE.Scene(),cam:new THREE.PerspectiveCamera(30,1,10,20000),fridge:null,wall:null,base:null,frame:null};
 (function(){ const L=LOBBY, S=L.scene;
   S.add(new THREE.AmbientLight(0xffffff,0.55)); const d=new THREE.DirectionalLight(0xffffff,0.75); d.position.set(-300,400,600); S.add(d);
   const wc=cv(120,8), wg=wc.getContext('2d'); wg.fillStyle='#3C4A63'; wg.fillRect(0,0,120,8); wg.fillStyle='#41506B'; wg.fillRect(116,0,4,8);
   const wt=new THREE.CanvasTexture(wc); wt.encoding=THREE.sRGBEncoding; wt.wrapS=THREE.RepeatWrapping;
   L.wall=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:wt})); L.wall.position.z=-900; S.add(L.wall);
   L.base=new THREE.Mesh(new THREE.BoxGeometry(1,14,40),new THREE.MeshBasicMaterial({color:col('#2A3447')})); L.base.position.z=-850; S.add(L.base);
-  L.cam.position.z=1000; })();
+  })();
 function makeLobbyFridge(){   // a tall two-door fridge: rounded body, freezer on top, handles, two magnets and a post-it
   const g=new THREE.Group(), W=1.5, H=2.3, D=1.15;
   const white=new THREE.MeshStandardMaterial({color:col('#EEF2F5')}), grey=new THREE.MeshStandardMaterial({color:col('#9AA6B4')}), dark=new THREE.MeshStandardMaterial({color:col('#2A3447')});
@@ -4362,14 +4362,14 @@ function makeLobbyFridge(){   // a tall two-door fridge: rounded body, freezer o
   mg(-0.42,H*0.84,'#2F6FB3'); mg(-0.3,H*0.5,'#D8352A');
   const note=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.46),new THREE.MeshBasicMaterial({color:col('#FFE36E')})); note.position.set(-0.3,H*0.4,D/2+0.065); note.rotation.z=0.1; note.userData.ink=true; g.add(note);
   const foot=new THREE.Mesh(new THREE.BoxGeometry(W-0.1,0.08,D-0.1),dark); foot.position.y=0.04; g.add(foot);
-  inkify(g); g.rotation.set(0.16,0.62,0); g.userData.H=H; g.userData.W=W; return g; }
+  inkify(g); g.userData.H=H; g.userData.D=D+0.1; g.userData.W=W; return g; }
 function placeLobby(){   // the wall band, the fridge on it, the frame round the box, and the floor with a window cut for it
   const L=LOBBY, w=innerWidth, h=innerHeight, wh=L.wh=Math.round(h*0.36);
   if(!L.fridge){ L.fridge=makeLobbyFridge(); L.scene.add(L.fridge); }
-  L.cam.left=0; L.cam.right=w; L.cam.top=0; L.cam.bottom=-h; L.cam.updateProjectionMatrix();   // the whole screen in CSS px; only the top band holds anything
-  L.wall.scale.set(w,wh,1); L.wall.position.set(w/2,-wh/2,-900); L.wall.material.map.repeat.set(w/120,1);
-  L.base.scale.x=w; L.base.position.set(w/2,-wh+7,-850);
-  const fh=Math.min(wh*0.58,190), sc=fh/L.fridge.userData.H; L.fridge.scale.setScalar(sc); L.fridge.position.set(30+L.fridge.userData.W*sc*0.62,-wh+14,-400);
+  const Z=h/(2*Math.tan(15*Math.PI/180)); L.cam.aspect=w/h; L.cam.position.set(w/2,-wh,Z); L.cam.lookAt(w/2,-wh,0); L.cam.setViewOffset(w,h,0,Math.round(h/2-wh),w,h); L.cam.updateProjectionMatrix();   // eye at the desk's edge, looking straight at the fridge; the view shifted so the plane z=0 maps 1:1 to CSS px
+  const gw=(Z+260)/Z, WW=w*gw*1.1, WH=wh*gw*1.05; L.wall.scale.set(WW,WH,1); L.wall.position.set(w/2,-wh+WH/2,-260); L.wall.material.map.repeat.set(WW/120,1);   // bottom edge on the desk line
+  L.base.visible=false;
+  const fh=Math.min(wh*0.64,210), sc=fh/L.fridge.userData.H; L.fridge.scale.setScalar(sc); L.fridge.position.set(20+L.fridge.userData.W*sc/2,-wh,-L.fridge.userData.D*sc/2);   // facing us, standing on the desk line
   $('lobFloor').style.top=wh+'px';
   const FW=Math.min(230,Math.round(w*0.59)), FH=Math.round(FW*0.9), FL=12, FT=Math.round(h*0.377), fr=$('lobFrame');
   Object.assign(fr.style,{left:FL+'px',top:FT+'px',width:FW+'px',height:FH+'px'});
