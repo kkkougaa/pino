@@ -1123,15 +1123,17 @@ html[lang="ja"] .setlegal{word-break:normal;line-break:strict}
 
 /* ---- start: one mode button that cycles, beside the start button ---- */
 #tui .mode{display:none!important}
-#tui{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 44px)!important}
-.gorow{width:min(100%,340px);display:flex;gap:8px;align-items:stretch}
-#tui .gorow .btn{flex:1;width:auto;margin:0}
-.modecyc{appearance:none;flex:none;width:88px;border:3px solid #3A2416;border-radius:16px;background:#FFFBEF;color:#3A2416;cursor:pointer;
+#tui{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 64px)!important}
+.gorow{width:min(100%,348px);display:flex;gap:14px;align-items:stretch}
+#tui .gorow .btn{flex:1;width:auto;margin:0;min-height:70px;font-size:26px}
+.modecyc{appearance:none;position:relative;flex:none;width:96px;border:3px solid #3A2416;border-radius:16px;background:#FFFBEF;color:#3A2416;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 4px;box-shadow:0 0 0 4px #FFFBEF,0 0 0 6.5px #3A2416,0 6px 0 5px rgba(0,0,0,.4);margin:0 4px 0 6px}
-.modecyc b{font:800 16px/1 var(--sys)} .modecyc small{font:600 10px/1 var(--sys);color:#7A6250;white-space:nowrap}
+.modecyc b{font:800 18px/1 var(--sys)} .modecyc small{font:600 11px/1 var(--sys);color:#7A6250;white-space:nowrap}
 .modecyc[data-mode="hard"]{background:var(--m-hard);color:var(--m-hard-ink)} .modecyc[data-mode="hard"] small{color:rgba(58,36,22,.75)}
 .modecyc[data-mode="super"]{background:var(--m-super);color:#FFFBEF} .modecyc[data-mode="super"] small{color:rgba(255,251,239,.85)}
 .modecyc:active{transform:translateY(3px)}
+.modecyc .dot{position:absolute;right:-8px;top:-8px;width:14px;height:14px;border-radius:50%;background:#E5413A;border:2.5px solid #FFFBEF;box-shadow:0 0 0 2px #3A2416;display:none}
+.modecyc.new .dot{display:block}
 </style>
 </head>
 <body>
@@ -1201,7 +1203,7 @@ bootStep(0.1);</script>
     <p class="lead"><span data-i18n="lead"></span> <span id="intro2" data-i18n="intro2"></span></p>
     <div class="mode"><div class="seg" role="group" aria-label="Mode"><button type="button" data-mode="normal" data-i18n="modeNormal"></button><button type="button" data-mode="hard" data-i18n="modeHard"></button><button type="button" data-mode="super" data-i18n="modeSuper" hidden></button></div></div>
     <p class="hardnote" id="hardNote" data-i18n="hardNote"></p>
-    <div class="gorow"><button type="button" class="modecyc" id="modeCyc"><b id="modeCycT"></b><small data-i18n="modeTap"></small></button><button class="btn" id="go" data-i18n="start">시작!</button></div>
+    <div class="gorow"><button type="button" class="modecyc" id="modeCyc"><i class="dot" aria-hidden="true"></i><b id="modeCycT"></b><small data-i18n="modeTap"></small></button><button class="btn" id="go" data-i18n="start">시작!</button></div>
   </div>
 </div>
 
@@ -2935,7 +2937,7 @@ function showOpenHint(quiet){
 }
 function tap(x,y){
   if(cur&&cur.covered) return;
-  if(state==='pizza'){ openPizza(); return; }
+  if(state==='pizza'){ if(!PZHOLD) openPizza(); else if(cur) cur.jitter=0.04; return; }   // held while its guide shows
   if(state==='film'||state==='tear'){ showOpenHint(); return; }
   if(state==='pick'){
     setRay(x,y);
@@ -4312,7 +4314,8 @@ addEventListener('resize',()=>{ if(!$('start').hidden) evCard(); });   // the no
 $('boardBtn').addEventListener('click',()=>{ audio(); boardShow(); });
 $('rankIco').addEventListener('click',()=>{ audio(); boardShow(); });
 // one mode button beside start: each tap moves to the next unlocked mode (the hidden switch underneath does the work)
-function modeCycSync(){ const on=document.querySelector('#tui .mode button[aria-pressed="true"]'), b=$('modeCyc'); if(!on) return; $('modeCycT').textContent=on.textContent; b.dataset.mode=on.dataset.mode; }
+function modeCycSync(){ const on=document.querySelector('#tui .mode button[aria-pressed="true"]'), b=$('modeCyc'); if(!on) return; $('modeCycT').textContent=on.textContent; b.dataset.mode=on.dataset.mode;
+  let seen=false; try{ if(on.dataset.mode==='super') localStorage.setItem('kouga-super-seen','1'); seen=localStorage.getItem('kouga-super-seen')==='1'; }catch(e){} b.classList.toggle('new',superOpen&&!seen); }   // a red dot until super has been picked once
 $('modeCyc').addEventListener('click',()=>{ const bs=[...document.querySelectorAll('#tui .mode button')].filter(x=>!x.hidden), i=bs.findIndex(x=>x.getAttribute('aria-pressed')==='true'); const n=bs[(i+1)%bs.length]; if(n) n.click(); modeCycSync(); });
 new MutationObserver(modeCycSync).observe(document.querySelector('#tui .mode'),{subtree:true,attributes:true,attributeFilter:['aria-pressed','hidden'],childList:true,characterData:true});
 setTimeout(modeCycSync,0);
@@ -4595,6 +4598,7 @@ function loop(t){
   }
   if(cur){
     if(state==='idle') cur.group.rotation.y=0;   // the start screen: the box holds still
+    if(postit&&postit.parent===cur.group){ if(state==='idle'&&!reduceMotion){ const w=Math.sin(now*1.7)*0.6+Math.sin(now*2.9+1)*0.4, g=Math.max(0,Math.sin(now*0.9))**3; postit.rotation.x=-0.045*(0.4+0.6*g)*(0.6+0.4*w); postit.rotation.z=0.02*w*g; postit.rotation.y=-0.1+0.015*w; postit.wind=1; } else if(postit.wind){ postit.wind=0; postit.rotation.set(0,-0.1,0); } }   // the start screen: the note lifts a little in the breeze
     if(cur.jitter>0.0005){ cur.group.rotation.z=Math.sin(now*70)*cur.jitter; cur.jitter*=Math.exp(-dt*12); }
     else if(state!=='throwing') cur.group.rotation.z=0;
     if(state==='pick') cur.pick.position.y=cur.pick.userData.baseY+Math.sin(now*3)*0.004;
