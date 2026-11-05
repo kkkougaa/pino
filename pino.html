@@ -1102,7 +1102,7 @@ body.paused :is(#cutin,#cutin *,#sus,#sus *,#patrol .nohand){animation-play-stat
 /* ---- start screen, pared down: logo, the box, modes and start; ranking behind a trophy, everything else in Settings ---- */
 #start #evTop,#tui .lead,#tui .hardnote{display:none!important}
 #start .setbtn{right:16px!important}
-.rankico{position:fixed;right:60px;top:calc(env(safe-area-inset-top,0px) + 16px);z-index:3;width:36px;height:36px;padding:7px;border-radius:50%;border:2px solid #FFFBEF;background:rgba(26,14,8,.55);color:#FFFBEF;cursor:pointer;pointer-events:auto}
+.rankico{position:fixed;right:60px;top:calc(env(safe-area-inset-top,0px) + 16px);z-index:3;width:36px;height:36px;padding:7px;border-radius:50%;border:2px solid #3A2416;background:#FFD23F;color:#3A2416;cursor:pointer;pointer-events:auto}
 .rankico[hidden]{display:none}
 .rankico svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .rankico i{position:absolute;right:-2px;top:-2px;width:10px;height:10px;border-radius:50%;background:#E5413A;border:2px solid #FFFBEF;display:none}
@@ -2807,7 +2807,7 @@ function nextBox(){
     const b=makePizza(); cur=b; scene.add(b.group); boxNo++;
     b.group.position.set(6,0,0); b.group.rotation.y=-0.4; state='arrive'; setGuide(null);
     tween(0.38,k=>{const e=easeOut(k);b.group.position.x=6*(1-e);b.group.rotation.y=-0.4*(1-e);},
-      ()=>{ if(state!=='arrive') return; state='pizza'; keepCombo(); popCenter(say('pizza_hint'),'pizza'); if(HARD&&!(TUT||AUTO.on)&&!(TEST.coach?COACH.run.pizza:coachSeen('pizza'))){ PZHOLD=true; const pzTry=()=>{ if(state!=='pizza'||cur!==b){ PZHOLD=false; return; } if(coach('pizza',{target:()=>{ const q=toScreen(b.group.position.clone().setY(0.3)); return {x:q.x,y:q.y,r:Math.min(innerWidth,innerHeight)*0.32}; },tap:true})) return; if(COACH.on) later(pzTry,150); else PZHOLD=false; }; later(pzTry,120); } });   // the combo clock restarts when the pizza lands, so deciding doesn't cost it; the pizza guide shows at once (or once another guide closes) and the pizza waits for it
+      ()=>{ if(state!=='arrive') return; state='pizza'; keepCombo(); popCenter(say('pizza_hint'),'pizza'); if((TEST.coach||!HARD)&&!(TUT||AUTO.on)&&!(TEST.coach?COACH.run.pizza:coachSeen('pizza'))){ PZHOLD=true; const pzTry=()=>{ if(state!=='pizza'||cur!==b){ PZHOLD=false; return; } if(coach('pizza',{target:()=>{ const q=toScreen(b.group.position.clone().setY(0.3)); return {x:q.x,y:q.y,r:Math.min(innerWidth,innerHeight)*0.32}; },tap:true})) return; if(COACH.on) later(pzTry,150); else PZHOLD=false; }; later(pzTry,120); } });   // the combo clock restarts when the pizza lands, so deciding doesn't cost it; the pizza guide shows at once (or once another guide closes) and the pizza waits for it
     return;
   }
   const b=makeBox(); cur=b; scene.add(b.group); boxNo++; b.covered=false; b.meltT=meltTime();
@@ -3982,10 +3982,11 @@ function meltEnd(){
 }
 /* ---------- hard-mode guide: the first time each trouble appears, the game slows (or stops), a spotlight picks out
    what matters and one line says what to do. Shown once per device; never in autoplay or the tutorial ---------- */
-const COACH={on:null,ts:1,run:{}}; let PZHOLD=false;   // the first pizza with its guide: it can't be swiped away until the guide is done
+const COACH={on:null,ts:1,run:{}};
+const GUIDE_IN={warn:'practice',watch:'practice',dare:'practice',pizza:'practice',melt:'hard',sus:'hard',recheck:'hard',feint:'hard',rage:'hard'};   // which mode each guide belongs to (hard = hard and super); once seen it never shows again, in any mode let PZHOLD=false;   // the first pizza with its guide: it can't be swiped away until the guide is done
 function coachSeen(k){ try{ return localStorage.getItem('kouga-coach-'+k)==='1'; }catch(e){ return false; } }
 function coach(k,o){   // o.target: element id | ()=>{x,y,r}; o.tap: stop the game until a tap; o.slow: time scale while the hint shows; o.until: done when true
-  o=o||{}; if((!HARD&&!o.any&&!TEST.coach)||TUT||AUTO.on||COACH.on||(TEST.coach?COACH.run[k]:coachSeen(k))||state==='over'||state==='swat'||state==='idle') return false;
+  o=o||{}; if((!TEST.coach&&(GUIDE_IN[k]==='practice'?HARD:!HARD))||TUT||AUTO.on||COACH.on||(TEST.coach?COACH.run[k]:coachSeen(k))||state==='over'||state==='swat'||state==='idle') return false;
   COACH.run[k]=1;   // test switch 'guide always': each guide once per run
   try{ localStorage.setItem('kouga-coach-'+k,'1'); }catch(e){}
   COACH.on={k,o,t0:performance.now()}; COACH.ts=o.tap?0:(o.slow??0.25);
