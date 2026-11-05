@@ -6,7 +6,7 @@
 <title>코우가 챌린지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@700&family=IBM+Plex+Sans+KR:wght@500;600;700&family=IBM+Plex+Sans+JP:wght@500;600;700&family=Gamja+Flower&family=Yusei+Magic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=IBM+Plex+Sans+JP:wght@500;600;700&family=Gamja+Flower&family=Yusei+Magic&display=swap" rel="stylesheet">
 <style>
 /* ===== loading screen: painted before the heavy parts of the page arrive ===== */
 #boot{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:#C79A6A;transition:opacity .35s ease}
@@ -1139,13 +1139,16 @@ html[lang="ja"] .setlegal{word-break:normal;line-break:strict}
 .modecyc.new .dot{display:block}
 .modecyc.one small{display:none} .modecyc.one{pointer-events:none}   /* only hard so far: nothing to switch to */
 
-/* ---- start screen: a location caption, top left ---- */
+/* ---- start screen: a location caption, top left (NEXON Lv1 Gothic, a free font by NEXON) ---- */
+@font-face{font-family:"NexonLv1";font-weight:400;font-display:swap;src:url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON%20Lv1%20Gothic%20OTF.woff") format("woff")}
+@font-face{font-family:"NexonLv1";font-weight:700;font-display:swap;src:url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON%20Lv1%20Gothic%20OTF%20Bold.woff") format("woff")}
 .loccap{position:fixed;left:18px;top:calc(env(safe-area-inset-top,0px) + 18px);z-index:3;pointer-events:none;color:#FFFBEF;text-shadow:0 1px 3px rgba(26,14,8,.75)}
 .loccap p{margin:0}
-.loccap .ld{display:block;width:max-content;font:700 17px/1.3 "Martian Mono",ui-monospace,monospace;opacity:.85;white-space:nowrap}
+.loccap .ld{display:block;width:max-content;font:700 17px/1.3 "NexonLv1",ui-monospace,monospace;opacity:.85;white-space:nowrap}
 
-.loccap .lt{display:block;width:max-content;font:700 34px/1 "Martian Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
-.loccap .lp{margin-top:8px;font:600 13px/1.35 var(--sys)}
+.loccap .lt{display:block;width:max-content;font:700 38px/1 "NexonLv1",ui-monospace,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+.loccap .lt i{display:inline-block;width:.6em;text-align:center;font-style:normal} .loccap .lt i.col{width:.32em}
+.loccap .lp{margin-top:8px;font:700 14px/1.35 "NexonLv1",var(--sys)}
 .loccap .ln{font:500 12px/1.35 var(--sys);opacity:.8}
 body:not(.title) .loccap{display:none}
 </style>
@@ -4359,7 +4362,8 @@ addEventListener('resize',()=>{ if(!$('start').hidden) evCard(); });   // the no
 $('boardBtn').addEventListener('click',()=>{ audio(); boardShow(); });
 $('rankIco').addEventListener('click',()=>{ audio(); boardShow(); });
 // the start screen's location caption: today's date and the time now, then where we are
-function locTick(){ const d=new Date(), z=n=>String(n).padStart(2,'0'); $('locDate').textContent=d.getFullYear()+'.'+z(d.getMonth()+1)+'.'+z(d.getDate()); $('locTime').textContent=z(d.getHours())+':'+z(d.getMinutes())+':'+z(d.getSeconds()); locFit(); }
+function locTick(){ const d=new Date(), z=n=>String(n).padStart(2,'0'); $('locDate').textContent=d.getFullYear()+'.'+z(d.getMonth()+1)+'.'+z(d.getDate()); const tx=z(d.getHours())+':'+z(d.getMinutes())+':'+z(d.getSeconds()), el=$('locTime'); if(el.childNodes.length!==8){ el.textContent=''; for(let i=0;i<8;i++) el.appendChild(document.createElement('i')); }
+  [...tx].forEach((c,i)=>{ const k=el.childNodes[i]; if(k.textContent!==c){ k.textContent=c; k.className=c===':'?'col':''; } }); locFit(); }   // one fixed cell per digit, so the proportional face doesn't wobble each second
 function locFit(){ const a=$('locDate'), t=$('locTime'); if(!a.offsetWidth) return; a.style.letterSpacing='0px'; a.style.marginRight='0px'; const n=a.textContent.length, g=(t.getBoundingClientRect().width-a.getBoundingClientRect().width)/(n-1); a.style.letterSpacing=g.toFixed(2)+'px'; a.style.marginRight=(-g).toFixed(2)+'px'; }   // the date spread to the time's width
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(locFit);
 (function locLoop(){ locTick(); setTimeout(locLoop,1000-new Date().getMilliseconds()+5); })();   // on each turn of the second
