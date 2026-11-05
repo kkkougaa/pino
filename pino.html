@@ -682,7 +682,7 @@ body.paused .pop,body.paused .cele-bit,body.paused #cele .cele-in{animation-play
 .rhead h2{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:visible}
 .rhead .grade{flex:none}
 /* ===== hide button (hard): sits just above the melt pill while Kouga's on his way ===== */
-#hideBtn{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 74px);transform:translateX(-50%);z-index:5;
+#hideBtn{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 44px);transform:translateX(-50%);z-index:5;
   display:flex;align-items:center;gap:8px;padding:10px 22px 9px 16px;border-radius:999px;border:3px solid #3A2416;
   background:#E0412F;color:#fff;font-family:var(--ui);font-weight:800;font-size:22px;line-height:1;letter-spacing:.02em;cursor:pointer;
   box-shadow:0 5px 0 #3A2416,0 0 0 6px rgba(255,255,255,.35);text-shadow:0 2px 0 rgba(58,36,22,.55);
@@ -1049,7 +1049,7 @@ body.title .hud,body.title #sus,body.title #fever,body.title #mood{visibility:hi
 #tui .btn:active{transform:translateY(3px);box-shadow:0 0 0 4px #FFFBEF,0 0 0 6.5px #3A2416,0 3px 0 5px rgba(0,0,0,.4)}
 #tui .mode .seg{box-shadow:0 0 0 2px #3A2416,0 3px 0 2px rgba(0,0,0,.35);border-width:2px}
 #tui .btn.ghost{background:#3A2416;color:#FFFBEF;border-color:#3A2416}
-#tui .legal{margin:0;max-width:340px;white-space:pre-line;color:rgba(255,243,222,.5);font:400 10px/1.45 var(--sys);text-align:center;opacity:1;word-break:keep-all}
+#tui .legal{margin:0;max-width:340px;white-space:pre-line;color:rgba(255,243,222,.85);text-shadow:0 1px 2px rgba(26,14,8,.7);font:400 10px/1.45 var(--sys);text-align:center;opacity:1;word-break:keep-all}
 html[lang="ja"] #tui .legal{word-break:normal;line-break:strict}
 #tui .credit{margin:0;display:flex;justify-content:center;align-items:center;gap:8px;color:rgba(255,243,222,.78);font:600 10.5px/1.3 var(--sys);letter-spacing:.02em}
 #tui .credit i{font-style:normal;opacity:.5}
@@ -1112,10 +1112,6 @@ body.paused :is(#cutin,#cutin *,#sus,#sus *,#patrol .nohand){animation-play-stat
 #setOv #tlang .seg{background:transparent;border-color:#3A2E28}
 #setOv #tlang button{color:#3A2E28;font-size:14px}
 #setOv #tlang button[aria-pressed="true"]{background:#3A2E28;color:#FFFBEF}
-.setlegal{margin:16px 0 0;white-space:pre-line;font:500 11px/1.5 var(--sys);color:#7A6250;text-align:left;word-break:keep-all;opacity:1}
-html[lang="ja"] .setlegal{word-break:normal;line-break:strict}
-.setcredit{margin:8px 0 0;display:flex;gap:8px;justify-content:center;font:600 11px/1.4 var(--sys);color:#7A6250}
-.setcredit i{font-style:normal;opacity:.5}
 #boardOv .evcard{margin:12px auto 0}
 #boardOv #boardBtn{display:none}
 #setOv .setcard{max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;box-sizing:border-box}
@@ -1161,16 +1157,24 @@ body:not(.title) .loccap{display:none}
 
 /* ---- start screen: touch to start; the mode as a pill bottom left ---- */
 #tui .gorow .btn,#tui #go{display:none!important}
-.tts{position:fixed;left:10%;right:10%;bottom:calc(env(safe-area-inset-bottom,0px) + 168px);z-index:2;display:flex;justify-content:center;pointer-events:none;
+.tts{cursor:pointer;position:fixed;left:10%;right:10%;bottom:calc(env(safe-area-inset-bottom,0px) + 168px);z-index:2;display:flex;justify-content:center;pointer-events:auto;
   background:linear-gradient(90deg,rgba(16,10,6,0) 0%,rgba(16,10,6,.25) 22%,rgba(16,10,6,.25) 78%,rgba(16,10,6,0) 100%);padding:12px 0}
 .tts span{position:relative;font:500 17px/1 var(--loc);letter-spacing:.32em;margin-right:-.32em;color:#FFFBEF;text-shadow:0 1px 3px rgba(0,0,0,.5)}
 body:not(.title) .tts{display:none}
-#tui{padding:0!important;background:none!important}
-.gorow{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 104px);width:auto!important;z-index:3}
+#tui{padding:0 16px calc(env(safe-area-inset-bottom,0px) + 12px)!important;background:none!important}
+.gorow{position:fixed;left:0;right:0;margin:0 auto;bottom:calc(env(safe-area-inset-bottom,0px) + 104px);width:max-content!important;z-index:3}
 .modecyc{width:166px!important;height:41px;flex-direction:row!important;justify-content:center!important;gap:0!important;padding:0 20px!important;border-radius:999px!important;margin:0!important;border:2px solid #3A2416!important;box-shadow:none!important}
 .modecyc b{font:700 15px/1 var(--sys)!important} .modecyc small{display:none!important}
 .modecyc .cyc{position:absolute;left:14px;top:50%;width:18px;height:18px;margin-top:-9px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .modecyc.one .cyc{display:none}
+
+/* ---- practice: skip button; the result keeps only the home button ---- */
+.pracskip{position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:5;appearance:none;height:34px;padding:0 14px;border:2px solid #3A2416;border-radius:17px;background:#FFFBEF;color:#3A2416;font:700 13px/1 var(--sys);cursor:pointer;box-shadow:0 3px 0 rgba(58,36,22,.4)}
+.pracskip[hidden]{display:none}
+#result.practice #again,#result.practice #shareX,#result.practice #saveImg{display:none}
+#result.practice #homeBtn{flex:1}
+.nmi{width:20px;height:20px;flex:none;fill:none;stroke:var(--m-nm);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.mrow{display:flex;align-items:center;gap:6px}
 </style>
 </head>
 <body>
@@ -1214,6 +1218,7 @@ bootStep(0.1);</script>
 <div id="pops"></div>
 <div id="patrol" hidden aria-live="polite"><div class="vig"></div><div class="tape" aria-hidden="true"></div><img class="pk" id="patrolKouga" alt=""><p class="pksay" id="pkSay" hidden></p><img class="pt" id="patrolTxt" alt=""><div class="nohand" aria-hidden="true"><!-- hand: Font Awesome Free 6.5.2 "hand" (solid) by Fonticons, Inc., CC BY 4.0, https://fontawesome.com/license/free --><svg viewBox="0 0 64 64"><g transform="translate(15.00 15.00) scale(0.0664)"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V336c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64H304c97.2 0 176-78.8 176-176V128c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V32z" fill="#FFFBEF" stroke="#3A2416" stroke-width="45.18" stroke-linejoin="round" paint-order="stroke"/></g><circle cx="32" cy="32" r="27" fill="none" stroke="#3A2416" stroke-width="9"/><circle cx="32" cy="32" r="27" fill="none" stroke="#E0261B" stroke-width="5.5"/><path d="M13 51 51 13" stroke="#3A2416" stroke-width="9" stroke-linecap="round"/><path d="M13 51 51 13" stroke="#E0261B" stroke-width="5.5" stroke-linecap="round"/></svg></div></div>
 <div id="yell" hidden aria-live="polite"><p id="yellTxt"></p><img id="yellImg" alt=""></div>
+<button class="pracskip" id="pracSkip" type="button" hidden data-i18n="tutSkip"></button>
 <button class="pausebtn" id="pauseBtn" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg><span class="vh" data-i18n="pause"></span></button>
 <div class="overlay" id="pauseOv" hidden>
   <div class="card">
@@ -1242,6 +1247,8 @@ bootStep(0.1);</script>
     <p class="lead"><span data-i18n="lead"></span> <span id="intro2" data-i18n="intro2"></span></p>
     <div class="mode"><div class="seg" role="group" aria-label="Mode"><button type="button" data-mode="normal" data-i18n="modeNormal"></button><button type="button" data-mode="hard" data-i18n="modeHard"></button><button type="button" data-mode="super" data-i18n="modeSuper" hidden></button></div></div>
     <p class="hardnote" id="hardNote" data-i18n="hardNote"></p>
+    <p class="legal" data-i18n="legal"></p>
+    <p class="credit"><span data-i18n="crGame"></span><i aria-hidden="true">·</i><span data-i18n="crArt"></span></p>
     <div class="gorow"><button type="button" class="modecyc" id="modeCyc"><i class="dot" aria-hidden="true"></i><svg class="cyc" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9a8 8 0 0 1 14-3l2 2M20 4v4h-4"/><path d="M20 15a8 8 0 0 1-14 3l-2-2M4 20v-4h4"/></svg><b id="modeCycT"></b><small data-i18n="modeTap"></small></button><button class="btn" id="go" data-i18n="start">시작!</button></div>
   </div>
 </div>
@@ -1262,8 +1269,6 @@ bootStep(0.1);</script>
       <div class="setrow"><span data-i18n="tDraft"></span><button class="tog" type="button" data-test="draft"></button></div>
       <div class="setrow"><span data-i18n="tEgg"></span><button class="tog" type="button" id="eggBtn" data-i18n="tEggGo"></button></div>
     </div>
-    <p class="legal setlegal" data-i18n="legal"></p>
-    <p class="credit setcredit"><span data-i18n="crGame"></span><i aria-hidden="true">·</i><span data-i18n="crArt"></span></p>
     <button class="btn" id="setClose" type="button" data-i18n="close" style="margin-top:18px"></button>
   </div>
 </div>
@@ -1282,7 +1287,7 @@ bootStep(0.1);</script>
 <div class="overlay" id="unlockOv" hidden>
   <div class="card unlockcard">
     <h2 class="asktitle" id="unlockTitle"></h2>
-    <p data-i18n="unlockTxt"></p>
+    <p id="unlockBody"></p>
     <button class="btn" id="unlockOk" type="button" data-i18n="introOk"></button>
   </div>
 </div>
@@ -1322,8 +1327,8 @@ bootStep(0.1);</script>
 
 <div class="overlay" id="result" hidden>
   <div class="card">
-    <div class="rhead"><div class="rt"><h2 id="rTitle" data-i18n="resultTitle"></h2><p id="rCause" hidden></p></div><div class="grade" id="rGrade"><svg id="rCrown" class="crown" viewBox="0 0 64 44" hidden aria-label="nightmare"><path d="M6 40 3 9l15 14L32 3l14 20 15-14-3 31Z" fill="#F2B705" stroke="#C48F00" stroke-width="2" stroke-linejoin="round"/></svg><img id="rGradeImg" alt=""></div></div>
-    <div class="mrow"><span class="mchip" id="rMode"></span></div>
+    <div class="rhead"><div class="rt"><h2 id="rTitle" data-i18n="resultTitle"></h2><p id="rCause" hidden></p></div><div class="grade" id="rGrade"><img id="rGradeImg" alt=""></div></div>
+    <div class="mrow"><span class="mchip" id="rMode"></span><svg class="nmi" id="rNm" viewBox="0 0 24 24" aria-label="nightmare" hidden><path d="M3 8Q8 7 9 2M15 2Q16 7 21 8M21 16Q16 17 15 22M9 22Q8 17 3 16"/></svg></div>
     <div class="say"><img id="sayImg" alt=""><p id="sayText"></p></div>
     <div class="big"><b id="rScore">0</b><span data-i18n="pts"></span></div>
     <dl class="rows">
@@ -1371,14 +1376,14 @@ var I18N={
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.', intro2Rank:'1등은 좋은 일이 생길지도…',
     pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setLang:'언어', locPlace:'코우가의 집, 주방', locNow:'현재 시각', locNote:'피노 6알, 아직 무사함', modeTap:'탭해서 변경', legalShort:'비공식 팬 게임', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tDraft:'시안 연출 (간발·안도)', tEgg:'이스터에그 보기', tEggGo:'보기', eggNames:'기본 (모찌 아이스)|붕어빵|가지|계란|생선뼈|타코야끼|새우튀김|포션|메론빵|포장 햄버거', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
     fx_miss:'MISS −1초', 
-    ready:'준비~', go_:'START!', modeNormal:'연습', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
+    ready:'준비~', go_:'START!', modeNormal:'연습', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardUnlock:'하드 모드 해금!', unlockTxtHard:'시간 제한은 없지만\n코우가에게 들키면 끝! 점수는 1.7배예요', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
     cause_moved:'쳐다보는 중에 움직였어!', cause_late:'제때 못 숨겼어!', cause_silent:'발소리 없이 왔어!', cause_recheck:'…다시 돌아봤어!', cause_feint:'가는 척이었어!', cause_melt:'피노가 다 녹아버렸어…', cause_pizza:'피자 냄새로 들켰어!', co_sus:'의심 게이지예요. 시간이 지나고 피노를 먹을수록 차올라요. 꽉 차면… 코우가가 화를 내고, 난이도가 올라가요!', co_warn:'발소리! 코우가가 와요. 「숨기기」를 눌러 상자를 숨겨요!', co_watch:'코우가가 보고 있어요. 떠날 때까지 아무것도 만지지 마요!', co_melt:'상자를 열면 피노가 녹기 시작해요. 다 녹기 전에 6알 다 먹어요!', co_pizza:'피자 상자예요! 옆으로 쓸어서 치워요. 열면 냄새로 들켜요', co_dare:'코우가가 오는 중에 먹으면 점수 ×5! 대신 늦게 숨기면 들켜요', co_rage:'코우가가 화났어요! 순찰이 잦아지고 예고가 짧아져요. 게이지가 다 차면… 폭주!', co_recheck:'…다시 돌아봤어요! 바로 다시 숨겨요', co_feint:'가는 척이었어요! 완전히 떠날 때까지 기다려요', rc_lines:['어디서 피노 냄새가 나는데?!','네 녀석, 피노 먹고 있던 거 아니지?!','부스럭 소리가 난 것 같은데?!','뭔가 수상한데!','다시 와서 확인할 테니까, 가만히 있어!','분명 여기서 소리가 났는데!?','이 근처에서 피노의 기운이 느껴지는데!!!!','네 녀석, 뭐 먹고있었지!','분명 박스 뜯는 소리가 났는데!'], fe_lines:['진짜 안 먹는 거 맞아?!','이 몸이 다 보고 있다고!','네 녀석…! 지켜보고 있을 거야!','수상하다니까 네 녀석!!!!','네 녀석, 엄청 수상하다고!','도둑질 하다가 걸린 표정 같은데 아냐?!','단 냄새가 계속 나는 것 같은데!!','수상하다고!!!!!!!!!!'], rankBtn:'랭킹', rankUp:'↑{n}', rankJoin:'랭킹 참가하기', rankTitle:'코우가 챌린지 랭킹', rankNick:'닉네임 (12자까지)', rankXid:'X 아이디 (@없이)', rankXidNote:'X 아이디는 운영자만 볼 수 있어요. 순위 확인과 연락에 쓰여요.', rankSave:'참가하고 시작', rankSkip:'그냥 시작', rankSaveOnly:'저장', rankCancel:'취소', rankNeed:'닉네임과 X 아이디를 넣어 주세요', rankPeriod:'{a} ~ {b}', rankLeft:'남은 시간 {t}', rankSoon:'{t} 뒤 시작', rankOver:'종료 · 최종 순위', rankMe:'내 순위', rankMeNone:'아직 기록이 없어요', rankAsk:'랭킹전이 진행 중이에요!\n닉네임과 아이디를 등록하고 플레이해야 점수가 기록돼요!', rankAskJoin:'닉네임 등록하기', rankAskPlay:'그냥 플레이하기', rankJoinShort:'닉네임 등록', rankUnit:'위', rankNow:'이벤트 랭킹', rankBestS:'최고 {s}점', rankNew:'기록 갱신!', w_rankto:'위까지', w_rankup:'위 달성!', rk_lead:'1위 독주 중!', rk_top10:'TOP 10 진입!', rk_first:'1위 달성!', rankHeld:'기록을 확인한 뒤 반영돼요', rankFail:'랭킹에 보내지 못했어요', rankView:'랭킹 보기', rankEmpty:'아직 기록이 없어요', rankLoading:'불러오는 중…', rankDay:'{n}일 ', rankHour:'{n}시간 ', rankMin:'{n}분', coTap:'탭해서 계속', x5:'×5', timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_away:'휙!', yell_pizza:['이 피자 냄새는 뭐야?! 피자녀석?!','피자?! 아니 피노도 먹었잖아!?','피자 녀석이랑 한 패냐?!?!','피자 녀석이 시킨 거 아냐?!','피자... 뭐야! 이 피노 박스 더미는?!?!'], pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:['이 몸의 피노가 없어졌잖아!?!\n누구야!!!','피노가 줄어들었는데?!\n어떤 녀석이야!!!','빈 피노박스?!\n어떤 놈이야!!!'], nm_on:'코우가가 폭주한다!', shout_nm:['피노 돌려줘!!!!!!!!!!','피노 내놔!!!!!!!!!!!','잡히기만 해봐라!!!!!','크아아아아아!!!!\n피노!!!!!','이 몸의 손에\n잡히기만 해봐라!!!!!'], dbgNm:'나이트메어', dbgMax:'최고 난이도', autoOn:'자동 플레이: 켜짐', autoOff:'자동 플레이: 꺼짐', legal:'본 게임은 비공식\u2060·\u2060비영리 팬 게임으로, 모리나가유업\u2060·\u2060롯데 및 관계사와 무관합니다.\n「피노」는 모리나가유업, 「유키미다이후쿠」는 롯데의 상표이며, 그 밖의 상표\u2060·\u2060캐릭터\u2060·\u2060이미지의 권리는 각 권리자에게 있습니다.', crGame:'게임 제작 코우가', crArt:'일러스트 A', recheck:'…응?!', quit:'그만하기',
     patrol_warn:'코우가가 온다!', patrol_watch:'쉿…', hint_cover:'↓ 쓸어서 상자 덮기!', hideBtn:'숨기기!', unhideBtn:'꺼내기', patrol_caught:'들켰다!', hardTag:'하드',
     yell:['네 녀석!!!!!','범인 잡았다!!!!!!!!!!!!','역시 네 녀석이었구나!!!!!!!!!!','이 자식...!!!! 피노 뱉어내!!!!!','가만 안둬!!!!!!'], fx_heart:'하트', fx_star:'별',
     fx_combo:'COMBO', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
     late_wake:'코우가가 깨어났다…!', late_pen:'MISS −5초', susMood:'의심', susFury:'분노', susNm:'폭주', glLost:'화면을 다시 불러오는 중…', glReload:'다시 불러오기', cat_pass:'…지나가던 강아지였잖아!',
-    tutSkip:'건너뛰기', tutDoneT:'준비 끝!', tutDone:'이제 60초 동안 최대한 많이 먹어요. 콤보를 이어가면 점수가 쑥쑥 올라요!',
+    tutSkip:'건너뛰기', tutDoneT:'준비 끝!', tutDone:'이제 30초 동안 최대한 많이 먹어요. 콤보를 이어가면 점수가 쑥쑥 올라요!',
     tut1:'흰 띠를 위로 쭉 쓸어 올려서 비닐을 벗겨요', tut2:'앞쪽 손잡이를 위로 쭉 밀어 올려 상자를 열어요', tut3:'피크를 톡! 눌러서 집어요', tut4:'피노를 톡톡 눌러서 6알 다 먹어요', tut5:'빈 상자는 아무 방향으로 휙 쓸어서 던져요',
     w_miss:'MISS', w_combo:'COMBO!', w_safe:'안 들켰다!', w_pizzaOpen:'앗, 피자잖아!',
     hint_film:'띠를 쭉 당겨요!', hint_tear:'위로 쭉 열어요!',
@@ -1429,14 +1434,14 @@ var I18N={
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。', intro2Rank:'1位にはいいことがあるかも…',
     pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setLang:'言語', locPlace:'コウガの家、キッチン', locNow:'現在時刻', locNote:'ピノ6粒、まだ無事', modeTap:'タップで変更', legalShort:'非公式ファンゲーム', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tDraft:'試作演出', tEgg:'イースターエッグを見る', tEggGo:'見る', eggNames:'いつもの（もちアイス）|たい焼き|なす|たまご|魚の骨|たこ焼き|エビフライ|ポーション|メロンパン|包みバーガー', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
     fx_miss:'MISS −1秒', 
-    ready:'よーい…', go_:'START!', modeNormal:'練習', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
+    ready:'よーい…', go_:'START!', modeNormal:'練習', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardUnlock:'ハードモード解放！', unlockTxtHard:'時間制限はないけど\nコウガにバレたらおしまい！スコアは1.7倍', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
     cause_moved:'見られてる時に動いた！', cause_late:'かくすのが間に合わなかった！', cause_silent:'足音なしで来た！', cause_recheck:'…また振り返った！', cause_feint:'帰るふりだった！', cause_melt:'ピノが溶けちゃった…', cause_pizza:'ピザのにおいでバレた！', co_sus:'あやしさゲージ。時間がたつほど、ピノを食べるほどたまっていく。満タンになると…コウガが怒って、難易度が上がる！', co_warn:'足音！コウガが来る。「かくす！」を押して箱をかくそう！', co_watch:'コウガが見てる。いなくなるまで何もさわらないで！', co_melt:'箱をあけるとピノが溶けはじめる。溶ける前に6粒食べよう！', co_pizza:'ピザの箱！横にスワイプしてどかそう。あけるとにおいでバレる', co_dare:'コウガが近づいてる間に食べるとスコア×5！でも、かくすのが遅れるとバレる', co_rage:'コウガが怒った！見回りが増えて予告も短くなる。ゲージが満タンになると…暴走！', co_recheck:'…また振り返った！すぐかくし直そう', co_feint:'帰るふりだった！完全にいなくなるまで待とう', rc_lines:['どっかからピノのにおいがするぜ？！','お前、ピノ食ってたんじゃねぇだろうな？！','ガサッて音がした気がするぜ？！','なんか怪しいぜ！','また見に来るからな、おとなしくしてんだぜ！','確かにここで音がしたんだがな！？','この辺からピノの気配がするぜ！！！！','お前、何か食ってただろ！','確かに箱を開ける音がしたぜ！'], fe_lines:['ほんとに食ってねぇんだな？！','俺様が全部見てるんだからな！','てめぇ…！見張ってるからな！','怪しいって言ってんだろ、お前！！！！','お前、めちゃくちゃ怪しいぜ！','盗み食いがバレた顔してんじゃねぇか？！','ずっと甘いにおいがするんだがな！！','怪しいって言ってんだ！！！！！！！！！！'], rankBtn:'ランキング', rankUp:'↑{n}', rankJoin:'ランキングに参加', rankTitle:'コウガチャレンジ ランキング', rankNick:'ニックネーム（12文字まで）', rankXid:'XのID（@なし）', rankXidNote:'XのIDは運営しか見られません。順位の確認と連絡に使います。', rankSave:'参加してスタート', rankSkip:'参加せずにスタート', rankSaveOnly:'保存', rankCancel:'キャンセル', rankNeed:'ニックネームとXのIDを入力してください', rankPeriod:'{a} ～ {b}', rankLeft:'残り {t}', rankSoon:'開始まで {t}', rankOver:'終了・最終順位', rankMe:'あなたの順位', rankMeNone:'まだ記録がありません', rankAsk:'ランキング開催中！\nニックネームとXのIDを登録してプレイすると、スコアが記録されます！', rankAskJoin:'ニックネームを登録する', rankAskPlay:'そのままプレイする', rankJoinShort:'ニックネーム登録', rankUnit:'位', rankNow:'イベントランキング', rankBestS:'ベスト {s}点', rankNew:'記録更新！', w_rankto:'位まで', w_rankup:'位 達成！', rk_lead:'1位 独走中！', rk_top10:'TOP10入り！', rk_first:'1位 達成！', rankHeld:'記録は確認後に反映されます', rankFail:'ランキングに登録できませんでした', rankView:'ランキングを見る', rankEmpty:'まだ記録がありません', rankLoading:'読み込み中…', rankDay:'{n}日', rankHour:'{n}時間', rankMin:'{n}分', coTap:'タップでつづける', x5:'×5', timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_away:'ポイッ！', yell_pizza:['このピザのにおいはなんなんだ？！ピザ野郎？！','ピザ？！いや、ピノも食ってるじゃねぇか！？','ピザ野郎とグルか？！？！','ピザ野郎の差し金か？！','ピザ…なんだ！このピノの箱の山は？！？！'], pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:['俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!','ピノが減ってるじゃねぇか?!\nどこのどいつだ!!!','ピノの箱が空っぽ?!\nどいつの仕業だ!!!'], nm_on:'コウガが暴走した！', shout_nm:['ピノ返せ!!!!!!!!!!','ピノよこせ!!!!!!!!!!!','捕まえたらただじゃおかねぇ!!!!!','グオオオオオ!!!!\nピノ!!!!!','俺様の手に\n捕まったら覚悟しろ!!!!!'], dbgNm:'ナイトメア', dbgMax:'最高難易度', autoOn:'オートプレイ：オン', autoOff:'オートプレイ：オフ', legal:'本ゲームは非公式\u2060・\u2060非営利のファンゲームであり、森永乳業\u2060・\u2060ロッテおよび関係各社とは関係ありません。\n「ピノ」は森永乳業、「雪見だいふく」はロッテの商標であり、その他の商標\u2060・\u2060キャラクター\u2060・\u2060画像の権利は各権利者に帰属します。', crGame:'ゲーム制作 コウガ', crArt:'イラスト A', recheck:'…ん？！', quit:'やめる',
     patrol_warn:'コウガが来る！', patrol_watch:'しーっ…', hint_cover:'↓ スワイプでフタを閉める！', hideBtn:'かくす！', unhideBtn:'とりだす', patrol_caught:'バレた！', hardTag:'ハード',
     yell:['てめぇ！！！！！','犯人みっけ！！！！！！！！！！！！','やっぱりてめぇだったか！！！！！！！！！！','てめぇ…！！！！ピノを吐き出せ！！！！！','ただじゃおかねぇ！！！！！！'], fx_heart:'ハート', fx_star:'ほし',
     fx_combo:'COMBO', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
     late_wake:'コウガが起きた…！', late_pen:'MISS −5秒', susMood:'あやしさ', susFury:'いかり', susNm:'暴走', glLost:'画面を読み込み直しています…', glReload:'再読み込み', cat_pass:'…通りすがりの犬だった！',
-    tutSkip:'スキップ', tutDoneT:'準備OK！', tutDone:'60秒でできるだけたくさん食べよう。コンボをつなぐとスコアがぐんぐん上がるよ！',
+    tutSkip:'スキップ', tutDoneT:'準備OK！', tutDone:'30秒でできるだけたくさん食べよう。コンボをつなぐとスコアがぐんぐん上がるよ！',
     tut1:'白い帯を上にスッとなぞって、フィルムをはがそう', tut2:'前のつまみを上にグイッと押し上げて、箱をあけよう', tut3:'ピックをタップしてつまもう', tut4:'ピノをタップして6粒ぜんぶ食べよう', tut5:'空き箱はスワイプしてポイッと投げよう',
     w_miss:'MISS', w_combo:'COMBO!', w_safe:'バレなかった！', w_pizzaOpen:'あっ、ピザだ！',
     hint_film:'帯をひっぱって！', hint_tear:'上にグイッとあけて！',
@@ -2515,7 +2520,8 @@ function makeBox(){
 }
 
 /* ---------- state ---------- */
-let state='idle', cur=null, timeLeft=60, now=0, boxNo=0, paused=false;
+const PRACTICE_SEC=30;   // practice has a 30 s clock
+let state='idle', cur=null, timeLeft=PRACTICE_SEC, now=0, boxNo=0, paused=false;
 let score=0, totalEaten=0, boxesThrown=0, boxesDone=0, luckyCount=0, heartCount=0, starCount=0;
 let combo=0, maxCombo=0, comboT=0, lastTier=1;
 const COMBO_WIN=2.6;
@@ -2773,14 +2779,15 @@ const TEST_SUPER_OPEN=TEST.super;
 try{ superOpen=TEST_SUPER_OPEN||localStorage.getItem('kouga-super')==='1'; MODE=localStorage.getItem('kouga-mode')||'normal'; }catch(e){}
 if(MODE==='super'&&!superOpen) MODE='hard';
 let practiceDone=false; try{ practiceDone=localStorage.getItem('kouga-practice-done')==='1'; }catch(e){}   // practice (the old normal) is there until the first run is played; hard is the default after
+if(!practiceDone) MODE='normal';
 if(practiceDone&&MODE==='normal') MODE='hard';
 HARD=MODE!=='normal'; SUPER=MODE==='super';
 // furious Kouga pays more: super-hard, and the furious stretch of a normal hard run, both ×2.5
 const SM=()=>nightmare?6:SUPER?5:rage?2.5:HARD?1.7:1;   // super-hard skips the easy stretch a hard run banks, so it pays more
-function setMode(m){ if(m==='super'&&!superOpen) m='hard'; if(m==='normal'&&practiceDone) m='hard'; MODE=m; HARD=m!=='normal'; SUPER=m==='super'; setNight(HARD); if(!HARD) humStop();
-  $('timeStat').querySelector('.lab').textContent=TX(HARD?'timeHard':'time'); setNum(timeEl,HARD?'0.0':'60.0','hud'); try{ localStorage.setItem('kouga-mode',m); }catch(e){}
+function setMode(m){ if(m==='super'&&!superOpen) m='hard'; if(m==='normal'&&practiceDone) m='hard'; if(!practiceDone) m='normal'; MODE=m; HARD=m!=='normal'; SUPER=m==='super'; setNight(HARD); if(!HARD) humStop();
+  $('timeStat').querySelector('.lab').textContent=TX(HARD?'timeHard':'time'); setNum(timeEl,HARD?'0.0':PRACTICE_SEC.toFixed(1),'hud'); try{ localStorage.setItem('kouga-mode',m); }catch(e){}
   document.body.classList.toggle('hard',HARD); document.body.classList.toggle('super',SUPER);
-  document.querySelector('.mode button[data-mode="super"]').hidden=!superOpen; document.querySelector('.mode button[data-mode="normal"]').hidden=practiceDone;
+  document.querySelector('.mode button[data-mode="super"]').hidden=!superOpen||!practiceDone; document.querySelector('.mode button[data-mode="normal"]').hidden=practiceDone; document.querySelector('.mode button[data-mode="hard"]').hidden=!practiceDone;
   $('hardNote').textContent=TX(SUPER?'superNote':'hardNote');
   document.querySelectorAll('.hud .hardtag').forEach(t=>{ t.textContent=TX(SUPER?'superTag':'hardTag'); t.dataset.m=SUPER?'super':'hard'; });
   document.querySelectorAll('.mode button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m))); }
@@ -2870,7 +2877,7 @@ function nextBox(){
     const b=makePizza(); cur=b; scene.add(b.group); boxNo++;
     b.group.position.set(6,0,0); b.group.rotation.y=-0.4; state='arrive'; setGuide(null);
     tween(0.38,k=>{const e=easeOut(k);b.group.position.x=6*(1-e);b.group.rotation.y=-0.4*(1-e);},
-      ()=>{ if(state!=='arrive') return; state='pizza'; keepCombo(); popCenter(say('pizza_hint'),'pizza'); if((TEST.coach||!HARD)&&!(TUT||AUTO.on)&&!(TEST.coach?COACH.run.pizza:coachSeen('pizza'))){ PZHOLD=true; const pzTry=()=>{ if(state!=='pizza'||cur!==b){ PZHOLD=false; return; } if(coach('pizza',{target:()=>{ const q=toScreen(b.group.position.clone().setY(0.3)); return {x:q.x,y:q.y,r:Math.min(innerWidth,innerHeight)*0.32}; },tap:true})) return; if(COACH.on) later(pzTry,150); else PZHOLD=false; }; later(pzTry,120); } });   // the combo clock restarts when the pizza lands, so deciding doesn't cost it; the pizza guide shows at once (or once another guide closes) and the pizza waits for it
+      ()=>{ if(state!=='arrive') return; state='pizza'; keepCombo(); popCenter(say('pizza_hint'),'pizza'); if((TEST.coach||MODE==='hard')&&!(TUT||AUTO.on)&&!(TEST.coach?COACH.run.pizza:coachSeen('pizza'))){ PZHOLD=true; const pzTry=()=>{ if(state!=='pizza'||cur!==b){ PZHOLD=false; return; } if(coach('pizza',{target:()=>{ const q=toScreen(b.group.position.clone().setY(0.3)); return {x:q.x,y:q.y,r:Math.min(innerWidth,innerHeight)*0.32}; },tap:true})) return; if(COACH.on) later(pzTry,150); else PZHOLD=false; }; later(pzTry,120); } });   // the combo clock restarts when the pizza lands, so deciding doesn't cost it; the pizza guide shows at once (or once another guide closes) and the pizza waits for it
     return;
   }
   const b=makeBox(); cur=b; scene.add(b.group); boxNo++; b.covered=false; b.meltT=meltTime();
@@ -3004,7 +3011,7 @@ function showOpenHint(quiet){
 }
 function tap(x,y){
   if(cur&&cur.covered) return;
-  if(state==='pizza'){ if(!PZHOLD) openPizza(); else if(cur) cur.jitter=0.04; return; }   // held while its guide shows
+  if(state==='pizza'){ if(cur) cur.jitter=0.04; return; }   // a plain tap does nothing: swipe up to open, sideways to shove
   if(state==='film'||state==='tear'){ showOpenHint(); return; }
   if(state==='pick'){
     setRay(x,y);
@@ -3221,7 +3228,7 @@ function flyPostit(a){   // flicked off the lid the way the finger went (screen 
   whoosh(2600,500,0.3,0.2,{pan:Math.cos(a)*0.6}); sNoise(3200,1.2,0.12,0.09,'highpass'); buzz(12);
   tween(0.55,k=>{ const e=k*(2-k); p.position.set(p0.x+Math.cos(a)*dist*e, p0.y+1.6*Math.sin(Math.PI*k*0.8)+0.6*e, p0.z+Math.sin(a)*dist*0.7*e); p.rotation.y=ry0+spin*k; p.rotation.x=tilt*k; },
     ()=>{ scene.remove(p); p.userData.pa.material.map.dispose(); }); }
-function titleOn(){ requestAnimationFrame(()=>{ try{ locFit(); }catch(e){} }); if(practiceDone&&MODE==='normal') setMode('hard'); else setMode(MODE); document.body.classList.add('title'); titleTo=1; if(cur) attachPostit(cur); requestAnimationFrame(placeSetBtn);
+function titleOn(){ requestAnimationFrame(()=>{ try{ locFit(); }catch(e){} }); if(superDefault&&superOpen){ superDefault=false; setMode('super'); } else if(practiceDone&&MODE==='normal') setMode('hard'); else setMode(MODE); document.body.classList.add('title'); titleTo=1; if(cur) attachPostit(cur); requestAnimationFrame(placeSetBtn);
   titleLogo(); }
 // the start screen's logo in the current language (Korean / Japanese pictures, both taken from the loading screen before it goes)
 const LOGOS={}; ['ko','ja'].forEach(l=>{ const im=$(l==='ja'?'bootLogoJa':'bootLogo'); if(im) LOGOS[l]={src:im.src,cells:+im.dataset.cells||im.naturalWidth}; });
@@ -3241,10 +3248,11 @@ function flickPostit(dx,dy){
   const done=flickWait; if(!done) return; flickWait=null; $('pops').querySelectorAll('.flickhint').forEach(e=>e.remove());
   flyPostit(Math.atan2(dy,dx)); later(done,560); }
 function startGame(keep){   // keep: the start screen's box (its post-it just flicked off) becomes the first box of the run
+  $('pracSkip').hidden=HARD||!!TUT;
   audio(); if(HARD) bgm.stop(0.2); if(SUPER) decodeCBGM(['rage']); document.body.classList.remove('resultFx','paused'); decoyAway(true); fx.clear(); shownScore=0; hitStop=0; kick=0;
   const keepBox=keep===true&&cur&&state==='idle'?cur:null; if(!keepBox) disposeCur();
   for(const p of parts) scene.remove(p.mesh); parts.length=0; tweens.length=0;
-  cur=null; pickHeld=false; timeLeft=60; endCause=null; COACH.run={}; PZHOLD=false; caughtFx(false); $('patrol').classList.remove('lean'); rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0; heartCount=0; starCount=0;
+  cur=null; pickHeld=false; timeLeft=PRACTICE_SEC; endCause=null; COACH.run={}; PZHOLD=false; caughtFx(false); $('patrol').classList.remove('lean'); rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0; heartCount=0; starCount=0;
   while(pile.children.length) pile.remove(pile.children[0]); pileCount=0;
   combo=0; maxCombo=0; comboT=0; lastTier=1; charge=0; endFever(); renderCombo(); addScore(0);
   $('fever').classList.remove('off');
@@ -3264,6 +3272,7 @@ function disposeCur(){
   scene.remove(cur.group);
 }
 function goHome(){   // drop the current run and go back to the start memo
+  $('pracSkip').hidden=true;
   tutEnd(); $('tutDone').hidden=true;
   audio(); paused=false; humStop(); rageOff(); patrolReset(); endFever(); bgm.play('normal'); document.body.classList.remove('resultFx','paused'); decoyAway(true); ['pkShove','pkLaugh'].forEach(i=>$(i).classList.remove('go'));
   disposeCur();
@@ -3271,7 +3280,7 @@ function goHome(){   // drop the current run and go back to the start memo
   while(pile.children.length) pile.remove(pile.children[0]); pileCount=0;
   cur=makeBox(); scene.add(cur.group); pickHeld=false; state='idle'; setGuide(null);
   combo=0; comboT=0; renderCombo(); score=0; addScore(0); totalEaten=0; eatenEl.textContent=TX('eaten')(0);
-  timeLeft=60; elapsed=0; mood=0; pizzaEnd=false; caughtEnd=false; meltedEnd=false; quitEnd=false;
+  timeLeft=PRACTICE_SEC; elapsed=0; mood=0; pizzaEnd=false; caughtEnd=false; meltedEnd=false; quitEnd=false;
   $('pauseOv').hidden=true; $('result').hidden=true; $('start').hidden=false;
   $('pauseBtn').hidden=true; $('fever').classList.add('off'); $('mood').classList.add('off'); $('sus').hidden=true; $('melt').hidden=true;
   $('fridgeGlow').style.opacity='';
@@ -4014,7 +4023,7 @@ function enterNightmare(){
 }
 function enterRage(){
   rage=true; rageReached=true; document.body.classList.add('rage'); decodeCBGM(['rage','nightmare']); bgm.setMode('rage');
-  if(!superOpen&&!SUPER){ superOpen=true; try{ localStorage.setItem('kouga-super','1'); }catch(e){} later(()=>popUnderShout('superUnlock','lucky',1),900); superJust=true; }
+  if(!superOpen&&!SUPER){ superOpen=true; try{ localStorage.setItem('kouga-super','1'); }catch(e){} superJust=true; }
   fury=0; const announce=()=>{ alarm(2); cutIn(false,'shout_rage'); later(()=>coach('rage',{target:'sus',tap:true}),3200); };   // the alarm goes off with the "코우가가 화났다!" cut-in (super-hard: after READY / START)
   if(readyT>0) later(()=>{ if(rage&&state!=='over'&&state!=='idle') announce(); },(readyT+0.9)*1000); else announce();
   thump(40,0.45,{dur:0.7}); [49,48,47].forEach((n,i)=>bell(n,{vol:0.07,delay:i*0.02,dur:2})); whoosh(2000,200,0.8,0.12); buzz([60,40,60,40,120]); shake=0.3;
@@ -4046,7 +4055,7 @@ function meltEnd(){
 /* ---------- hard-mode guide: the first time each trouble appears, the game slows (or stops), a spotlight picks out
    what matters and one line says what to do. Shown once per device; never in autoplay or the tutorial ---------- */
 const COACH={on:null,ts:1,run:{}};
-const GUIDE_IN={warn:'practice',watch:'practice',dare:'practice',pizza:'practice',melt:'hard',sus:'hard',recheck:'hard',feint:'hard',rage:'hard'};   // which mode each guide belongs to (hard = hard only, not super); once seen it never shows again, in any mode let PZHOLD=false;   // the first pizza with its guide: it can't be swiped away until the guide is done
+const GUIDE_IN={warn:'practice',watch:'practice',dare:'practice',pizza:'hard',melt:'hard',sus:'hard',recheck:'hard',feint:'hard',rage:'hard'};   // which mode each guide belongs to (hard = hard only, not super); once seen it never shows again, in any mode let PZHOLD=false;   // the first pizza with its guide: it can't be swiped away until the guide is done
 function coachSeen(k){ try{ return localStorage.getItem('kouga-coach-'+k)==='1'; }catch(e){ return false; } }
 function coach(k,o){   // o.target: element id | ()=>{x,y,r}; o.tap: stop the game until a tap; o.slow: time scale while the hint shows; o.until: done when true
   o=o||{}; if((!TEST.coach&&(GUIDE_IN[k]==='practice'?HARD:MODE!=='hard'))||TUT||AUTO.on||COACH.on||(TEST.coach?COACH.run[k]:coachSeen(k))||state==='over'||state==='swat'||state==='idle') return false;
@@ -4082,7 +4091,7 @@ const RANK_LOCAL=(()=>{ const K='kouga-rank-local', toks={};
   const save=d=>{ try{ localStorage.setItem(K,JSON.stringify(d)); }catch(e){} };
   const ev=d=>{ const now=Date.now(); return {start:d.start,end:d.end,now,open:now>=d.start&&now<d.end}; };
   const best=d=>{ const b={}; d.scores.forEach(r=>{ if(!b[r.xid]||r.score>b[r.xid].score||(r.score===b[r.xid].score&&r.at<b[r.xid].at)) b[r.xid]=r; });
-    return Object.values(b).sort((a,c)=>c.score-a.score||a.at-c.at).map((r,i)=>({rank:i+1,xid:r.xid,nick:d.players[r.xid]||'?',score:r.score,mode:r.nightmare?'nightmare':r.mode})); };
+    return Object.values(b).sort((a,c)=>c.score-a.score||a.at-c.at).map((r,i)=>({rank:i+1,xid:r.xid,nick:d.players[r.xid]||'?',score:r.score,mode:r.mode,nm:!!r.nightmare})); };
   return function(path,body){ const d=load();
     if(path==='/api/event') return ev(d);
     if(path==='/api/start'){ if(!ev(d).open) return {error:'closed'}; const xid=String(body.xid||'').replace(/^@/,'').toLowerCase(); d.players[xid]=body.nick; save(d);
@@ -4091,7 +4100,7 @@ const RANK_LOCAL=(()=>{ const K='kouga-rank-local', toks={};
       d.scores.push({xid:tk.xid,mode:tk.mode,score:body.score|0,nightmare:body.summary&&body.summary.nightmare?1:0,at:Date.now()}); save(d);
       const all=best(d), me=all.find(r=>r.xid===tk.xid); return {status:'ok',rank:me?me.rank:null,best:me?me.score:null}; }
     if(path.startsWith('/api/board')){ const xid=(path.split('xid=')[1]||'').toLowerCase(), all=best(d), me=all.find(r=>r.xid===decodeURIComponent(xid))||null;
-      const strip=r=>r&&{rank:r.rank,nick:r.nick,score:r.score,mode:r.mode}; return {event:ev(d),players:all.length,top:all.slice(0,10).map(strip),me:strip(me)}; }
+      const strip=r=>r&&{rank:r.rank,nick:r.nick,score:r.score,mode:r.mode,nm:r.nm}; return {event:ev(d),players:all.length,top:all.slice(0,10).map(strip),me:strip(me)}; }
     return {error:'not found'}; }; })();
 function rankApi(path,body){   // the server, or the stand-in
   if(RANK_API==='local') return new Promise(res=>setTimeout(()=>res(RANK_LOCAL(path,body)),150));
@@ -4147,8 +4156,8 @@ let boardTimer=0;
 function boardRow(el,r,mine){ el.innerHTML=''; const k=document.createElement('span'), n=document.createElement('span'), m=document.createElement('span'), c=document.createElement('span');
   k.className='rk'; if(r.rank<=3){ const b=document.createElement('b'); b.className='r'+r.rank; b.textContent=r.rank; k.appendChild(b); } else k.textContent=r.rank;
   n.className='nk'; if(mine){ const t=document.createElement('small'); t.textContent=TX('rankMe'); n.appendChild(t); } n.appendChild(document.createTextNode(r.nick));
-  m.className='mc '+r.mode; m.textContent=TX(r.mode==='nightmare'?'mc_nm':'mc_'+r.mode);
-  c.className='sc'; c.textContent=r.score.toLocaleString(LOCALE()); el.append(k,n,m,c); }
+  m.className='mc '+r.mode; m.textContent=TX('mc_'+r.mode);
+  c.className='sc'; c.textContent=r.score.toLocaleString(LOCALE()); el.append(k,n,m); if(r.nm){ const i=document.createElementNS('http://www.w3.org/2000/svg','svg'); i.setAttribute('viewBox','0 0 24 24'); i.setAttribute('class','nmi'); i.innerHTML='<path d="M3 8Q8 7 9 2M15 2Q16 7 21 8M21 16Q16 17 15 22M9 22Q8 17 3 16"/>'; el.append(i); } el.append(c); }
 function boardLoad(first){
   const ol=$('boardList'); if(first) ol.innerHTML='<li class="msg">'+TX('rankLoading')+'</li>';
   rankApi('/api/board'+(RANK.who?'?xid='+encodeURIComponent(RANK.who.xid):'')).then(d=>{
@@ -4212,8 +4221,9 @@ function chaseUp(r,first,fromQ){   // a rank passed (or the top 10 reached): the
   if(r===1||first) sfx.lucky(); else sfx.tier(); buzz(r===1?60:25); }
 const pickLine=k=>{ const v=TX(k); return Array.isArray(v)?v[Math.floor(rnd()*v.length)]:v; };   // a moment with several lines: one at random
 const eatenStr=()=>TX('eatenVal').replace('{b}',boxesDone).replace('{n}',totalEaten), luckyStr=()=>TX('luckyVal').replace('{h}',heartCount).replace('{s}',starCount);
-let superJust=false;   // super-hard opened during this run: explain it on the result screen
-function unlockShow(){ artInto($('unlockTitle'),'superUnlock',TX('superUnlock')); $('unlockOv').hidden=false; woodblock(84,{vol:0.12}); sfx.lucky(); }
+let hardJust=false;   // hard just unlocked by the first practice run
+let superJust=false, superDefault=false;   // super-hard opened during this run: explain it on the result screen, then make it the default
+function unlockShow(kind){ const h=kind==='hard'; artInto($('unlockTitle'),h?'hardUnlock':'superUnlock',TX(h?'hardUnlock':'superUnlock')); $('unlockBody').textContent=TX(h?'unlockTxtHard':'unlockTxt'); $('unlockOv').hidden=false; woodblock(84,{vol:0.12}); sfx.lucky(); }
 let caughtAt=0;
 function caughtFx(on){ const c=renderer.domElement; c.style.transition=on?'filter .25s ease-out':''; c.style.filter=on&&!reduceMotion?'saturate(.3) contrast(1.12) brightness(.92)':''; }   // off: back to the stylesheet (and its slow nightmare dimming)
 let endCause=null;   // why the run ended, shown under the result title
@@ -4223,10 +4233,10 @@ function patrolCaught(){   // spotted: that's the end of the night
   caughtFx(true); $('patrol').classList.add('lean'); caughtAt=now;   // the room drains of colour, Kouga leans right in, the camera tips
   later(()=>pop(say('patrol_caught'),innerWidth/2,innerHeight*0.2,'alert'),190); startSwat(null,520);   // the banner lands on the big boom
 }
-// normal mode's last 30 s: Kouga is up and about. Being seen costs time instead of the run
+// practice's second half: Kouga is up and about. Being seen costs time instead of the run
 let lateOn=false;
 function lateTick(){
-  if(HARD||TUT||lateOn||readyT>0||timeLeft>30||state==='idle'||state==='over'||state==='swat') return;
+  if(HARD||TUT||lateOn||readyT>0||timeLeft>PRACTICE_SEC/2||state==='idle'||state==='over'||state==='swat') return;
   lateOn=true; patrol.next=2.4; popCenter(say('late_wake'),'warn'); voice(260,{vol:0.07,dur:0.16,bend:1.3}); thump(48,0.25,{dur:0.4}); buzz([20,40,20]);
 }
 function caughtLate(){
@@ -4261,10 +4271,10 @@ function revealResult(){
     el.textContent=Math.round(target*e).toLocaleString(LOCALE()); if(q<1){ if(Math.random()<0.45) woodblock(84+Math.floor(q*12),{vol:0.05}); requestAnimationFrame(tick); } else stampGrade(); })();
 }
 function endTitle(){ return pizzaEnd?TX('pizzaTitle'):meltedEnd?TX('meltTitle'):caughtEnd?TX('caughtTitle'):(HARD||quitEnd)?TX('endTitle'):TX('resultTitle'); }   // hard has no clock, so never "time up"
-function reachedMode(){ return nightmareReached?'nm':rageReached?'super':HARD?'hard':'normal'; }
+function reachedMode(){ return MODE; }
 function stampGrade(){
   const ge=$('rGrade'); ge.classList.remove('go'); void ge.offsetWidth; ge.classList.add('go');
-  if(nightmareReached) setTimeout(()=>{ const c=$('rCrown'); c.classList.remove('go'); void c.getBoundingClientRect(); c.classList.add('go'); [84,88,91,96].forEach((n,i)=>bell(n,{vol:0.05,delay:i*0.06})); },420);
+  if(nightmareReached) setTimeout(()=>{ [84,88,91,96].forEach((n,i)=>bell(n,{vol:0.05,delay:i*0.06})); },420);
   setTimeout(()=>{ const r=ge.getBoundingClientRect(), x=r.left+r.width/2, y=r.top+r.height/2, top=gradeOf(score)[0];
     const cols=top==='S'?GOLD:top==='A'?['#FF7AA8','#FFC2D6','#fff']:['#fff','#FFE9B8'];
     jolt(); [-1,1].forEach(sx=>fx.burst(x+sx*r.width*0.3,r.bottom-4,{n:2,dir:sx>0?-0.25:Math.PI+0.25,spread:0.7,speed:120,gravity:-20,drag:5,size:11,life:0.45,shape:'puff',colors:['#fff']}));   // the stamp lands: the memo jolts, a puff of paper dust
@@ -4274,8 +4284,8 @@ function stampGrade(){
 }
 function endGame(){
   if(cur&&cur.pick&&cur.pick.parent&&cur.pick.parent!==cur.group&&cur.group.parent) cur.group.attach(cur.pick);
-  if(!practiceDone&&!TUT){ practiceDone=true; try{ localStorage.setItem('kouga-practice-done','1'); }catch(e){} }   // one run played: practice goes (the switch happens back on the start screen)
-  state='over'; paused=false; $('pauseBtn').hidden=true; humStop(); rageOff(); bgm.stop(0.5); setMode(MODE); $('mood').classList.add('off'); $('sus').hidden=true;
+  const firstPractice=!practiceDone&&!TUT;   // one run played: practice goes once this result is shown
+  state='over'; paused=false; $('pauseBtn').hidden=true; $('pracSkip').hidden=true; humStop(); rageOff(); bgm.stop(0.5); setMode(MODE); if(firstPractice){ practiceDone=true; hardJust=true; try{ localStorage.setItem('kouga-practice-done','1'); }catch(e){} } $('mood').classList.add('off'); $('sus').hidden=true;
   $('rTime').textContent=elapsed.toFixed(1)+TX('sec'); { const g=gradeOf(score)[0]; if(caughtEnd||meltedEnd||pizzaEnd||g==='C'||g==='F'||g==='B') sadHorn(); else sfx.end(); }   // lost (or a so-so run): the sad horn
   setGuide(null); pickHeld=false; combo=0; endFever(); $('fever').classList.add('off'); renderCombo();
   let best=0, isNew=false;
@@ -4284,9 +4294,8 @@ function endGame(){
   $('rEaten').textContent=eatenStr(); $('rLucky').textContent=luckyStr();
   $('rCombo').textContent=maxCombo;
   $('rBest').textContent=isNew?TX('newBest'):TX('best').replace('{n}',best.toLocaleString(LOCALE()));
-  $('rCrown').toggleAttribute('hidden',!nightmareReached); $('rCrown').classList.remove('go');   // svg: use the attribute, not .hidden
-  { const m=reachedMode(); $('rMode').dataset.m=m; $('rMode').textContent=TX('mc_'+m); }
-  $('rTitle').textContent=endTitle(); chaseHide(); rankResult(); if(superJust){ superJust=false; setTimeout(unlockShow,2400); } { const c=$('rCause'); c.hidden=!endCause; c.textContent=endCause?TX('cause_'+endCause):''; }
+  { const m=reachedMode(); $('rMode').dataset.m=m; $('rMode').textContent=TX('mc_'+m); $('rNm').hidden=!nightmareReached; }
+  $('result').classList.toggle('practice',!HARD); $('rTitle').textContent=endTitle(); chaseHide(); rankResult(); if(hardJust){ hardJust=false; setTimeout(()=>unlockShow('hard'),2400); } else if(superJust){ superJust=false; superDefault=true; setTimeout(()=>unlockShow('super'),2400); } { const c=$('rCause'); c.hidden=!endCause; c.textContent=endCause?TX('cause_'+endCause):''; }
   const gr=gradeOf(score), ge=$('rGrade'); $('sayText').textContent=''; setTimeout(()=>typeText($('sayText'),TX('say_'+gr[0]),34,360),1300); setArt($('rGradeImg'),'g'+gr[0],42,'g'+gr[0],gr[0]);   // about the title's height
   ge.classList.remove('go');
   $('shareMsg').textContent='';
@@ -4382,6 +4391,10 @@ rankFetchEvent(); setInterval(()=>{ if(!document.hidden&&!$('start').hidden) evC
 addEventListener('resize',()=>{ if(!$('start').hidden) evCard(); });   // the notice's size depends on the room beside the logo
 $('boardBtn').addEventListener('click',()=>{ audio(); boardShow(); });
 $('rankIco').addEventListener('click',()=>{ audio(); boardShow(); });
+$('tts').addEventListener('click',()=>$('go').click());
+$('pracSkip').addEventListener('click',()=>{   // skip practice: hard opens, back to the start screen
+  if(state==='idle'||state==='over'||TUT) return; practiceDone=true; try{ localStorage.setItem('kouga-practice-done','1'); }catch(e){}
+  goHome(); setTimeout(()=>unlockShow('hard'),500); });
 // the start screen's location caption: today's date and the time now, then where we are
 const LOC_T0=performance.now(), LOC_BASE=3*3600+21*60+Math.floor(Math.random()*(90*60+1));   // a random moment between 03:21:00 and 04:51:00 each time the page loads; from there it runs in real time
 function locTick(){ const t=LOC_BASE+Math.floor((performance.now()-LOC_T0)/1000), z=n=>String(n).padStart(2,'0');
@@ -4469,11 +4482,12 @@ function makeShareImage(){
     g.globalAlpha=0.7; g.font='700 34px '+disp; g.fillText(TX('title'),X+P,Y+92); g.globalAlpha=1;
     { const m=reachedMode(), lab=TX('mc_'+m), col={normal:'#4C9A6A',hard:'#3E4C6E',super:'#D3263A',nm:'#7A2FD0'}[m];
       g.font='700 30px '+disp; const tw=g.measureText(TX('title')).width; g.font='700 28px '+disp; const lw=g.measureText(lab).width, cx=X+P+tw+(g.measureText(' ').width)+20, cy=Y+56;
-      g.fillStyle=col; rr(cx,cy,lw+40,48,24); g.fill(); g.lineWidth=4; g.strokeStyle=line; g.stroke(); g.fillStyle='#fff'; g.fillText(lab,cx+20,cy+35); g.fillStyle=ink; }
+      g.fillStyle=col; rr(cx,cy,lw+40,48,24); g.fill(); g.lineWidth=4; g.strokeStyle=line; g.stroke(); g.fillStyle='#fff'; g.fillText(lab,cx+20,cy+35); g.fillStyle=ink;
+      if(nightmareReached){ g.save(); g.translate(cx+lw+40+14,cy+10); g.scale(28/24,28/24); g.strokeStyle='#7A2FD0'; g.lineWidth=3.4; g.lineCap='round'; g.stroke(new Path2D('M3 8Q8 7 9 2M15 2Q16 7 21 8M21 16Q16 17 15 22M9 22Q8 17 3 16')); g.restore(); } }
     g.font='64px '+hand; g.fillText(endTitle(),X+P,Y+178);
     { const gr=gradeOf(score), gs=sprite(gr[0],'g'+gr[0],58), gi=$('rGradeImg'), gsrc=artOf('g'+gr[0])&&gi.complete&&gi.naturalWidth?gi:gs.canvas, gh=230, gw=gh*(gsrc.naturalWidth||gsrc.width)/(gsrc.naturalHeight||gsrc.height);
       g.save(); g.translate(X+Wc-P-gw/2+24,Y+6+gh/2); g.rotate(0.08); g.drawImage(gsrc,-gw/2,-gh/2,gw,gh); g.restore();
-      if(nightmareReached){ const p=new Path2D('M6 40 3 9l15 14L32 3l14 20 15-14-3 31Z'), cw=110; g.save(); g.translate(X+Wc-P-gw/2+24-cw/2,Y-62); g.scale(cw/64,cw/64); g.fillStyle='#F2B705'; g.fill(p); g.lineWidth=2; g.strokeStyle='#C48F00'; g.stroke(p); g.restore(); } }
+    }
     // big score, shrunk to fit
     const sc=score.toLocaleString(LOCALE()); g.font='800 48px '+disp; const uw=g.measureText(TX('pts')).width;
     let fs=190; g.font='800 '+fs+'px '+disp;
@@ -4758,7 +4772,7 @@ function lowCheck(){ if(LOW_PREF!=null) return; setTimeout(()=>{ let n=0; const 
 function init(){
   $('pkShove').src=PK_SHOVE; $('pkLaugh').src=PK_LAUGH;
   setFeverLab(); setSprite($('moodLab'),TX('mood'),'lucky',17); setArt($('celeT'),'pino',28,'combo','PINO!'); $('sayImg').src=$('celeImg').src;
-  setNum(scoreEl,'0','hud'); setNum(timeEl,HARD?'0.0':'60.0','hud');
+  setNum(scoreEl,'0','hud'); setNum(timeEl,HARD?'0.0':PRACTICE_SEC.toFixed(1),'hud');
   buildMaterials();
   loadDefaultFaces();
   restoreFaces();

@@ -85,10 +85,10 @@ async function board(url, env) {
   const ev = eventOf(env, Date.now());
   if (!ev.start) return json({ event: ev, players: 0, top: [], me: null }, 200, env);
   const all = (await env.DB.prepare(BEST_SQL).bind(ev.start, ev.end).all()).results || [];
-  const top = all.slice(0, 10).map((r, i) => ({ rank: i + 1, nick: r.nick, score: r.score, mode: r.nightmare ? 'nightmare' : r.mode }));
+  const top = all.slice(0, 10).map((r, i) => ({ rank: i + 1, nick: r.nick, score: r.score, mode: r.mode, nm: !!r.nightmare }));
   const xid = cleanXid(url.searchParams.get('xid'));
   let me = null;
-  if (xid) { const i = all.findIndex((r) => r.xid === xid); if (i >= 0) me = { rank: i + 1, nick: all[i].nick, score: all[i].score, mode: all[i].nightmare ? 'nightmare' : all[i].mode }; }
+  if (xid) { const i = all.findIndex((r) => r.xid === xid); if (i >= 0) me = { rank: i + 1, nick: all[i].nick, score: all[i].score, mode: all[i].mode, nm: !!all[i].nightmare }; }
   return json({ event: ev, players: all.length, top, me }, 200, env, { 'cache-control': 'no-store' });
 }
 

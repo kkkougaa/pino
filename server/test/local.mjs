@@ -62,7 +62,7 @@ if (process.argv[2] === 'serve') {
 
   r = await run({ xid: 'nm_player', nick: '폭주왕' }, 'super', 300000, { elapsed: 120, boxes: 20, eaten: 120, combo: 120, rage: true, nightmare: true, patrols: 15 }, 150);
   b = await call('GET', '/api/board');
-  ok(b.body.top.some((x) => x.mode === 'nightmare'), 'a run that reached nightmare shows as nightmare');
+  ok(b.body.top.some((x) => x.mode === 'super' && x.nm), 'a run that reached nightmare keeps its mode and carries the nightmare mark');
 
   for (let i = 0; i < 12; i++) await run({ xid: 'p' + i, nick: '플레이어' + i }, 'normal', 1000 + i);
   b = await call('GET', '/api/board?xid=p0');
