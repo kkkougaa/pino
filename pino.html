@@ -1157,16 +1157,16 @@ body:not(.title) .loccap{display:none}
 
 /* ---- start screen: touch to start; the mode as a pill bottom left ---- */
 #tui .gorow .btn,#tui #go{display:none!important}
-.tts{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 132px);z-index:2;display:flex;justify-content:center;pointer-events:none;
-  background:linear-gradient(90deg,rgba(16,10,6,0) 0%,rgba(16,10,6,.5) 22%,rgba(16,10,6,.5) 78%,rgba(16,10,6,0) 100%);padding:12px 0}
+.tts{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 210px);z-index:2;display:flex;justify-content:center;pointer-events:none;
+  background:linear-gradient(90deg,rgba(16,10,6,0) 0%,rgba(16,10,6,.25) 22%,rgba(16,10,6,.25) 78%,rgba(16,10,6,0) 100%);padding:12px 0}
 .tts span{position:relative;font:500 17px/1 "Murecho",var(--sys);letter-spacing:.32em;margin-right:-.32em;color:#FFFBEF;text-shadow:0 1px 3px rgba(0,0,0,.5)}
-.tts span::before,.tts span::after{content:"";position:absolute;top:50%;width:5px;height:5px;margin-top:-3px;border:1px solid rgba(255,251,239,.8);transform:rotate(45deg)}
-.tts span::before{left:-34px} .tts span::after{right:calc(-34px + .32em)}
 body:not(.title) .tts{display:none}
 #tui{padding:0!important;background:none!important}
-.gorow{position:fixed;left:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);width:auto!important;z-index:3}
-.modecyc{width:auto!important;flex-direction:row!important;gap:10px!important;padding:10px 18px 10px 16px!important;border-radius:999px!important;margin:0!important}
-.modecyc b{font-size:17px!important} .modecyc small{font-size:11px!important}
+.gorow{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 140px);width:auto!important;z-index:3}
+.modecyc{width:184px!important;height:46px;flex-direction:row!important;justify-content:center!important;gap:0!important;padding:0 20px!important;border-radius:999px!important;margin:0!important;border:2px solid #3A2416!important;box-shadow:none!important}
+.modecyc b{font:700 17px/1 var(--sys)!important} .modecyc small{display:none!important}
+.modecyc .cyc{position:absolute;left:16px;top:50%;width:20px;height:20px;margin-top:-10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.modecyc.one .cyc{display:none}
 </style>
 </head>
 <body>
@@ -1238,7 +1238,7 @@ bootStep(0.1);</script>
     <p class="lead"><span data-i18n="lead"></span> <span id="intro2" data-i18n="intro2"></span></p>
     <div class="mode"><div class="seg" role="group" aria-label="Mode"><button type="button" data-mode="normal" data-i18n="modeNormal"></button><button type="button" data-mode="hard" data-i18n="modeHard"></button><button type="button" data-mode="super" data-i18n="modeSuper" hidden></button></div></div>
     <p class="hardnote" id="hardNote" data-i18n="hardNote"></p>
-    <div class="gorow"><button type="button" class="modecyc" id="modeCyc"><i class="dot" aria-hidden="true"></i><b id="modeCycT"></b><small data-i18n="modeTap"></small></button><button class="btn" id="go" data-i18n="start">시작!</button></div>
+    <div class="gorow"><button type="button" class="modecyc" id="modeCyc"><i class="dot" aria-hidden="true"></i><svg class="cyc" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9a8 8 0 0 1 14-3l2 2M20 4v4h-4"/><path d="M20 15a8 8 0 0 1-14 3l-2-2M4 20v-4h4"/></svg><b id="modeCycT"></b><small data-i18n="modeTap"></small></button><button class="btn" id="go" data-i18n="start">시작!</button></div>
   </div>
 </div>
 
