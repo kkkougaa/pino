@@ -2801,7 +2801,7 @@ function nextBox(){
     const b=makePizza(); cur=b; scene.add(b.group); boxNo++;
     b.group.position.set(6,0,0); b.group.rotation.y=-0.4; state='arrive'; setGuide(null);
     tween(0.38,k=>{const e=easeOut(k);b.group.position.x=6*(1-e);b.group.rotation.y=-0.4*(1-e);},
-      ()=>{ if(state!=='arrive') return; state='pizza'; keepCombo(); popCenter(say('pizza_hint'),'pizza'); if(HARD) later(()=>coach('pizza',{target:()=>{ const q=toScreen(b.group.position.clone().setY(0.3)); return {x:q.x,y:q.y,r:Math.min(innerWidth,innerHeight)*0.32}; },tap:true}),500); });   // the combo clock restarts when the pizza lands, so deciding doesn't cost it
+      ()=>{ if(state!=='arrive') return; state='pizza'; keepCombo(); popCenter(say('pizza_hint'),'pizza'); if(HARD&&!(TUT||AUTO.on)&&!(TEST.coach?COACH.run.pizza:coachSeen('pizza'))){ PZHOLD=true; later(()=>{ if(!coach('pizza',{target:()=>{ const q=toScreen(b.group.position.clone().setY(0.3)); return {x:q.x,y:q.y,r:Math.min(innerWidth,innerHeight)*0.32}; },tap:true})) PZHOLD=false; },500); } });   // the combo clock restarts when the pizza lands, so deciding doesn't cost it
     return;
   }
   const b=makeBox(); cur=b; scene.add(b.group); boxNo++; b.covered=false; b.meltT=meltTime();
@@ -3175,7 +3175,7 @@ function startGame(keep){   // keep: the start screen's box (its post-it just fl
   audio(); if(HARD) bgm.stop(0.2); if(SUPER) decodeCBGM(['rage']); document.body.classList.remove('resultFx','paused'); decoyAway(true); fx.clear(); shownScore=0; hitStop=0; kick=0;
   const keepBox=keep===true&&cur&&state==='idle'?cur:null; if(!keepBox) disposeCur();
   for(const p of parts) scene.remove(p.mesh); parts.length=0; tweens.length=0;
-  cur=null; pickHeld=false; timeLeft=60; endCause=null; COACH.run={}; caughtFx(false); $('patrol').classList.remove('lean'); rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0; heartCount=0; starCount=0;
+  cur=null; pickHeld=false; timeLeft=60; endCause=null; COACH.run={}; PZHOLD=false; caughtFx(false); $('patrol').classList.remove('lean'); rankStart(); score=0; totalEaten=0; boxesThrown=0; boxesDone=0; luckyCount=0; heartCount=0; starCount=0;
   while(pile.children.length) pile.remove(pile.children[0]); pileCount=0;
   combo=0; maxCombo=0; comboT=0; lastTier=1; charge=0; endFever(); renderCombo(); addScore(0);
   $('fever').classList.remove('off');
@@ -3976,10 +3976,10 @@ function meltEnd(){
 }
 /* ---------- hard-mode guide: the first time each trouble appears, the game slows (or stops), a spotlight picks out
    what matters and one line says what to do. Shown once per device; never in autoplay or the tutorial ---------- */
-const COACH={on:null,ts:1,run:{}};
+const COACH={on:null,ts:1,run:{}}; let PZHOLD=false;   // the first pizza with its guide: it can't be swiped away until the guide is done
 function coachSeen(k){ try{ return localStorage.getItem('kouga-coach-'+k)==='1'; }catch(e){ return false; } }
 function coach(k,o){   // o.target: element id | ()=>{x,y,r}; o.tap: stop the game until a tap; o.slow: time scale while the hint shows; o.until: done when true
-  o=o||{}; if((!HARD&&!o.any)||TUT||AUTO.on||COACH.on||(TEST.coach?COACH.run[k]:coachSeen(k))||state==='over'||state==='swat'||state==='idle') return false;
+  o=o||{}; if((!HARD&&!o.any&&!TEST.coach)||TUT||AUTO.on||COACH.on||(TEST.coach?COACH.run[k]:coachSeen(k))||state==='over'||state==='swat'||state==='idle') return false;
   COACH.run[k]=1;   // test switch 'guide always': each guide once per run
   try{ localStorage.setItem('kouga-coach-'+k,'1'); }catch(e){}
   COACH.on={k,o,t0:performance.now()}; COACH.ts=o.tap?0:(o.slow??0.25);
@@ -3996,7 +3996,7 @@ function placeCoach(){ const c=COACH.on; if(!c) return; let x=null,y,r=0; const 
   bub.style.top=(below?Math.min(innerHeight-bh-20,y+r+18):Math.max(20,y-r-18-bh)).toFixed(0)+'px'; }
 function coachTick(){ const c=COACH.on; if(!c) return; placeCoach();
   if(state==='over'||state==='swat'||(c.o.until&&c.o.until())||(!c.o.tap&&!c.o.until&&performance.now()-c.t0>2600)) coachEnd(); }
-function coachEnd(){ COACH.on=null; COACH.ts=1; $('coach').hidden=true; }
+function coachEnd(){ if(COACH.on&&COACH.on.k==='pizza') PZHOLD=false; COACH.on=null; COACH.ts=1; $('coach').hidden=true; }
 /* ---------- ranking event (needs the server in /server; RANK_API empty = no ranking anywhere) ----------
    players join before a run (nickname + X handle, kept on this device); every run started inside the event window is sent
    when it ends; the board shows the top 10, your own place, and refreshes itself while open */
@@ -4516,7 +4516,7 @@ canvas.addEventListener('pointerdown',e=>{
 canvas.addEventListener('pointermove',e=>{
   if(!down||e.pointerId!==down.id) return;
   if(flickWait){ const dx=e.clientX-down.x, dy=e.clientY-down.y; if(Math.hypot(dx,dy)>40){ flickPostit(dx,dy); down=null; } return; }   // swipe the note away, any direction
-  if(state==='pizza'){ const dx=e.clientX-down.x, dy=e.clientY-down.y;
+  if(state==='pizza'){ const dx=e.clientX-down.x, dy=e.clientY-down.y; if(PZHOLD){ if(Math.hypot(dx,dy)>45){ down=null; if(cur) cur.jitter=0.04; } return; }   // held while its guide shows
     if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2){ shovePizza(Math.sign(dx)); down=null; return; }
     if(dy<-45&&-dy>Math.abs(dx)*1.2){ openPizza(); down=null; return; }   // up only: a downward 'hide' swipe must never open it
     return; }
