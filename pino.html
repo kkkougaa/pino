@@ -4269,7 +4269,7 @@ $('go').addEventListener('click',()=>{ if(irisBusy||introOpen||flickWait) return
   if(rankOpen()&&!RANK.who){ askShow(goRun); return; }   // ranking event on and no name yet: register, or play without a record
   goRun(); });
 function goRun(){
-  if(!HARD&&!tutSeen()){ awaitFlick(()=>beginRun(true)); return; }   // first normal run: the tutorial, once the note is off
+  if(!HARD){ awaitFlick(()=>beginRun(true)); return; }   // practice: always the step-by-step tutorial first (tear the string, open the box…), once the note is off
   awaitFlick(()=>startGame(true)); }   // the box under the post-it is the first one
 let irisBusy=false;
 $('homeBtn').addEventListener('click',goHome);
