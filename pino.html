@@ -1120,6 +1120,18 @@ html[lang="ja"] .setlegal{word-break:normal;line-break:strict}
 #setOv .setcard{max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;box-sizing:border-box}
 
 #tlogo[hidden]{display:none!important}   /* start screen without a logo */
+
+/* ---- start: one mode button that cycles, beside the start button ---- */
+#tui .mode{display:none!important}
+#tui{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 44px)!important}
+.gorow{width:min(100%,340px);display:flex;gap:8px;align-items:stretch}
+#tui .gorow .btn{flex:1;width:auto;margin:0}
+.modecyc{appearance:none;flex:none;width:88px;border:3px solid #3A2416;border-radius:16px;background:#FFFBEF;color:#3A2416;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 4px;box-shadow:0 0 0 4px #FFFBEF,0 0 0 6.5px #3A2416,0 6px 0 5px rgba(0,0,0,.4);margin:0 4px 0 6px}
+.modecyc b{font:800 16px/1 var(--sys)} .modecyc small{font:600 10px/1 var(--sys);color:#7A6250;white-space:nowrap}
+.modecyc[data-mode="hard"]{background:var(--m-hard);color:var(--m-hard-ink)} .modecyc[data-mode="hard"] small{color:rgba(58,36,22,.75)}
+.modecyc[data-mode="super"]{background:var(--m-super);color:#FFFBEF} .modecyc[data-mode="super"] small{color:rgba(255,251,239,.85)}
+.modecyc:active{transform:translateY(3px)}
 </style>
 </head>
 <body>
@@ -1189,7 +1201,7 @@ bootStep(0.1);</script>
     <p class="lead"><span data-i18n="lead"></span> <span id="intro2" data-i18n="intro2"></span></p>
     <div class="mode"><div class="seg" role="group" aria-label="Mode"><button type="button" data-mode="normal" data-i18n="modeNormal"></button><button type="button" data-mode="hard" data-i18n="modeHard"></button><button type="button" data-mode="super" data-i18n="modeSuper" hidden></button></div></div>
     <p class="hardnote" id="hardNote" data-i18n="hardNote"></p>
-    <button class="btn" id="go" data-i18n="start">시작!</button>
+    <div class="gorow"><button type="button" class="modecyc" id="modeCyc"><b id="modeCycT"></b><small data-i18n="modeTap"></small></button><button class="btn" id="go" data-i18n="start">시작!</button></div>
   </div>
 </div>
 
@@ -1316,7 +1328,7 @@ var I18N={
     say_C:'흥, 한두개쯤이야. 이번만 봐준다.',
     say_F:'뭐야, 먹긴 한 거냐?',
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.', intro2Rank:'1등은 좋은 일이 생길지도…',
-    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setLang:'언어', legalShort:'비공식 팬 게임', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tDraft:'시안 연출 (간발·안도)', tEgg:'이스터에그 보기', tEggGo:'보기', eggNames:'기본 (모찌 아이스)|붕어빵|가지|계란|생선뼈|타코야끼|새우튀김|포션|메론빵|포장 햄버거', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
+    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setLang:'언어', modeTap:'탭해서 변경', legalShort:'비공식 팬 게임', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tDraft:'시안 연출 (간발·안도)', tEgg:'이스터에그 보기', tEggGo:'보기', eggNames:'기본 (모찌 아이스)|붕어빵|가지|계란|생선뼈|타코야끼|새우튀김|포션|메론빵|포장 햄버거', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
     fx_miss:'MISS −1초', 
     ready:'준비~', go_:'START!', modeNormal:'보통', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
@@ -1374,7 +1386,7 @@ var I18N={
     say_C:'フン、1つや2つくらいどうってことねぇぜ。今回だけは見逃してやるぜ。',
     say_F:'なんだ、ほんとに食ったのか？',
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。', intro2Rank:'1位にはいいことがあるかも…',
-    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setLang:'言語', legalShort:'非公式ファンゲーム', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tDraft:'試作演出', tEgg:'イースターエッグを見る', tEggGo:'見る', eggNames:'いつもの（もちアイス）|たい焼き|なす|たまご|魚の骨|たこ焼き|エビフライ|ポーション|メロンパン|包みバーガー', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
+    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setLang:'言語', modeTap:'タップで変更', legalShort:'非公式ファンゲーム', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tDraft:'試作演出', tEgg:'イースターエッグを見る', tEggGo:'見る', eggNames:'いつもの（もちアイス）|たい焼き|なす|たまご|魚の骨|たこ焼き|エビフライ|ポーション|メロンパン|包みバーガー', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
     fx_miss:'MISS −1秒', 
     ready:'よーい…', go_:'START!', modeNormal:'ふつう', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
@@ -4299,6 +4311,11 @@ rankFetchEvent(); setInterval(()=>{ if(!document.hidden&&!$('start').hidden) evC
 addEventListener('resize',()=>{ if(!$('start').hidden) evCard(); });   // the notice's size depends on the room beside the logo
 $('boardBtn').addEventListener('click',()=>{ audio(); boardShow(); });
 $('rankIco').addEventListener('click',()=>{ audio(); boardShow(); });
+// one mode button beside start: each tap moves to the next unlocked mode (the hidden switch underneath does the work)
+function modeCycSync(){ const on=document.querySelector('#tui .mode button[aria-pressed="true"]'), b=$('modeCyc'); if(!on) return; $('modeCycT').textContent=on.textContent; b.dataset.mode=on.dataset.mode; }
+$('modeCyc').addEventListener('click',()=>{ const bs=[...document.querySelectorAll('#tui .mode button')].filter(x=>!x.hidden), i=bs.findIndex(x=>x.getAttribute('aria-pressed')==='true'); const n=bs[(i+1)%bs.length]; if(n) n.click(); modeCycSync(); });
+new MutationObserver(modeCycSync).observe(document.querySelector('#tui .mode'),{subtree:true,attributes:true,attributeFilter:['aria-pressed','hidden'],childList:true,characterData:true});
+setTimeout(modeCycSync,0);
 $('rankOpen').addEventListener('click',()=>{ audio(); boardShow(); });
 $('evJoin').addEventListener('click',()=>{ audio(); joinDialog(null); });
 $('boardClose').addEventListener('click',()=>{ $('boardOv').hidden=true; clearInterval(boardTimer); });
@@ -4577,7 +4594,7 @@ function loop(t){
     if(p.life<=0){ scene.remove(p.mesh); if(p.fade) p.mesh.material.dispose(); parts.splice(i,1); }
   }
   if(cur){
-    if(state==='idle') cur.group.rotation.y=Math.sin(now*0.6)*0.12;
+    if(state==='idle') cur.group.rotation.y=0;   // the start screen: the box holds still
     if(cur.jitter>0.0005){ cur.group.rotation.z=Math.sin(now*70)*cur.jitter; cur.jitter*=Math.exp(-dt*12); }
     else if(state!=='throwing') cur.group.rotation.z=0;
     if(state==='pick') cur.pick.position.y=cur.pick.userData.baseY+Math.sin(now*3)*0.004;
