@@ -1174,11 +1174,9 @@ body:not(.title) .tts{display:none}
 .pracskip[hidden]{display:none}
 #result.practice #again,#result.practice #shareX,#result.practice #saveImg{display:none}
 #result.practice #homeBtn{flex:1}
-.nmc{background:var(--m-nm);display:inline-flex;align-items:center;justify-content:center;padding:0 10px;min-height:26px}
-.nmc[hidden]{display:none}
-.nmc img{display:block}
-.mc.nmc{padding:0 6px;min-height:19px;border-color:var(--m-nm)}
-.mc.nmc img{width:17px!important;height:auto!important}
+.nmico{flex:none;width:26px;height:26px;border-radius:50%;background:#FFFBEF;border:2.5px solid #3A2416;color:#7A2FD0;display:inline-grid;place-items:center;box-sizing:border-box}
+.nmico[hidden]{display:none} .nmico svg{width:17px;height:17px;display:block}
+.nmico.sm{width:20px;height:20px;border-width:2px} .nmico.sm svg{width:13px;height:13px}
 .mrow{display:flex;align-items:center;gap:6px}
 </style>
 </head>
@@ -1333,7 +1331,7 @@ bootStep(0.1);</script>
 <div class="overlay" id="result" hidden>
   <div class="card">
     <div class="rhead"><div class="rt"><h2 id="rTitle" data-i18n="resultTitle"></h2><p id="rCause" hidden></p></div><div class="grade" id="rGrade"><img id="rGradeImg" alt=""></div></div>
-    <div class="mrow"><span class="mchip" id="rMode"></span><span class="mchip nmc" id="rNm" hidden></span></div>
+    <div class="mrow"><span class="mchip" id="rMode"></span><span class="nmico" id="rNm" hidden></span></div>
     <div class="say"><img id="sayImg" alt=""><p id="sayText"></p></div>
     <div class="big"><b id="rScore">0</b><span data-i18n="pts"></span></div>
     <dl class="rows">
@@ -4162,7 +4160,7 @@ function boardRow(el,r,mine){ el.innerHTML=''; const k=document.createElement('s
   k.className='rk'; if(r.rank<=3){ const b=document.createElement('b'); b.className='r'+r.rank; b.textContent=r.rank; k.appendChild(b); } else k.textContent=r.rank;
   n.className='nk'; if(mine){ const t=document.createElement('small'); t.textContent=TX('rankMe'); n.appendChild(t); } n.appendChild(document.createTextNode(r.nick));
   m.className='mc '+r.mode; m.textContent=TX('mc_'+r.mode);
-  c.className='sc'; c.textContent=r.score.toLocaleString(LOCALE()); el.append(k,n,m); if(r.nm){ const i=document.createElement('span'); i.className='mc nightmare nmc'; nmChip(i,true); el.append(i); } el.append(c); }
+  c.className='sc'; c.textContent=r.score.toLocaleString(LOCALE()); el.append(k,n,m); if(r.nm){ const i=document.createElement('span'); i.className='nmico sm'; nmChip(i,true); el.append(i); } el.append(c); }
 function boardLoad(first){
   const ol=$('boardList'); if(first) ol.innerHTML='<li class="msg">'+TX('rankLoading')+'</li>';
   rankApi('/api/board'+(RANK.who?'?xid='+encodeURIComponent(RANK.who.xid):'')).then(d=>{
@@ -4277,7 +4275,7 @@ function revealResult(){
 }
 function endTitle(){ return pizzaEnd?TX('pizzaTitle'):meltedEnd?TX('meltTitle'):caughtEnd?TX('caughtTitle'):(HARD||quitEnd)?TX('endTitle'):TX('resultTitle'); }   // hard has no clock, so never "time up"
 function reachedMode(){ return MODE; }
-function nmChip(el,on){ el.hidden=!on; el.textContent=''; const a=artOf('vein'); if(on&&a){ const im=artImgEl(a,0.6); el.appendChild(im); } }   // the nightmare mark: the in-game vein picture on a purple chip
+function nmChip(el,on){ el.hidden=!on; el.innerHTML=on?'<svg viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"><path d="M16 6 C16 13 13 16 6 16"/><path d="M24 6 C24 13 27 16 34 16"/><path d="M16 34 C16 27 13 24 6 24"/><path d="M24 34 C24 27 27 24 34 24"/></g></svg>':''; }   // the nightmare mark: the same icon as beside the suspicion gauge, in its nightmare purple
 function stampGrade(){
   const ge=$('rGrade'); ge.classList.remove('go'); void ge.offsetWidth; ge.classList.add('go');
   if(nightmareReached) setTimeout(()=>{ [84,88,91,96].forEach((n,i)=>bell(n,{vol:0.05,delay:i*0.06})); },420);
@@ -4489,8 +4487,8 @@ function makeShareImage(){
     { const m=reachedMode(), lab=TX('mc_'+m), col={normal:'#4C9A6A',hard:'#3E4C6E',super:'#D3263A',nm:'#7A2FD0'}[m];
       g.font='700 30px '+disp; const tw=g.measureText(TX('title')).width; g.font='700 28px '+disp; const lw=g.measureText(lab).width, cx=X+P+tw+(g.measureText(' ').width)+20, cy=Y+56;
       g.fillStyle=col; rr(cx,cy,lw+40,48,24); g.fill(); g.lineWidth=4; g.strokeStyle=line; g.stroke(); g.fillStyle='#fff'; g.fillText(lab,cx+20,cy+35); g.fillStyle=ink;
-      const vi=nightmareReached&&$('rNm').querySelector('img');
-      if(vi&&vi.complete&&vi.naturalWidth){ const bx=cx+lw+40+10; g.fillStyle='#7A2FD0'; rr(bx,cy,72,48,24); g.fill(); g.lineWidth=4; g.strokeStyle=line; g.stroke(); g.drawImage(vi,bx+36-21,cy+24-21,42,42*vi.naturalHeight/vi.naturalWidth); g.fillStyle=ink; } }
+      if(nightmareReached){ const bx=cx+lw+40+12, r=24, ccx=bx+r, ccy=cy+24; g.fillStyle='#FFFBEF'; g.beginPath(); g.arc(ccx,ccy,r,0,7); g.fill(); g.lineWidth=5; g.strokeStyle=line; g.stroke();   // the suspicion gauge's icon, in nightmare purple
+        g.save(); g.translate(ccx-17,ccy-17); g.scale(34/40,34/40); g.strokeStyle='#7A2FD0'; g.lineWidth=6; g.lineCap='round'; ['M16 6 C16 13 13 16 6 16','M24 6 C24 13 27 16 34 16','M16 34 C16 27 13 24 6 24','M24 34 C24 27 27 24 34 24'].forEach(d=>g.stroke(new Path2D(d))); g.restore(); g.fillStyle=ink; } }
     g.font='64px '+hand; g.fillText(endTitle(),X+P,Y+178);
     { const gr=gradeOf(score), gs=sprite(gr[0],'g'+gr[0],58), gi=$('rGradeImg'), gsrc=artOf('g'+gr[0])&&gi.complete&&gi.naturalWidth?gi:gs.canvas, gh=230, gw=gh*(gsrc.naturalWidth||gsrc.width)/(gsrc.naturalHeight||gsrc.height);
       g.save(); g.translate(X+Wc-P-gw/2+24,Y+6+gh/2); g.rotate(0.08); g.drawImage(gsrc,-gw/2,-gh/2,gw,gh); g.restore();
