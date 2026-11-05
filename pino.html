@@ -1101,18 +1101,10 @@ body.paused :is(#cutin,#cutin *,#sus,#sus *,#patrol .nohand){animation-play-stat
 /* ---- start screen: the lobby (draft 6). A wall with the fridge, Kouga in front of it, the box on the table, a ranking card beside it, one big button, a tab bar ---- */
 :root{--lob:"Jua","Yusei Magic",var(--sys);--lob-ink:#3A2416;--lob-go:#FF5A3C;--lob-go-d:#D93A2B;--lob-wall:#3C4A63;--lob-wall-d:#2A3447}
 #start #tlang,#start .evtop{display:none!important}
-.lobwall{position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top,0px) + 36vh);z-index:0;pointer-events:none;
-  background:linear-gradient(rgba(0,0,0,.18),rgba(0,0,0,0) 30%),repeating-linear-gradient(90deg,var(--lob-wall) 0 58px,#41506B 58px 60px)}
-.lobbase{position:absolute;left:0;right:0;bottom:0;height:14px;background:var(--lob-wall-d);box-shadow:0 4px 8px rgba(0,0,0,.25)}
-.lobfridge{position:absolute;left:22px;bottom:14px;width:min(40vw,160px);height:calc(100% - env(safe-area-inset-top,0px) - 72px);border:3px solid var(--lob-wall-d);border-bottom:0;border-radius:12px 12px 0 0;background:#E9EEF2;overflow:hidden}
-.lobfridge .fz{position:absolute;left:0;right:0;top:0;height:36%;border-bottom:3px solid var(--lob-wall-d);background:linear-gradient(90deg,#F4F7F9,#DCE3E9)}
-.lobfridge .fr{position:absolute;left:0;right:0;top:36%;bottom:0;background:linear-gradient(90deg,#F4F7F9,#D7DFE6)}
-.lobfridge .h1,.lobfridge .h2{position:absolute;right:12px;width:7px;border-radius:4px;background:#9AA6B4;box-shadow:inset -2px 0 0 #7E8A98}
-.lobfridge .h1{top:12%;height:16%} .lobfridge .h2{top:44%;height:22%}
-.lobfridge .mg{position:absolute;width:14px;height:14px;border-radius:50%;box-shadow:inset -2px -3px 0 rgba(0,0,0,.2)}
-.lobfridge .m1{left:18%;top:52%;background:#D8352A} .lobfridge .m2{left:44%;top:12%;background:#2F6FB3}
-.lobfridge .note{position:absolute;left:12%;top:56%;width:38%;height:22%;background:#FFE36E;transform:rotate(-6deg);box-shadow:0 3px 4px rgba(0,0,0,.18)}
-body:not(.title) .lobwall{display:none}
+.lobfloor{position:fixed;left:0;right:0;bottom:0;top:36vh;z-index:0;pointer-events:none;background:#F3C98E repeating-linear-gradient(90deg,rgba(214,160,92,.45) 0 46px,transparent 46px 92px)}
+.lobframe{position:fixed;z-index:1;pointer-events:none;border:3px solid var(--lob-ink);border-radius:14px;transform:rotate(-4deg);box-shadow:0 6px 0 rgba(58,36,22,.35)}
+body:not(.title) .lobfloor,body:not(.title) .lobframe{display:none}
+body.title #bg{background:#3C4A63 repeating-linear-gradient(90deg,#3C4A63 0 58px,#41506B 58px 60px)} body.title #bg .fridge{visibility:hidden}   /* above the 3D wall's reach, the wall carries on behind the canvas */
 #start .setbtn{right:16px!important;width:40px;height:40px;padding:9px;border:0;background:rgba(20,26,38,.72)}
 .lobtop{position:fixed;right:64px;top:calc(env(safe-area-inset-top,0px) + 16px);z-index:3;display:flex;gap:8px;pointer-events:auto}
 .lobchip{appearance:none;height:40px;max-width:36vw;padding:0 14px;border:0;border-radius:20px;background:rgba(20,26,38,.72);color:#FFFFFF;font:600 13px/40px var(--sys);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
@@ -1128,7 +1120,7 @@ body:not(.title) .lobwall{display:none}
 html[lang="ja"] .lobbub{font-size:14px;line-height:1.35;word-break:normal;line-break:strict}
 #start #tui{bottom:calc(env(safe-area-inset-bottom,0px) + 68px);padding:0 16px 16px;gap:10px;align-items:stretch;background:none}
 #start #tui .lead{display:none}
-#start .evcard{position:fixed;right:12px;top:calc(50% - 16px);z-index:3;width:min(40vw,156px);margin:0;pointer-events:auto}
+#start .evcard{position:fixed;right:12px;top:41.7%;z-index:3;width:min(40vw,156px);margin:0;pointer-events:auto}
 #start .evcard[hidden]{display:none}
 .rankban{appearance:none;width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:10px 12px;border:3px solid var(--lob-ink);border-radius:16px;background:#FFFFFF;color:var(--lob-ink);cursor:pointer;box-shadow:0 5px 0 var(--lob-ink);text-align:left}
 .rankban b{padding:3px 8px;border-radius:6px;background:var(--m-super);color:#FFFFFF;font:700 11px/1.2 var(--sys)}
@@ -1221,7 +1213,7 @@ bootStep(0.1);</script>
   <div class="lang" id="tlang"><div class="seg" role="group" aria-label="Language"><button type="button" data-lang="ko" aria-pressed="true">한국어</button><button type="button" data-lang="ja" aria-pressed="false">日本語</button></div></div>
   <div class="evtop" id="evTop" hidden><img class="evart" id="evArt" alt=""><p class="evtime" id="evLeft"></p></div>
   <h1 class="vh" data-i18n="title"></h1>
-  <div class="lobwall" aria-hidden="true"><div class="lobfridge"><i class="fz"></i><i class="fr"></i><i class="h1"></i><i class="h2"></i><i class="mg m1"></i><i class="mg m2"></i><i class="note"></i></div><i class="lobbase"></i></div>
+  <div class="lobfloor" id="lobFloor" aria-hidden="true"></div><div class="lobframe" id="lobFrame" aria-hidden="true"></div>
   <img id="tlogo" alt="">
   <div class="lobtop" id="lobTop"><button type="button" class="lobchip" id="evJoin"></button><span class="lobbest" id="lobBest" hidden><b data-i18n="lobBest"></b><span id="lobBestN"></span></span></div>
   <div class="lobkouga" aria-hidden="true"><img id="lobKouga" alt=""><p class="lobbub" data-i18n="lobSay"></p></div>
@@ -1994,7 +1986,7 @@ function fit(){
 }
 function applyTitleCam(){   // blend the play framing toward the start screen's: box lifted into the top half (or to the left on wide screens), 10% closer
   const w=innerWidth, h=innerHeight, tall=camera.aspect<1, k=titleK;
-  const oy=(tall?-Math.round(h*0.15):0)+Math.round(k*(tall?h*0.07:-h*0.1)),   // wide screens: box a little lower, clear of the logo
+  const oy=(tall?-Math.round(h*0.15):0)+Math.round(k*(tall?h*0.145:-h*0.1)),   // wide screens: box a little lower, clear of the logo
     ox=Math.round(k*(tall?w*0.15:w*0.2));
   camera.zoom=1-(camera.aspect<1?0.42:0.133)*k; if(ox||oy) camera.setViewOffset(w,h,ox,oy,w,h); else camera.clearViewOffset(); camera.updateProjectionMatrix(); }   // tall screens: pulled back so the fridge stands behind the box
 
@@ -3192,7 +3184,7 @@ function flyPostit(a){   // flicked off the lid the way the finger went (screen 
   whoosh(2600,500,0.3,0.2,{pan:Math.cos(a)*0.6}); sNoise(3200,1.2,0.12,0.09,'highpass'); buzz(12);
   tween(0.55,k=>{ const e=k*(2-k); p.position.set(p0.x+Math.cos(a)*dist*e, p0.y+1.6*Math.sin(Math.PI*k*0.8)+0.6*e, p0.z+Math.sin(a)*dist*0.7*e); p.rotation.y=ry0+spin*k; p.rotation.x=tilt*k; },
     ()=>{ scene.remove(p); p.userData.pa.material.map.dispose(); }); }
-function titleOn(){ document.body.classList.add('title'); try{ const bs=+localStorage.getItem('six-bites-best-score')||0; $('lobBest').hidden=!bs; $('lobBestN').textContent=bs.toLocaleString('en-US'); }catch(e){} titleTo=1; if(cur) attachPostit(cur); requestAnimationFrame(placeSetBtn);
+function titleOn(){ document.body.classList.add('title'); placeLobby(); try{ const bs=+localStorage.getItem('six-bites-best-score')||0; $('lobBest').hidden=!bs; $('lobBestN').textContent=bs.toLocaleString('en-US'); }catch(e){} titleTo=1; if(cur) attachPostit(cur); requestAnimationFrame(placeSetBtn);
   titleLogo(); }
 // the start screen's logo in the current language (Korean / Japanese pictures, both taken from the loading screen before it goes)
 const LOGOS={}; ['ko','ja'].forEach(l=>{ const im=$(l==='ja'?'bootLogoJa':'bootLogo'); if(im) LOGOS[l]={src:im.src,cells:+im.dataset.cells||im.naturalWidth}; });
@@ -4349,6 +4341,46 @@ function setLabels(){ $('setTest').hidden=!TEST_MENU; document.querySelectorAll(
   document.querySelectorAll('#setOv .tog[data-set]').forEach(b=>{ const k=b.dataset.set, v=k==='bgm'?bgm.on:k==='sfx'?sfxOn:k==='low'?LOW.on:vibOn; b.setAttribute('aria-pressed',String(v)); b.textContent=TX(v?'on':'off'); }); }
 function placeSetBtn(){ const l=$('tlang'); if(l&&l.offsetWidth) $('setBtn').style.right=(16+l.offsetWidth+8)+'px'; }   // just left of the language switch
 addEventListener('resize',placeSetBtn);
+// ---- start-screen lobby: a wall with a 3D fridge, drawn into the top band of the canvas (an orthographic shot in CSS px) ----
+const LOBBY={wh:0,scene:new THREE.Scene(),cam:new THREE.OrthographicCamera(0,1,0,-1,1,2000),fridge:null,wall:null,base:null,frame:null};
+(function(){ const L=LOBBY, S=L.scene;
+  S.add(new THREE.AmbientLight(0xffffff,0.55)); const d=new THREE.DirectionalLight(0xffffff,0.75); d.position.set(-300,400,600); S.add(d);
+  const wc=cv(120,8), wg=wc.getContext('2d'); wg.fillStyle='#3C4A63'; wg.fillRect(0,0,120,8); wg.fillStyle='#41506B'; wg.fillRect(116,0,4,8);
+  const wt=new THREE.CanvasTexture(wc); wt.encoding=THREE.sRGBEncoding; wt.wrapS=THREE.RepeatWrapping;
+  L.wall=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:wt})); L.wall.position.z=-900; S.add(L.wall);
+  L.base=new THREE.Mesh(new THREE.BoxGeometry(1,14,40),new THREE.MeshBasicMaterial({color:col('#2A3447')})); L.base.position.z=-850; S.add(L.base);
+  L.cam.position.z=1000; })();
+function makeLobbyFridge(){   // a tall two-door fridge: rounded body, freezer on top, handles, two magnets and a post-it
+  const g=new THREE.Group(), W=1.5, H=2.3, D=1.15;
+  const white=new THREE.MeshStandardMaterial({color:col('#EEF2F5')}), grey=new THREE.MeshStandardMaterial({color:col('#9AA6B4')}), dark=new THREE.MeshStandardMaterial({color:col('#2A3447')});
+  const rb=(w,h,d,r)=>{ const sh=new THREE.Shape(), x=-w/2, y=-h/2; sh.moveTo(x+r,y); sh.lineTo(x+w-r,y); sh.quadraticCurveTo(x+w,y,x+w,y+r); sh.lineTo(x+w,y+h-r); sh.quadraticCurveTo(x+w,y+h,x+w-r,y+h); sh.lineTo(x+r,y+h); sh.quadraticCurveTo(x,y+h,x,y+h-r); sh.lineTo(x,y+r); sh.quadraticCurveTo(x,y,x+r,y);
+    const q=new THREE.ExtrudeGeometry(sh,{depth:d,bevelEnabled:true,bevelThickness:0.05,bevelSize:0.05,bevelSegments:3,curveSegments:6}); q.translate(0,0,-d/2); return q; };
+  const body=new THREE.Mesh(rb(W,H,D,0.14),white); body.position.y=H/2; g.add(body);
+  const seam=new THREE.Mesh(new THREE.BoxGeometry(W+0.02,0.035,0.02),dark); seam.position.set(0,H*0.64,D/2+0.06); seam.userData.ink=true; g.add(seam);
+  [[H*0.74,0.36],[H*0.36,0.5]].forEach(([y,h])=>{ const hd=new THREE.Mesh(new THREE.BoxGeometry(0.07,h,0.09),grey); hd.position.set(W/2-0.18,y,D/2+0.1); g.add(hd); });
+  const mg=(x,y,c)=>{ const m=new THREE.Mesh(new THREE.SphereGeometry(0.07,12,8),new THREE.MeshStandardMaterial({color:col(c)})); m.scale.z=0.5; m.position.set(x,y,D/2+0.08); g.add(m); };
+  mg(-0.42,H*0.84,'#2F6FB3'); mg(-0.3,H*0.5,'#D8352A');
+  const note=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.46),new THREE.MeshBasicMaterial({color:col('#FFE36E')})); note.position.set(-0.3,H*0.4,D/2+0.065); note.rotation.z=0.1; note.userData.ink=true; g.add(note);
+  const foot=new THREE.Mesh(new THREE.BoxGeometry(W-0.1,0.08,D-0.1),dark); foot.position.y=0.04; g.add(foot);
+  inkify(g); g.rotation.set(0.16,0.62,0); g.userData.H=H; g.userData.W=W; return g; }
+function placeLobby(){   // the wall band, the fridge on it, the frame round the box, and the floor with a window cut for it
+  const L=LOBBY, w=innerWidth, h=innerHeight, wh=L.wh=Math.round(h*0.36);
+  if(!L.fridge){ L.fridge=makeLobbyFridge(); L.scene.add(L.fridge); }
+  L.cam.left=0; L.cam.right=w; L.cam.top=0; L.cam.bottom=-h; L.cam.updateProjectionMatrix();   // the whole screen in CSS px; only the top band holds anything
+  L.wall.scale.set(w,wh,1); L.wall.position.set(w/2,-wh/2,-900); L.wall.material.map.repeat.set(w/120,1);
+  L.base.scale.x=w; L.base.position.set(w/2,-wh+7,-850);
+  const fh=Math.min(wh*0.58,190), sc=fh/L.fridge.userData.H; L.fridge.scale.setScalar(sc); L.fridge.position.set(30+L.fridge.userData.W*sc*0.62,-wh+14,-400);
+  $('lobFloor').style.top=wh+'px';
+  const FW=Math.min(230,Math.round(w*0.59)), FH=Math.round(FW*0.9), FL=12, FT=Math.round(h*0.377), fr=$('lobFrame');
+  Object.assign(fr.style,{left:FL+'px',top:FT+'px',width:FW+'px',height:FH+'px'});
+  const cx=FL+FW/2, cy=FT+FH/2-wh, a=-4*Math.PI/180, hw=FW/2-3, hh=FH/2-3, r=11, pts=[];   // the hole: the frame's inside, rounded, in the floor layer's own coordinates
+  [[hw-r,-hh+r,-Math.PI/2],[hw-r,hh-r,0],[-hw+r,hh-r,Math.PI/2],[-hw+r,-hh+r,Math.PI]].forEach(([x,y,a0])=>{ for(let i=0;i<=4;i++){ const t=a0+i/4*Math.PI/2, px=x+Math.cos(t)*r, py=y+Math.sin(t)*r; pts.push([cx+px*Math.cos(a)-py*Math.sin(a),cy+px*Math.sin(a)+py*Math.cos(a)]); } });
+  const fh2=h-wh, poly=['0 0',w+'px 0',w+'px '+fh2+'px','0 '+fh2+'px','0 0'].concat(pts.map(p=>p[0].toFixed(1)+'px '+p[1].toFixed(1)+'px'),[pts[0][0].toFixed(1)+'px '+pts[0][1].toFixed(1)+'px','0 0']);
+  $('lobFloor').style.clipPath='polygon(evenodd, '+poly.join(', ')+')'; }
+function lobbyRender(){ if(!LOBBY.wh) return;   // drawn over the main shot, keeping its colour
+  renderer.autoClear=false; renderer.clearDepth(); renderer.render(LOBBY.scene,LOBBY.cam); renderer.autoClear=true; }
+addEventListener('resize',placeLobby);
+
 $('setBtn').addEventListener('click',()=>{ audio(); setLabels(); $('setOv').hidden=false; });
 $('setClose').addEventListener('click',()=>{ $('setOv').hidden=true; });
 // TEST ONLY: look at every cover-up in turn, on the table, from the start screen
@@ -4701,7 +4733,7 @@ function loop(t){
   if(caughtEnd&&state==='swat'&&!reduceMotion){ const q=Math.min(1,(now-caughtAt)*5); camera.rotateZ(-0.045*q*(2-q)); }   // caught: the shot tips over
   if(titleK>0.0005) camera.rotateZ(-0.07*titleK);   // and a slight lean
   followFridge();
-  if(!glLost) renderer.render(scene,camera);
+  if(!glLost){ renderer.render(scene,camera); if(titleK>0.5&&document.body.classList.contains('title')) lobbyRender(); }
   // rolling score
   if(shownScore!==score){ if(score===0) shownScore=0; else { shownScore+=(score-shownScore)*Math.min(1,rdt*11); if(Math.abs(score-shownScore)<1) shownScore=score; }
     setNum(scoreEl,Math.round(shownScore).toLocaleString(LOCALE()),'hud'); chaseTick(shownScore); }
