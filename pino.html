@@ -3983,10 +3983,10 @@ function meltEnd(){
 /* ---------- hard-mode guide: the first time each trouble appears, the game slows (or stops), a spotlight picks out
    what matters and one line says what to do. Shown once per device; never in autoplay or the tutorial ---------- */
 const COACH={on:null,ts:1,run:{}};
-const GUIDE_IN={warn:'practice',watch:'practice',dare:'practice',pizza:'practice',melt:'hard',sus:'hard',recheck:'hard',feint:'hard',rage:'hard'};   // which mode each guide belongs to (hard = hard and super); once seen it never shows again, in any mode let PZHOLD=false;   // the first pizza with its guide: it can't be swiped away until the guide is done
+const GUIDE_IN={warn:'practice',watch:'practice',dare:'practice',pizza:'practice',melt:'hard',sus:'hard',recheck:'hard',feint:'hard',rage:'hard'};   // which mode each guide belongs to (hard = hard only, not super); once seen it never shows again, in any mode let PZHOLD=false;   // the first pizza with its guide: it can't be swiped away until the guide is done
 function coachSeen(k){ try{ return localStorage.getItem('kouga-coach-'+k)==='1'; }catch(e){ return false; } }
 function coach(k,o){   // o.target: element id | ()=>{x,y,r}; o.tap: stop the game until a tap; o.slow: time scale while the hint shows; o.until: done when true
-  o=o||{}; if((!TEST.coach&&(GUIDE_IN[k]==='practice'?HARD:!HARD))||TUT||AUTO.on||COACH.on||(TEST.coach?COACH.run[k]:coachSeen(k))||state==='over'||state==='swat'||state==='idle') return false;
+  o=o||{}; if((!TEST.coach&&(GUIDE_IN[k]==='practice'?HARD:MODE!=='hard'))||TUT||AUTO.on||COACH.on||(TEST.coach?COACH.run[k]:coachSeen(k))||state==='over'||state==='swat'||state==='idle') return false;
   COACH.run[k]=1;   // test switch 'guide always': each guide once per run
   try{ localStorage.setItem('kouga-coach-'+k,'1'); }catch(e){}
   COACH.on={k,o,t0:performance.now()}; COACH.ts=o.tap?0:(o.slow??0.25);
