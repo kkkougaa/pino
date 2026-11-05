@@ -1128,7 +1128,7 @@ html[lang="ja"] .setlegal{word-break:normal;line-break:strict}
 .gorow{width:min(100%,348px);display:flex;gap:14px;align-items:stretch}
 #tui .gorow .btn{flex:1;width:auto;margin:0;min-height:70px;font-size:26px;background:var(--m-super)}
 .modecyc{appearance:none;position:relative;flex:none;width:96px;border:3px solid #3A2416;border-radius:16px;background:#FFFBEF;color:#3A2416;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 4px;box-shadow:0 0 0 4px #FFFBEF,0 0 0 6.5px #3A2416,0 6px 0 5px rgba(0,0,0,.4);margin:0 4px 0 6px}
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 4px;border-width:2px;box-shadow:0 0 0 2.5px #FFFBEF,0 0 0 4px #3A2416,0 5px 0 3px rgba(0,0,0,.4);margin:0 4px 0 6px}
 .modecyc b{font:800 18px/1 var(--sys)} .modecyc small{font:600 11px/1 var(--sys);color:#7A6250;white-space:nowrap}
 .modecyc[data-mode="hard"]{background:var(--m-hard);color:var(--m-hard-ink)} .modecyc[data-mode="hard"] small{color:rgba(58,36,22,.75)}
 .modecyc[data-mode="super"]{background:var(--m-super);color:#FFFBEF} .modecyc[data-mode="super"] small{color:rgba(255,251,239,.85)}
@@ -3173,7 +3173,7 @@ function postitCanvas(){   // a yellow sticky note, written by hand: his heading
 function attachPostit(b){
   if(postit&&postit.parent) postit.parent.remove(postit);
   const tex=texFrom(postitCanvas()), sz=1.85, gp=new THREE.Group();
-  const mk=(mat,ro)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(sz,sz,1,8),mat); m.rotation.x=-Math.PI/2; m.renderOrder=ro; return m; };
+  const mk=(mat,ro)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(sz,sz,4,8),mat); m.rotation.x=-Math.PI/2; m.renderOrder=ro; return m; };
   const sh=mk(new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.18,depthTest:false,depthWrite:false}),10); sh.position.set(0.04,-0.004,0.07);
   const pa=mk(new THREE.MeshBasicMaterial({map:tex,depthTest:false,transparent:true}),11);   // in the transparent pass after the film, so its sheen and seams never show through
   gp.add(sh,pa); gp.userData={sh,pa}; gp.position.set(0.26,H+0.13,0); gp.rotation.y=-0.1; b.group.add(gp); postit=gp; }
@@ -4541,6 +4541,8 @@ let down=null;
 const tearNeed=()=>Math.max(280,Math.min(520,innerHeight*0.55));
 const filmNeed=()=>Math.max(240,Math.min(460,innerHeight*0.5));
 canvas.addEventListener('pointerdown',e=>{
+  if(state==='idle'&&document.body.classList.contains('title')&&postit&&postit.parent){ const q=toScreen(postit.getWorldPosition(new V3())), r=Math.min(innerWidth,innerHeight)*0.3;   // the start screen: poke the note and it flaps
+    if(Math.hypot(e.clientX-q.x,e.clientY-q.y)<r){ audio(); postit.poke=now; postit.pokeS=(e.clientX<q.x?-1:1); sNoise(2600,0.8,0.09,0.06,'bandpass',0,{send:0.15}); sNoise(5200,1,0.05,0.04,'highpass',0.07,{send:0.1}); buzz(8); } return; }
   if(COACH.on&&COACH.on.o.tap) return;
   if(patrol.phase==='watch'&&!paused){ down=null; endCause=patrol.feint>0?'feint':'moved'; patrolCaught(); return; }   // any move while he looks: caught
   if(readyT>0){ down=null; return; }
@@ -4631,8 +4633,10 @@ function loop(t){
   if(cur){
     if(state==='idle') cur.group.rotation.y=0;   // the start screen: the box holds still
     if(postit&&postit.parent===cur.group){ const pa=postit.userData.pa, q=pa.geometry.attributes.position, hh=0.925;   // the start screen: the top edge stays stuck, the rest lifts and settles in the breeze
-      const A=state==='idle'&&!reduceMotion?0.05+0.045*Math.sin(now*1.6)+0.02*Math.sin(now*3.1+1):0;
-      if(A||postit.wind){ for(let i=0;i<q.count;i++){ const f=(hh-q.getY(i))/(2*hh); q.setZ(i,A*f*f); } q.needsUpdate=true; pa.geometry.computeBoundingSphere(); postit.wind=A?1:0; } }
+      const pk=postit.poke!=null?now-postit.poke:9, P=pk<1.4?0.5*Math.exp(-pk*3.2)*Math.abs(Math.sin(pk*15)):0;   // a poke: two or three quick flaps, dying away
+      const A=state==='idle'&&!reduceMotion?0.05+0.045*Math.sin(now*1.6)+0.02*Math.sin(now*3.1+1)+P:0, tw=P*(postit.pokeS||1)*0.5;
+      if(A||postit.wind){ for(let i=0;i<q.count;i++){ const f=(hh-q.getY(i))/(2*hh); q.setZ(i,A*f*f+tw*f*f*q.getX(i)); } q.needsUpdate=true; pa.geometry.computeBoundingSphere(); postit.wind=A?1:0;
+        const sh=postit.userData.sh; sh.position.x=0.04+0.5*P; sh.position.z=0.07+0.6*P; pa.scale.setScalar(1+0.05*P); postit.rotation.y=-0.1+0.08*P*(postit.pokeS||1); } }   // the shadow slides out as it lifts, and it gives a little hop
     if(cur.jitter>0.0005){ cur.group.rotation.z=Math.sin(now*70)*cur.jitter; cur.jitter*=Math.exp(-dt*12); }
     else if(state!=='throwing') cur.group.rotation.z=0;
     if(state==='pick') cur.pick.position.y=cur.pick.userData.baseY+Math.sin(now*3)*0.004;
