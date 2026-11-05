@@ -6,7 +6,7 @@
 <title>코우가 챌린지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@500;600;700&family=IBM+Plex+Sans+JP:wght@500;600;700&family=Gamja+Flower&family=Yusei+Magic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=IBM+Plex+Sans+KR:wght@500;600;700&family=IBM+Plex+Sans+JP:wght@500;600;700&family=Gamja+Flower&family=Yusei+Magic&display=swap" rel="stylesheet">
 <style>
 /* ===== loading screen: painted before the heavy parts of the page arrive ===== */
 #boot{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:#C79A6A;transition:opacity .35s ease}
@@ -1142,8 +1142,8 @@ html[lang="ja"] .setlegal{word-break:normal;line-break:strict}
 /* ---- start screen: a location caption, top left ---- */
 .loccap{position:fixed;left:18px;top:calc(env(safe-area-inset-top,0px) + 18px);z-index:3;pointer-events:none;color:#FFFBEF;text-shadow:0 1px 3px rgba(26,14,8,.75)}
 .loccap p{margin:0}
-.loccap .ld{font:500 12px/1.3 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.04em;opacity:.85}
-.loccap .lt{font:600 30px/1.05 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.loccap .ld{display:block;width:max-content;font:700 13px/1.3 "IBM Plex Mono",ui-monospace,monospace;opacity:.85;white-space:nowrap}
+.loccap .lt{display:block;width:max-content;font:700 38px/1 "IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
 .loccap .lp{margin-top:8px;font:600 13px/1.35 var(--sys)}
 .loccap .ln{font:500 12px/1.35 var(--sys);opacity:.8}
 body:not(.title) .loccap{display:none}
@@ -3196,7 +3196,7 @@ function flyPostit(a){   // flicked off the lid the way the finger went (screen 
   whoosh(2600,500,0.3,0.2,{pan:Math.cos(a)*0.6}); sNoise(3200,1.2,0.12,0.09,'highpass'); buzz(12);
   tween(0.55,k=>{ const e=k*(2-k); p.position.set(p0.x+Math.cos(a)*dist*e, p0.y+1.6*Math.sin(Math.PI*k*0.8)+0.6*e, p0.z+Math.sin(a)*dist*0.7*e); p.rotation.y=ry0+spin*k; p.rotation.x=tilt*k; },
     ()=>{ scene.remove(p); p.userData.pa.material.map.dispose(); }); }
-function titleOn(){ if(practiceDone&&MODE==='normal') setMode('hard'); else setMode(MODE); document.body.classList.add('title'); titleTo=1; if(cur) attachPostit(cur); requestAnimationFrame(placeSetBtn);
+function titleOn(){ requestAnimationFrame(()=>{ try{ locFit(); }catch(e){} }); if(practiceDone&&MODE==='normal') setMode('hard'); else setMode(MODE); document.body.classList.add('title'); titleTo=1; if(cur) attachPostit(cur); requestAnimationFrame(placeSetBtn);
   titleLogo(); }
 // the start screen's logo in the current language (Korean / Japanese pictures, both taken from the loading screen before it goes)
 const LOGOS={}; ['ko','ja'].forEach(l=>{ const im=$(l==='ja'?'bootLogoJa':'bootLogo'); if(im) LOGOS[l]={src:im.src,cells:+im.dataset.cells||im.naturalWidth}; });
@@ -4358,7 +4358,9 @@ addEventListener('resize',()=>{ if(!$('start').hidden) evCard(); });   // the no
 $('boardBtn').addEventListener('click',()=>{ audio(); boardShow(); });
 $('rankIco').addEventListener('click',()=>{ audio(); boardShow(); });
 // the start screen's location caption: today's date and the time now, then where we are
-function locTick(){ const d=new Date(), z=n=>String(n).padStart(2,'0'); $('locDate').textContent=d.getFullYear()+'.'+z(d.getMonth()+1)+'.'+z(d.getDate()); $('locTime').textContent=z(d.getHours())+':'+z(d.getMinutes()); }
+function locTick(){ const d=new Date(), z=n=>String(n).padStart(2,'0'); $('locDate').textContent=d.getFullYear()+'.'+z(d.getMonth()+1)+'.'+z(d.getDate()); $('locTime').textContent=z(d.getHours())+':'+z(d.getMinutes()); locFit(); }
+function locFit(){ const a=$('locDate'), t=$('locTime'); if(!a.offsetWidth) return; a.style.letterSpacing='0px'; a.style.marginRight='0px'; const n=a.textContent.length, g=(t.getBoundingClientRect().width-a.getBoundingClientRect().width)/(n-1); a.style.letterSpacing=g.toFixed(2)+'px'; a.style.marginRight=(-g).toFixed(2)+'px'; }   // the date spread to the time's width
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(locFit);
 locTick(); setInterval(locTick,10000);
 // one mode button beside start: each tap moves to the next unlocked mode (the hidden switch underneath does the work)
 function modeCycSync(){ const on=document.querySelector('#tui .mode button[aria-pressed="true"]'), b=$('modeCyc'); if(!on) return; $('modeCycT').textContent=on.textContent; b.dataset.mode=on.dataset.mode;
