@@ -3146,7 +3146,7 @@ function postitCanvas(){   // a yellow sticky note, written by hand: his heading
 function attachPostit(b){
   if(postit&&postit.parent) postit.parent.remove(postit);
   const tex=texFrom(postitCanvas()), sz=1.85, gp=new THREE.Group();
-  const mk=(mat,ro)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(sz,sz),mat); m.rotation.x=-Math.PI/2; m.renderOrder=ro; return m; };
+  const mk=(mat,ro)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(sz,sz,1,8),mat); m.rotation.x=-Math.PI/2; m.renderOrder=ro; return m; };
   const sh=mk(new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.18,depthTest:false,depthWrite:false}),10); sh.position.set(0.04,-0.004,0.07);
   const pa=mk(new THREE.MeshBasicMaterial({map:tex,depthTest:false,transparent:true}),11);   // in the transparent pass after the film, so its sheen and seams never show through
   gp.add(sh,pa); gp.userData={sh,pa}; gp.position.set(0.26,H+0.13,0); gp.rotation.y=-0.1; b.group.add(gp); postit=gp; }
@@ -4602,7 +4602,9 @@ function loop(t){
   }
   if(cur){
     if(state==='idle') cur.group.rotation.y=0;   // the start screen: the box holds still
-    if(postit&&postit.parent===cur.group){ if(state==='idle'&&!reduceMotion){ const w=Math.sin(now*1.7)*0.6+Math.sin(now*2.9+1)*0.4, g=Math.max(0,Math.sin(now*0.9))**3; postit.rotation.x=-0.045*(0.4+0.6*g)*(0.6+0.4*w); postit.rotation.z=0.02*w*g; postit.rotation.y=-0.1+0.015*w; postit.wind=1; } else if(postit.wind){ postit.wind=0; postit.rotation.set(0,-0.1,0); } }   // the start screen: the note lifts a little in the breeze
+    if(postit&&postit.parent===cur.group){ const pa=postit.userData.pa, q=pa.geometry.attributes.position, hh=0.925;   // the start screen: the top edge stays stuck, the rest lifts and settles in the breeze
+      const A=state==='idle'&&!reduceMotion?0.05+0.045*Math.sin(now*1.6)+0.02*Math.sin(now*3.1+1):0;
+      if(A||postit.wind){ for(let i=0;i<q.count;i++){ const f=(hh-q.getY(i))/(2*hh); q.setZ(i,A*f*f); } q.needsUpdate=true; pa.geometry.computeBoundingSphere(); postit.wind=A?1:0; } }
     if(cur.jitter>0.0005){ cur.group.rotation.z=Math.sin(now*70)*cur.jitter; cur.jitter*=Math.exp(-dt*12); }
     else if(state!=='throwing') cur.group.rotation.z=0;
     if(state==='pick') cur.pick.position.y=cur.pick.userData.baseY+Math.sin(now*3)*0.004;
