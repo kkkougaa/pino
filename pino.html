@@ -1101,8 +1101,8 @@ body.paused :is(#cutin,#cutin *,#sus,#sus *,#patrol .nohand){animation-play-stat
 
 /* ---- start screen, pared down: logo, the box, modes and start; ranking behind a trophy, everything else in Settings ---- */
 #start #evTop,#tui .lead,#tui .hardnote{display:none!important}
-#start .setbtn{right:auto!important;left:16px}
-.rankico{position:fixed;left:60px;top:calc(env(safe-area-inset-top,0px) + 16px);z-index:3;width:36px;height:36px;padding:7px;border-radius:50%;border:2px solid #3A2416;background:#FFD23F;color:#3A2416;cursor:pointer;pointer-events:auto}
+#start .setbtn{right:16px!important}
+.rankico{position:fixed;right:60px;top:calc(env(safe-area-inset-top,0px) + 16px);z-index:3;width:36px;height:36px;padding:7px;border-radius:50%;border:2px solid #3A2416;background:#FFD23F;color:#3A2416;cursor:pointer;pointer-events:auto}
 .rankico[hidden]{display:none}
 .rankico svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .rankico i{position:absolute;right:-2px;top:-2px;width:10px;height:10px;border-radius:50%;background:#E5413A;border:2px solid #FFFBEF;display:none}
@@ -1144,7 +1144,7 @@ html[lang="ja"] .setlegal{word-break:normal;line-break:strict}
 @font-face{font-family:"NexonLv1";font-weight:700;font-display:swap;src:url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON%20Lv1%20Gothic%20OTF%20Bold.woff") format("woff")}
 @font-face{font-family:"Giants";font-weight:400;font-display:swap;src:url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/Giants-Regular.woff2") format("woff2")}
 @font-face{font-family:"Giants";font-weight:700;font-display:swap;src:url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/Giants-Bold.woff2") format("woff2")}
-.loccap{position:fixed;right:18px;display:flex;flex-direction:column;align-items:flex-end;text-align:right;top:calc(env(safe-area-inset-top,0px) + 18px);z-index:3;pointer-events:none;color:#FFFBEF;text-shadow:0 1px 3px rgba(26,14,8,.75)}
+.loccap{position:fixed;left:18px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;top:calc(env(safe-area-inset-top,0px) + 18px);z-index:3;pointer-events:none;color:#FFFBEF;text-shadow:0 1px 3px rgba(26,14,8,.75)}
 .loccap p{margin:0}
 .loccap .ld{display:block;width:max-content;letter-spacing:.06em;font:400 13px/1.3 "Giants",ui-monospace,monospace;opacity:.85;white-space:nowrap}
 
@@ -1350,7 +1350,7 @@ var I18N={
     say_C:'흥, 한두개쯤이야. 이번만 봐준다.',
     say_F:'뭐야, 먹긴 한 거냐?',
     lead:'코우가가 모아둔 피노를 몰래 훔쳐먹어요.', intro2:'많이 먹으면 코우가의 관심을 받을지도 몰라요.', intro2Rank:'1등은 좋은 일이 생길지도…',
-    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setLang:'언어', locPlace:'- 코우가의 집, 주방', locNote:'피노 6알, 아직 무사함', modeTap:'탭해서 변경', legalShort:'비공식 팬 게임', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tDraft:'시안 연출 (간발·안도)', tEgg:'이스터에그 보기', tEggGo:'보기', eggNames:'기본 (모찌 아이스)|붕어빵|가지|계란|생선뼈|타코야끼|새우튀김|포션|메론빵|포장 햄버거', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
+    pause:'일시정지', resume:'이어하기', bgmOn:'음악: 켜짐', bgmOff:'음악: 꺼짐', settings:'설정', setBgm:'배경음악', setSfx:'효과음', setVib:'진동', setLow:'저사양 모드', setLang:'언어', locPlace:'코우가의 집, 주방', locNote:'피노 6알, 아직 무사함', modeTap:'탭해서 변경', legalShort:'비공식 팬 게임', setTest:'테스트 (개발용)', tSuper:'초하드 열기', tAuto:'자동 플레이', tNm:'나이트메어 버튼', tCoach:'가이드 항상 켜기', tDraft:'시안 연출 (간발·안도)', tEgg:'이스터에그 보기', tEggGo:'보기', eggNames:'기본 (모찌 아이스)|붕어빵|가지|계란|생선뼈|타코야끼|새우튀김|포션|메론빵|포장 햄버거', on:'켜짐', off:'꺼짐', close:'닫기', restart:'처음부터',
     fx_miss:'MISS −1초', 
     ready:'준비~', go_:'START!', modeNormal:'연습', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
@@ -1408,7 +1408,7 @@ var I18N={
     say_C:'フン、1つや2つくらいどうってことねぇぜ。今回だけは見逃してやるぜ。',
     say_F:'なんだ、ほんとに食ったのか？',
     lead:'コウガがためこんだピノを、こっそりつまみ食いしよう。', intro2:'たくさん食べたら、コウガにかまってもらえるかも。', intro2Rank:'1位にはいいことがあるかも…',
-    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setLang:'言語', locPlace:'- コウガの家、キッチン', locNote:'ピノ6粒、まだ無事', modeTap:'タップで変更', legalShort:'非公式ファンゲーム', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tDraft:'試作演出', tEgg:'イースターエッグを見る', tEggGo:'見る', eggNames:'いつもの（もちアイス）|たい焼き|なす|たまご|魚の骨|たこ焼き|エビフライ|ポーション|メロンパン|包みバーガー', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
+    pause:'一時停止', resume:'つづける', bgmOn:'BGM：オン', bgmOff:'BGM：オフ', settings:'設定', setBgm:'BGM', setSfx:'効果音', setVib:'振動', setLow:'低スペックモード', setLang:'言語', locPlace:'コウガの家、キッチン', locNote:'ピノ6粒、まだ無事', modeTap:'タップで変更', legalShort:'非公式ファンゲーム', setTest:'テスト（開発用）', tSuper:'超ハード解放', tAuto:'オートプレイ', tNm:'ナイトメアボタン', tCoach:'ガイドを毎回表示', tDraft:'試作演出', tEgg:'イースターエッグを見る', tEggGo:'見る', eggNames:'いつもの（もちアイス）|たい焼き|なす|たまご|魚の骨|たこ焼き|エビフライ|ポーション|メロンパン|包みバーガー', on:'オン', off:'オフ', close:'閉じる', restart:'さいしょから',
     fx_miss:'MISS −1秒', 
     ready:'よーい…', go_:'START!', modeNormal:'練習', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
