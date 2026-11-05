@@ -1661,6 +1661,7 @@ const bgm=(()=>{
   function play(a,t,st){
     const bar=Math.floor(st/8)%16, s8=st%8, hard=mode!=='normal', E8=60/(mode==='rage'?120:112)/2;
     const m=MEL[bar][s8];
+    if(preNow&&preNow.m===mode&&a===ac){ if(m&&feverOn) bell(m+12,{bus,delay:at(a,t),vol:0.022,dur:0.6}); return; }   // the loop is playing from its pre-rendered buffer: only the fever bells are live
     if(m){ let rest=1; while(s8+rest<8&&!MEL[bar][s8+rest]) rest++;
       const dur=Math.min(0.75,E8*rest*0.95+0.06);
       if(!hard) fm(NOTE(m),{bus,delay:at(a,t),ratio:2,index:0.55,mdecay:0.09,dur,vol:0.065,send:0.35});
@@ -1733,20 +1734,45 @@ const bgm=(()=>{
     // stab chords on the off-beats in the build
     if(build&&(s16===2||s16===10)) [r+12,r+15,r+19].forEach(m=>fm(NOTE(m),{bus:sc,delay:at(a,t),ratio:1,index:2,mdecay:0.06,dur:0.12,vol:0.022,send:0.2}));
   }
+  // the synth tune is rendered once, offline, into a seamless loop and played back as a buffer:
+  // scheduling dozens of notes a second live made the phone's audio stutter (ticks) whenever the 3D scene was busy
+  const PRE={}, PRE_BUSY={}; let preNow=null; const LOOP=128, E8P=60/112/2;
+  function prerender(m){ const OAC=window.OfflineAudioContext||window.webkitOfflineAudioContext; if(PRE[m]||PRE_BUSY[m]||!OAC||!ac||m==='rage') return; PRE_BUSY[m]=true;
+    const sr=ac.sampleRate, L=E8P*LOOP, N=Math.round(L*sr), T=Math.round(1.6*sr); let off;
+    try{ off=new OAC(2,N+T,sr); }catch(e){ PRE_BUSY[m]=false; return; }
+    const keep={ac,BUS,bus,lp,mode,feverOn};
+    try{
+      const dry=off.createGain(), wet=off.createGain(), room=off.createConvolver(), hp=off.createBiquadFilter(), wl=off.createBiquadFilter(), wv=off.createGain();
+      wet.gain.value=0.16; room.buffer=makeRoom(off,1.0,3.2); hp.type='highpass'; hp.frequency.value=260; wl.type='lowpass'; wl.frequency.value=6000; wv.gain.value=1/VOL[m];   // the per-note sends bypass the music bus live, so scale them back here
+      dry.connect(off.destination); wet.connect(hp); hp.connect(room); room.connect(wl); wl.connect(wv); wv.connect(off.destination);
+      ac=off; BUS={dry,wet}; bus=off.createGain(); bus.connect(off.destination); lp=null; mode=m; feverOn=false;
+      for(let st=0;st<LOOP;st++) play(off,st*E8P+(st%2?E8P*0.17:0),st);
+    }catch(e){ PRE_BUSY[m]=false; off=null; }
+    finally{ ac=keep.ac; BUS=keep.BUS; bus=keep.bus; lp=keep.lp; mode=keep.mode; feverOn=keep.feverOn; }
+    if(!off) return;
+    off.startRendering().then(buf=>{ PRE_BUSY[m]=false; if(!ac) return;
+      const out=ac.createBuffer(2,N,sr);
+      for(let c=0;c<2;c++){ const d=buf.getChannelData(c), o=out.getChannelData(c); o.set(d.subarray(0,N)); for(let i=0;i<T;i++) o[i]+=d[N+i]; }   // the tail that rings past the end folds onto the start: a seamless loop
+      PRE[m]=out; }).catch(()=>{ PRE_BUSY[m]=false; }); }
+  function startPre(a,t,ofs){ const buf=PRE[mode]; if(!buf||!bus) return; dropPre(0.05,t);
+    const src=a.createBufferSource(), g=a.createGain(); src.buffer=buf; src.loop=true; g.gain.value=1; src.connect(g); g.connect(bus); src.start(Math.max(a.currentTime,t),ofs||0); preNow={src,g,m:mode}; }
+  function dropPre(fade,at0){ const a=ac, f=preNow; if(!a||!f) return; preNow=null; const t=Math.max(a.currentTime,at0||0); try{ f.g.gain.setValueAtTime(1,t); f.g.gain.linearRampToValueAtTime(0.0001,t+(fade||0.3)); f.src.stop(t+(fade||0.3)+0.05); }catch(e){} }
   function tick(){ const a=ac; if(!a||!running) return;
     while(nextT<a.currentTime+0.15){ if(mode==='rage'){ const E16=60/165/4; if(on&&!fileNow) playRage(a,nextT,step); step++; nextT+=E16; }
-      else { const E8=60/112/2; if(on) play(a,nextT+(step%2?E8*0.17:0),step); step++; nextT+=E8; } } }
+      else { const E8=60/112/2; if(step%8===0&&(!preNow||preNow.m!==mode)){ if(PRE[mode]) startPre(a,nextT,(step%LOOP)*E8P); else prerender(mode); }   // hand over to the buffer at the next bar, from the same spot in the loop
+        if(on) play(a,nextT+(step%2?E8*0.17:0),step); step++; nextT+=E8; } } }
   return {
-    start(m){ const a=ensure(); if(!a) return; mode=m||'normal'; step=0; nextT=a.currentTime+0.06; running=true; duckLv=1; nmOn=false; level(a,0.15);
+    start(m){ const a=ensure(); if(!a) return; dropPre(0.15); mode=m||'normal'; step=0; nextT=a.currentTime+0.06; running=true; duckLv=1; nmOn=false; level(a,0.15);
       if(mode==='rage') { if(!playFile('rage')) dropFile(fileNow,0.3); } else dropFile(fileNow,0.3);
       clearInterval(timer); timer=setInterval(tick,25); tick(); },
     play(m){ if(running&&mode===m) return; this.start(m); },
     get playing(){ return running; },
+    get pre(){ return preNow?preNow.m:null; },
     state(){ return {running,mode,nmOn}; },
-    reset(){ clearInterval(timer); timer=0; running=false; bus=null; lp=null; sc=null; fileNow=null; },   // the context is gone: forget its nodes
+    reset(){ clearInterval(timer); timer=0; running=false; bus=null; lp=null; sc=null; fileNow=null; preNow=null; },   // the context is gone: forget its nodes
     resumeFrom(st){ this.start(st.mode); if(st.nmOn) this.nightmare(); },
-    stop(fade){ if(!ac||!bus) return; running=false; dropFile(fileNow,fade||0.3); level(ac,fade||0.3); clearInterval(timer); timer=0; },
-    setMode(m){ if(!ac||!bus) return; const was=mode; mode=m; if(m==='rage'&&was!=='rage'&&running){ step=0; nextT=ac.currentTime+0.6; playFile('rage',0.8); } if(m!=='rage') dropFile(fileNow,0.4); level(ac,0.4); },
+    stop(fade){ if(!ac||!bus) return; running=false; dropFile(fileNow,fade||0.3); dropPre(fade||0.3); level(ac,fade||0.3); clearInterval(timer); timer=0; },
+    setMode(m){ if(!ac||!bus) return; const was=mode; mode=m; if(m==='rage'&&was!=='rage'&&running){ step=0; nextT=ac.currentTime+0.6; playFile('rage',0.8); } if(m!=='rage') dropFile(fileNow,0.4); if(m==='rage') dropPre(0.8); level(ac,0.4); },
     nightmare(){ nmOn=true; if(running&&mode==='rage') playFile('nightmare',2.2); },   // a 2.2 s crossfade into the nightmare track
     get file(){ return fileNow?fileNow.key:null; },
     refresh(){ if(running&&mode==='rage') playFile(nmOn&&CBGM.nightmare?'nightmare':'rage',1.2); },
