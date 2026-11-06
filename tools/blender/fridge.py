@@ -43,30 +43,31 @@ inter('Bin',(cav_w-0.1,cav_d-0.2,hh),(0,yb+0.02+(cav_d-0.2)/2+0.05,zz+hh/2),M_BI
 ins=box('BinIn',(cav_w-0.12,cav_d-0.22,hh-0.02),(0,yb+0.02+(cav_d-0.2)/2+0.05,zz+hh/2+0.02),M_IN,0.01,2); ins.parent=body
 # --- frost: lumps and drifts on the back wall, the ceiling, the corners and the floor edge; icicles under the shelf
 xl,xr=-cav_w/2+0.01,cav_w/2-0.01; yback=-D/2+cav_d
-M_FROST2=mat('Rime',(0.90,0.95,0.99),0.9)
-def patch(x,y,z,rx,rz,axis):   # a thin, flat frost patch lying on a wall (axis: the wall's normal)
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=9,ring_count=5,location=(x,y,z)); o=bpy.context.active_object
-    if axis=='y': o.scale=(rx,0.0022,rz)
-    elif axis=='x': o.scale=(0.0022,rx,rz)
-    else: o.scale=(rx,rz,0.0022)
-    bpy.ops.object.transform_apply(scale=True); return o
-ps=[]
-for i in range(26): ps.append(patch(random.uniform(xl+0.05,xr-0.05),yback-0.001,random.uniform(zb+0.05,zt-0.05),random.uniform(0.025,0.075),random.uniform(0.02,0.06),'y'))
-for sx in (xl,xr):
-    for i in range(9): ps.append(patch(sx+(0.001 if sx<0 else -0.001),random.uniform(-D/2+0.12,yback-0.05),random.uniform(zb+0.05,zt-0.05),random.uniform(0.03,0.07),random.uniform(0.02,0.05),'x'))
-for i in range(10): ps.append(patch(random.uniform(xl+0.05,xr-0.05),random.uniform(-D/2+0.12,yback-0.05),zt-0.001,random.uniform(0.03,0.07),random.uniform(0.03,0.07),'z'))
-for nm,sz,lc in (('RimTop',(cav_w-0.02,0.03,0.022),(0,yback-0.014,zt-0.011)),('RimL',(0.024,0.03,cav_h-0.02),(xl+0.012,yback-0.014,(zt+zb)/2)),('RimR',(0.024,0.03,cav_h-0.02),(xr-0.012,yback-0.014,(zt+zb)/2)),('RimBack',(cav_w-0.02,0.03,0.02),(0,yback-0.014,zb+0.01))):
-    r=box(nm,sz,lc,M_FROST,0.01,2); ps.append(r)
+lumps=[]
+def lump(x,y,z,sx,sy,sz):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=7,ring_count=4,location=(x,y,z)); o=bpy.context.active_object; o.scale=(sx,sy,sz)
+    o.rotation_euler=(random.uniform(0,3),random.uniform(0,3),random.uniform(0,3)); lumps.append(o)
+for i in range(46):   # the back wall
+    lump(random.uniform(xl+0.03,xr-0.03),yback-0.004,random.uniform(zb+0.03,zt-0.03),random.uniform(0.018,0.05),random.uniform(0.008,0.016),random.uniform(0.014,0.04))
+for i in range(22):   # the ceiling
+    lump(random.uniform(xl+0.03,xr-0.03),random.uniform(-D/2+0.1,yback-0.03),zt-0.006,random.uniform(0.02,0.05),random.uniform(0.02,0.045),random.uniform(0.008,0.016))
+for sx in (xl,xr):    # the side walls
+    for i in range(16):
+        lump(sx+(0.004 if sx<0 else -0.004),random.uniform(-D/2+0.1,yback-0.03),random.uniform(zb+0.03,zt-0.03),random.uniform(0.008,0.016),random.uniform(0.02,0.05),random.uniform(0.014,0.04))
+for i in range(14):   # a thick drift along the floor's back edge and the floor itself
+    lump(random.uniform(xl+0.04,xr-0.04),yback-0.02,zb+0.01,random.uniform(0.03,0.06),random.uniform(0.02,0.04),random.uniform(0.012,0.024))
+for i in range(10):
+    lump(random.choice((xl+0.03,xr-0.03))+random.uniform(-0.01,0.01),random.uniform(-D/2+0.15,yback-0.05),zb+0.008,random.uniform(0.02,0.04),random.uniform(0.02,0.04),random.uniform(0.008,0.014))
 bpy.ops.object.select_all(action='DESELECT')
-for o in ps: o.select_set(True)
-bpy.context.view_layer.objects.active=ps[0]; bpy.ops.object.join(); fr=bpy.context.active_object; fr.name='Frost'; bpy.ops.object.transform_apply(location=True,rotation=True,scale=True); fr.data.materials.clear(); fr.data.materials.append(M_FROST2); fr.parent=body; bpy.ops.object.shade_smooth()
+for o in lumps: o.select_set(True)
+bpy.context.view_layer.objects.active=lumps[0]; bpy.ops.object.join(); fr=bpy.context.active_object; fr.name='Frost'; bpy.ops.object.transform_apply(location=True,rotation=True,scale=True); fr.data.materials.append(M_FROST); fr.parent=body; bpy.ops.object.shade_smooth()
 ics=[]
-for i in range(7):    # a few fine icicles under the shelf and along the ceiling
-    h=random.uniform(0.025,0.055); x=random.uniform(xl+0.06,xr-0.06); y=random.uniform(-D/2+0.15,yback-0.06); z=(zb+cav_h*0.66-0.005) if i<4 else zt-0.01
-    bpy.ops.mesh.primitive_cone_add(vertices=5,radius1=random.uniform(0.005,0.009),depth=h,location=(x,y,z-h/2)); c=bpy.context.active_object; c.rotation_euler=(math.pi,0,0); ics.append(c)
+for i in range(9):    # icicles
+    h=random.uniform(0.03,0.07); x=random.uniform(xl+0.05,xr-0.05); y=random.uniform(-D/2+0.12,yback-0.05); z=zb+cav_h*0.66-0.005
+    bpy.ops.mesh.primitive_cone_add(vertices=5,radius1=random.uniform(0.008,0.014),depth=h,location=(x,y,z-h/2)); c=bpy.context.active_object; c.rotation_euler=(math.pi,0,0); ics.append(c)
 bpy.ops.object.select_all(action='DESELECT')
 for o in ics: o.select_set(True)
-bpy.context.view_layer.objects.active=ics[0]; bpy.ops.object.join(); ic=bpy.context.active_object; ic.name='Icicles'; bpy.ops.object.transform_apply(location=True,rotation=True,scale=True); ic.data.materials.append(M_FROST2); ic.parent=body; bpy.ops.object.shade_smooth()
+bpy.context.view_layer.objects.active=ics[0]; bpy.ops.object.join(); ic=bpy.context.active_object; ic.name='Icicles'; bpy.ops.object.transform_apply(location=True,rotation=True,scale=True); ic.data.materials.append(M_FROST); ic.parent=body; bpy.ops.object.shade_smooth()
 # some frosted boxes in the upper bin, for scale
 for i,(bx,by,bz) in enumerate(((-0.17,0.05,0.07),(0.12,0.02,0.06))):
     pk=box('Pack%d'%i,(0.16,0.12,0.06),(bx,yb+0.02+(cav_d-0.2)/2+0.05+by,zz+0.02+0.03+bz*0.2),M_FROST,0.008,2); pk.parent=body
