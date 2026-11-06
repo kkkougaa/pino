@@ -4208,10 +4208,7 @@ function updateShareLink(){
   const text=TX('shareText')(totalEaten,boxesDone)+'\n'+TX('shareTag'), url=shareUrl();
   $('shareX').href='https://x.com/intent/tweet?text='+encodeURIComponent(text)+(url?'&url='+encodeURIComponent(url):'');
 }
-let DLS; const dlsReady=(window.claude&&window.claude.use)?window.claude.use('downloads').then(d=>DLS=d).catch(()=>DLS=null):Promise.resolve(DLS=undefined);
-async function saveFile(f){ await dlsReady;
-  if(DLS){ try{ await DLS.save({filename:f.name,data:f}); return true; }catch(e){ return false; } }
-  if(DLS===null) return false;
+async function saveFile(f){
   const a=document.createElement('a'); a.href=URL.createObjectURL(f); a.download=f.name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },4000); return true; }
 $('saveImg').addEventListener('click',async()=>{ const f=shareFile||await makeShareImage().catch(()=>null); if(f) saveFile(f); });
 $('shareX').addEventListener('click',e=>{
