@@ -30,60 +30,72 @@ def lay(*xs):
     return sum(np.pad(x, (0, n - len(x))) for x in xs)
 
 
+P = 'The Black Pearl 1.0/'
+H = 'HardElectro1/'
+
+
 def k_light():
-    return bq(lay(hit(E + 'Kick_Lite_2') * 0.9, hit(V + 'Kick 1', 1.1) * 0.45), 'hp', 35)
+    return bq(lay(hit(P + 'PearlKick-Hard', 1.1) * 0.9, hit(E + 'Kick_Lite_2') * 0.7, hit(V + 'Kick 1', 1.1) * 0.4), 'hp', 35)
 
 
 def k_soft():
-    return bq(hit(E + 'Kick_Low_1'), 'lp', 1800) * 0.9
+    return lay(hit(P + 'PearlKick-Med') * 0.9, bq(hit(E + 'Kick_Low_1'), 'lp', 1800) * 0.6)
 
 
 def k_heavy():
-    return sat(lay(hit(V + 'Kick 2', 1.05) * 0.9, hit(E + 'Kick_Hard_2') * 0.6), 1.6) * 0.9
+    return sat(lay(hit(P + 'PearlKick-Hardest') * 0.9, hit(V + 'Kick 2', 1.05) * 0.7, hit(H + 'HardHse_K_02') * 0.4), 1.8) * 0.9
 
 
 KICKS = {'light': k_light, 'soft': k_soft, 'heavy': k_heavy}
 
 
-def sn(p=1.1, big=True):
-    a = hit(V + 'Snare 2', p, jit=0.01)
+def sn(p=1.18, big=True):
+    """Acoustic rimshot pitched up like a sped-up break, with an electronic crack on top."""
     if big:
-        b = hit(V + 'Snare 3', p * 0.97)
-        n = max(len(a), len(b))
-        a = np.pad(a, (0, n - len(a))) + 0.55 * np.pad(b, (0, n - len(b)))
-    return a * 0.8
+        return sat(lay(hit(P + 'PearlSnareRimshot-Hardest', p, dec=0.16, jit=0.01), hit(V + 'Snare 2', p * 0.95) * 0.6,
+                       hit(H + 'PowR_SN_1', 1.0) * 0.35), 1.4) * 0.9
+    return lay(hit(P + 'PearlSnareRimshot-Hard', p, dec=0.13, jit=0.01), hit(V + 'Snare 2', p) * 0.4) * 0.85
 
 
 def gs(p=1.25):
-    return hit(V + 'Snare 1', p, dec=0.05, jit=0.03) * 0.7
+    return hit(P + ('PearlSnare-Soft' if rng.random() < 0.6 else 'PearlSnare-Med'), p, dec=0.06, jit=0.03) * 1.1
 
 
 def hc():
-    return hit(V + ('Hat 1 Cl' if rng.random() < 0.7 else 'Hat 3 Cl'), 1.0, dec=0.035, jit=0.03)
+    return hit(P + ('SabianHatClosed-Hard' if rng.random() < 0.5 else 'SabianHatClosed-Med'), 1.1, dec=0.05, jit=0.03) * 1.3
 
 
-def oh(dec=0.09):
-    return hit(V + 'Hat 1 Op', 1.0, dec=dec)
+def oh(dec=0.1):
+    return hit(P + 'SabianHatSemiOpen-Hard', 1.05, dec=dec) * 1.2
+
+
+def rd():
+    return hit(P + 'PaisteRide-Med', 1.0, dec=0.3)
+
+
+def crash():
+    return hit(P + 'SabianCrash-Hard', 1.0, dec=0.9)
 
 
 def rimc(p=1.0):
-    return hit(V + 'Click', p) * 1.6
+    return hit(P + 'PearlSideStick-Hard', p) * 1.2
 
 
 def tck(p=1.4):
     return hit(E + 'Click', p, jit=0.02) * 0.5
 
 
-def brk(m, bar, kinds, hats="x.x-x.xox.x-x.xo", kg=1.0, sg=0.8, hg=0.22, rd=False, sf=1.1, kp='heavy', big=True):
+def brk(m, bar, kinds, hats="x-xox-xox-xox-xo", kg=1.0, sg=0.9, hg=0.3, ride=False, sf=1.18, kp='heavy', big=True):
     kt = []
     for i, k in enumerate(kinds):
         K, S, G = BRK[k]
         kt += m.D('kick', bar + i, K, KICKS[kp], kg)
         m.D('snare', bar + i, S, sn, sg, p=sf, big=big)
-        m.D('snare', bar + i, G, gs, sg * 0.8, p=sf * 1.15)
-        m.D('hat', bar + i, hats, hc, hg * 2.2, pan=0.25)
-        if rd:
-            m.D('hat', bar + i, "..x...x...x...x.", oh, hg * 1.6, pan=-0.3)
+        m.D('snare', bar + i, G.replace('o', '-'), gs, sg * 0.75, p=sf * 1.08)
+        m.D('hat', bar + i, hats, hc, hg, pan=0.25)
+        m.D('hat', bar + i, "..x...x...x...x.", oh, hg * 0.8, pan=-0.3)
+        if ride:
+            m.D('hat', bar + i, "x...x...x...x...", rd, hg * 0.8, pan=0.4)
     return kt
 
 
@@ -111,7 +123,8 @@ def mute(m, spans, fade=0.004):
 
 
 def drumbus(x, drive=1.4, room=0.1, thr=-14, ratio=3, t60=0.35):
-    x = comp(sat(x * 0.9, drive), thr, ratio, 0.004, 0.09, 1.2)
+    x = norm(x, -14)
+    x = comp(sat(x * 1.6, drive), thr, ratio, 0.006, 0.09, 1.2) + 0.5 * comp(x, -30, 8, 0.001, 0.06, 4.0)
     return rev(x, t60, room, 0.005, 400, 9000, seed=3)
 
 
@@ -143,6 +156,16 @@ COMP = {
     'super': ([0, 3, 6, 9, 12, 14], [0, 3, 6, 10, 13]),
     'nightmare': ([3, 6, 12], [3, 9, 12, 14]),
 }
+
+
+def ratio(stem, y):
+    """Print how loud the drum bus is against everything else (BGM_DEBUG=1)."""
+    import os
+    if os.environ.get('BGM_DEBUG'):
+        d = stem['d']
+        r = y - d
+        f = lambda x: 20 * np.log10(np.sqrt((x ** 2).mean()) + 1e-9)
+        print(f"   drums {f(d):.1f} dB, rest {f(r):.1f} dB, drums-rest {f(d) - f(r):+.1f} dB")
 
 
 EP = lambda q, n: soundfont(0, 4, q, n)
@@ -261,22 +284,23 @@ def build(c, mood):
             kinds = c.get('dn', "TUTVTUTF" + "UJUVUJUF" + "HHHF")[b - 4]
             if garage:
                 kinds = "GGGFGGGF" [(b - 4) % 8] if sec != 'out' else "HHHF"[q]
-            kt += brk(m, b, kinds, kg=0.9, sg=0.75, hg=0.2, sf=1.18, kp='light', big=False, rd=sec == 'B')
+            kt += brk(m, b, kinds, kg=0.9, sg=0.75, hg=0.2, sf=1.18, kp='light', big=False, ride=sec == 'B')
             if garage:
                 m.D('rim', b, "..x......x......", rimc, 0.6, pan=-0.3)
         elif mood == 'hard':
             hole = sec == 'A' and b == 11
-            kt += m.D('kick', b, "x.........x." if hole else ("x.....x........." if sec == 'out' else "x.........x....."), k_soft, 0.9)
-            m.D('rim', b, "....x......." if hole else ("........x......." if sec == 'out' else "....x.......x..."), rimc, 0.9)
             m.D('tick', b, "xxxxxxxxxxxx" if hole else "xxxxxxxxxxxxxxxx", tck, 0.5, pan=0.3 if b % 2 else -0.3)
-            if not hole:
-                m.D('snare', b, ".......o.o.....o" if q != 3 else ".......o.o..o.oo", gs, 0.9)
-            if sec == 'B':
-                m.D('hat', b, "..x...x...x...x.", oh, 0.3, dec=0.06, pan=-0.2)
-                m.D('snare', b, "....x.......x...", sn, 0.4, p=1.15, big=False)
             if hole:
+                kt += m.D('kick', b, "x.........x.", k_soft, 0.9)
+                m.D('snare', b, "....x.......", sn, 0.7, p=1.08, big=False)
                 heart(m, 'kick', b, 12, 1.0, 2)
                 holes.append((b, 12, 16))
+            else:
+                kinds = "HHHF"[q] if sec == 'out' else ("TUTVTUTF" if sec == 'A' else "UJUVUJUF")[(b - 4) % 8]
+                if garage and sec != 'out':
+                    kinds = "GGGFGGGF"[(b - 4) % 8]
+                kt += brk(m, b, kinds, hats="x.x-x.xox.x-x.xo", kg=0.95, sg=0.7, hg=0.2, sf=1.08, kp='soft', big=False)
+                m.D('rim', b, "..x......x......" if q % 2 == 0 else ".....x.....x....", rimc, 0.5, pan=-0.3)
             if q == 0:
                 heart(m, 'tick', b, 0, 0.5, 4)
         elif mood == 'super':
@@ -284,7 +308,7 @@ def build(c, mood):
                 kinds = "HHAC"[q]
             else:
                 kinds = ("ABACABAC" if sec == 'A' else "UBUCUBAC")[(b - 4) % 8]
-            kt += brk(m, b, kinds, hats="x.xox.xox.xox.xo" if sec == 'A' else "xoxoxoxoxoxoxoxo", rd=sec == 'B', sf=1.1)
+            kt += brk(m, b, kinds, hats="x.xox.xox.xox.xo" if sec == 'A' else "xoxoxoxoxoxoxoxo", ride=sec == 'B', sf=1.1)
             if b in (11, 19):
                 roll(m, b, 12, 4, 2, 0.3, 0.9)
         else:
@@ -306,11 +330,13 @@ def build(c, mood):
                 roll(m, b, 0, 16, 1 if b == 22 else 2, 0.12 if b == 22 else 0.5, 0.5 if b == 22 else 1.0)
             else:
                 kinds = "HH"[q] if sec == 'out' else "UBUC"[q]
-                kt += brk(m, b, kinds, hats="xoxoxoxoxoxoxoxo", rd=sec == 'B', sf=1.04)
+                kt += brk(m, b, kinds, hats="xoxoxoxoxoxoxoxo", ride=sec == 'B', sf=1.04)
                 if sec == 'B' and q % 2:
                     for i in range(8):
                         m.add('hat', m.bt(b, 12 + i * 0.5), hc(), 0.3, 0.4)
     # ---- one-shots and long layers
+    for b_ in (4, 12, 20):
+        m.add('hat', m.bt(b_, 0), crash(), 0.5 if mood != 'hard' else 0.25, -0.2)
     m.add('fx', m.bt(2, 0), riser(m.sl * 32, 300, 9000), 0.9 if heavy else 0.6)
     m.add('fx', m.bt(19, 0), riser(m.sl * 16, 500, 9000), 0.6)
     if heavy:
@@ -337,26 +363,34 @@ def build(c, mood):
     stab_ = m.part('stab', Z('Rhodes/0008-Synth Rhodes1'), -21) if heavy else 0
     # ---- mix
     hole = mute(m, holes) if holes else 1.0
+    stem = {}
+
+    def DR(x):
+        stem['d'] = x
+        return x
     dk = duck(m.n, kt, {'normal': 0.4, 'hard': 0.45, 'super': 0.5, 'nightmare': 0.5}[mood], 0.07)
     dr = m.get('kick') * 0.95 + m.get('snare') * 0.9 + m.get('hat') + m.get('rim') * 0.8
     d3 = m.sl * 3
     fx = norm(m.get('fx'), -22)
     low = bq(bassz, 'hp', 110) + norm(m.get('sub'), -19) if not heavy else norm(m.get('reese'), -16) + bq(bassz, 'hp', 150)
     if mood == 'normal':
-        y = (norm(drumbus(dr, 1.3, 0.08), -15) + low * dk + wide(rev(comp_ * dk, 1.0, 0.2))
+        y = (DR(norm(drumbus(dr, 1.3, 0.08), -10.5)) + low * dk + wide(rev(comp_ * dk, 1.0, 0.2))
              + pan(rev(delay(hook, d3, 0.35, 0.2), 1.2, 0.16), -0.08) + pan(rev(delay(bell_, d3, 0.3, 0.2), 1.8, 0.3), 0.2)
              + rev(pad_ * dk, 1.8, 0.3) + fx)
+        ratio(stem, y)
         return master(y, -13, 1.15, m.body)
     if mood == 'hard':
-        y = (norm(drumbus(dr, 1.2, 0.12, t60=0.6), -17) + bq(low, 'lp', 900) * dk * hole + wide(rev(bq(comp_, 'lp', 2200) * 0.7 * dk, 1.8, 0.3)) * hole
+        y = (DR(norm(drumbus(dr, 1.2, 0.14, t60=0.6), -11.5)) + bq(low, 'lp', 900) * dk * hole + wide(rev(bq(comp_, 'lp', 2200) * 0.7 * dk, 1.8, 0.3)) * hole
              + rev(delay(bq(hook, 'lp', 3500), d3, 0.45, 0.32, lp=2400), 1.6, 0.22) * hole + rev(delay(bell_, d3, 0.4, 0.3), 2.2, 0.4) * 0.8 * hole
              + rev(pad_ * dk, 2.2, 0.35) * 1.2 * hole + norm(m.get('tens'), -29) * hole
              + norm(rev(m.get('tick'), 1.0, 0.25), -27) + fx)
+        ratio(stem, y)
         return master(shelf(y, 5000, -2), -14, 1.05, m.body)
-    y = (norm(drumbus(dr, 1.7 if mood == 'super' else 2.0, 0.1, -16, 4), -13) + low * dk * hole
+    y = (DR(norm(drumbus(dr, 1.7 if mood == 'super' else 2.0, 0.1, -16, 4), -9)) + low * dk * hole
          + wide(rev(comp_ * dk, 0.9, 0.18)) * hole + rev(stab_ * dk, 1.0, 0.22) * hole
          + rev(delay(hook + hook2, d3, 0.35, 0.22), 1.1, 0.16) * dk * hole + rev(delay(bell_, d3, 0.45, 0.35), 1.6, 0.3) * hole
          + (norm(m.get('tens'), -26) * dk * hole if dark else 0) + (norm(rev(m.get('tick'), 1.2, 0.3), -22) if dark else 0) + rev(fx, 1.5, 0.3))
+    ratio(stem, y)
     return master(y, -10.5 if mood == 'super' else -10, 1.5 if mood == 'super' else 1.6, m.body)
 
 

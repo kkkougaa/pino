@@ -18,8 +18,12 @@ _hits = {}
 def hit(name, pitch=1.0, dec=None, jit=0.0):
     """One drum sample as mono, optionally repitched and shortened."""
     if name not in _hits:
-        x, sr = sf.read(KITS + name + '.flac')
-        _hits[name] = x.mean(1) if x.ndim == 2 else x
+        fn = KITS + name + ('.flac' if os.path.exists(KITS + name + '.flac') else '.wav')
+        x, sr = sf.read(fn)
+        x = x.mean(1) if x.ndim == 2 else x
+        if sr != SR:
+            x = np.interp(np.arange(0, len(x) - 1, sr / SR), np.arange(len(x)), x)
+        _hits[name] = x
     x = _hits[name]
     import engine
     p = pitch * (1 + jit * (engine.rng.random() * 2 - 1))
