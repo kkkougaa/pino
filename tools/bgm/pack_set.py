@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Packs four seamless loop WAVs into a BGM_SETS entry for pino.html.
    usage: pack_set.py <n> normal.wav hard.wav rage.wav nightmare.wav > entry.txt
+   <n> is the set number shown in settings; 2 is taken by the built-in music (BGM_BUILTIN), so new sets start at 3.
    Each file gets LEAD seconds of wrap-around audio before and after the loop, so the game can loop any
    `len`-second window without depending on the MP3 encoder's padding. Paste the printed line into BGM_SETS."""
 import sys, wave, subprocess, base64, tempfile, os
