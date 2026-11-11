@@ -54,6 +54,14 @@ function kit(C,opt){
     bass(t,m,dur,vol,o){ o=o||{}; const f=NOTE(m), g=G(0), end=adsr(g,t,0.005,o.dec||0.22,o.sus==null?0.55:o.sus,dur,0.06,vol), F=lp24(t,f*(o.cut||7),f*(o.cutEnd||1.8),o.fdec||0.14,o.q||3.5), dr=C.createWaveShaper(), hp=C.createBiquadFilter();
       dr.curve=curve(o.drive||1.4); hp.type='highpass'; hp.frequency.value=34;
       const a=osc('sawtooth',f,0,t,end), b=osc('square',f/2,0,t,end), bg=G(0.5), ag=G(0.5); a.connect(ag); b.connect(bg); ag.connect(F.in); bg.connect(F.in); F.out.connect(dr); dr.connect(g); g.connect(hp); route(hp,{rev:0.02}); },
+    // reese: three detuned saws through a moving low-pass and drive, over a clean sub
+    reese(t,m,dur,vol,o){ o=o||{}; const f=NOTE(m), g=G(0), end=adsr(g,t,0.008,0.08,0.85,dur,0.05,vol), F=lp24(t,o.cut||1100,o.cutEnd||520,Math.max(0.08,dur),2.6), dr=C.createWaveShaper(), hp=C.createBiquadFilter();
+      dr.curve=curve(o.drive||2.6); hp.type='highpass'; hp.frequency.value=42;
+      [-23,0,19].forEach(dt=>{ const x=osc('sawtooth',f*2,dt,t,end), xg=G(0.33); if(o.glide){ x.frequency.setValueAtTime(NOTE(o.glide)*2,t); x.frequency.exponentialRampToValueAtTime(f*2,t+0.06); } x.connect(xg); xg.connect(F.in); });
+      F.out.connect(dr); dr.connect(g); g.connect(hp); route(hp,{pan:0});
+      const sg=G(0), se=adsr(sg,t,0.008,0.08,0.9,dur,0.05,vol*0.9); osc('sine',f,0,t,se).connect(sg); route(sg,{}); },
+    boom(t,vol){ const x=C.createOscillator(), g=G(0); x.frequency.setValueAtTime(120,t); x.frequency.exponentialRampToValueAtTime(30,t+0.5); x.start(t); x.stop(t+1.7); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+1.6); x.connect(g); route(g,{bus:'drums',rev:0.4});
+      const n=nz(t,1.2), lp=C.createBiquadFilter(), ng=G(0); lp.type='lowpass'; lp.frequency.setValueAtTime(3000,t); lp.frequency.exponentialRampToValueAtTime(200,t+1); ng.gain.setValueAtTime(vol*0.5,t); ng.gain.exponentialRampToValueAtTime(0.0001,t+1.1); n.connect(lp); lp.connect(ng); route(ng,{bus:'drums',rev:0.6}); },
     sub(t,m,dur,vol){ const g=G(0), end=adsr(g,t,0.02,0.1,0.9,dur,0.08,vol); osc('sine',NOTE(m),0,t,end).connect(g); route(g,{}); },
     // supersaw lead with vibrato
     lead(t,m,dur,vol,o){ o=o||{}; const f=NOTE(m), l=osc('sine',5.8,0,t,t+dur+0.4), lg=G(0); lg.gain.setValueAtTime(0,t+0.12); lg.gain.linearRampToValueAtTime(f*0.011,t+0.3); l.connect(lg);
@@ -184,5 +192,9 @@ async function compose(kind){
   const buf=await C.startRendering(), ch=[0,1].map(c=>{ const d=buf.getChannelData(c), o=new Float32Array(N); o.set(d.subarray(0,N)); for(let i=0;i<TAIL;i++) o[i]+=d[N+i]; return o; });
   return {sr:SR,length:N,seconds:L,ch};
 }
-root.PinoBGM={compose};
+// renders a list of [instrument, time, ...args] events (used by v4.py for the synth stem); returns the un-folded buffer
+async function renderEvents(ev,seconds,opt){ opt=opt||{}; seed=opt.seed||3; const N=Math.round(seconds*SR), TAIL=Math.round(3*SR), C=new OfflineAudioContext(2,N+TAIL,SR), K=kit(C,opt), kicks=[];
+  ev.forEach(e=>{ if(e[0]==='duckAt') kicks.push(e[1]); else K[e[0]].apply(K,e.slice(1)); }); if(kicks.length) K.duck(kicks,opt.duck||0.6,opt.duckRel||0.13);
+  const buf=await C.startRendering(); return {sr:SR,length:N+TAIL,ch:[buf.getChannelData(0),buf.getChannelData(1)]}; }
+root.PinoBGM={compose,renderEvents};
 })(typeof window!=='undefined'?window:globalThis);
