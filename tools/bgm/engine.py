@@ -322,6 +322,22 @@ def epiano(m, dur, bright=1.0, **_):
     return out * 0.4
 
 
+def keys(m, dur, bright=1.0, **_):
+    """Electric piano, two slightly detuned voices left and right."""
+    n = int((dur + 0.3) * SR)
+    t = tarr(n)
+    out = np.zeros((2, n))
+    for mm in m:
+        f0 = mtof(mm)
+        for ch, dt in ((0, -4), (1, 4)):
+            f = f0 * 2 ** (dt / 1200)
+            I = 2.0 * bright * np.exp(-t / 0.16) + 0.35 * bright
+            y = np.sin(TAU * f * t + I * np.sin(TAU * f * t)) * np.exp(-t / 0.9)
+            y += 0.12 * bright * np.sin(TAU * f * 4 * t) * np.exp(-t / 0.03)
+            out[ch] += y
+    return out * gate(n, dur, 0.002, 0.25) * 0.3
+
+
 def bell(m, dur, ratio=3.5, idx=2.0, dec=0.8, **_):
     out = 0
     for mm in m:

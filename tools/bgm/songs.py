@@ -1,58 +1,40 @@
-"""Twelve BGM sketches for Pino: three per difficulty. Run make.py to render."""
+"""Pino BGM: six compositions, each rendered in two moods.
+
+normal_N and hard_N share a composition (hard is the toned-down, tenser take);
+super_N and nightmare_N share one (nightmare is the more anxious take).
+Language throughout: light drum'n'bass / 2-step, jazzy 9th chords on electric piano,
+a syncopated synth hook in place of a vocal.
+"""
 import numpy as np
 from engine import *  # noqa
-
-
-def seqs(m, bus, bar, pats, inst, **kw):
-    for i, p in enumerate(pats):
-        m.P(bus, bar + i, p, inst, **kw)
-
-
-def chords(m, bus, bar, rhythm, names, inst, **kw):
-    for i, c in enumerate(names):
-        m.P(bus, bar + i, rhythm.replace('X', c), inst, **kw)
-
-
-def drumbus(x, drive=1.4, room=0.1, thr=-14, ratio=3, t60=0.4):
-    x = comp(sat(x * 0.9, drive), thr, ratio, 0.004, 0.09, 1.2)
-    return rev(x, t60, room, 0.005, 400, 8000, seed=3)
-
-
-def mute(m, spans, fade=0.004):
-    """Gain curve that drops to zero inside each (bar, step0, step1) span."""
-    e = np.ones(m.n)
-    f = int(fade * SR)
-    for bar, a, b in spans:
-        i, j = int(m.bt(bar, a) * SR), int(m.bt(bar, b) * SR)
-        e[i:j] = 0
-        e[max(0, i - f):i] = np.minimum(e[max(0, i - f):i], np.linspace(1, 0, f)[-(i - max(0, i - f)):])
-        e[j:j + f] = np.minimum(e[j:j + f], np.linspace(0, 1, f)[:len(e[j:j + f])])
-    return e
-
-
-def heart(m, bus, bar, step=0, g=1.0, gap=3.0):
-    m.add(bus, m.bt(bar, step), thud(62, 0.11), g)
-    m.add(bus, m.bt(bar, step + gap), thud(74, 0.08), g * 0.7)
-
 
 BRK = {
     'A': ("x.x.......xx....", "....X.......X...", ".......o.o.....o"),
     'B': ("x.x.......x.....", "....X.........X.", ".......o.o..o..."),
     'C': ("x.x...x...x.....", "....X..o.X..X.XX", "................"),
-    'T': ("x.........x.....", "....X.......X...", "......o..o....o."),
+    'T': ("x.........x.....", "....X.......X...", ".......o.o.....o"),
     'U': ("x.........xx....", "....X.......X...", ".o....o..o...oo."),
+    'V': ("x......x..x.....", "....X.......X...", "......o......o.o"),
+    'F': ("x.........x.....", "....X..o.o..X.oX", "................"),
     'H': ("x.....x.........", "........X.......", "..............o."),
+    'G': ("x.....x...x.....", "....X.......X...", ".......o.....o.o"),
+    'J': ("x..x......x..x..", "....X.......X...", ".......o.o.....o"),
+}
+KICKS = {
+    'light': dict(f0=200, f1=58, pt=0.018, dec=0.1, click=0.5, drive=1.6),
+    'soft': dict(f0=130, f1=50, pt=0.03, dec=0.16, click=0.15, drive=1.3),
+    'heavy': dict(f0=230, f1=55, pt=0.02, dec=0.13, click=0.6, drive=2.5),
 }
 
 
-def brk(m, bar, kinds, hats="x.xox.xox.xox.xo", kg=1.0, sg=0.8, hg=0.22, rd=True, sf=200):
+def brk(m, bar, kinds, hats="x.x-x.xox.x-x.xo", kg=1.0, sg=0.8, hg=0.22, rd=False, sf=200, kp='heavy', sd=0.13):
     kt = []
     for i, k in enumerate(kinds):
         K, S, G = BRK[k]
-        kt += m.D('kick', bar + i, K, kick, kg, f0=230, f1=55, pt=0.02, dec=0.13, click=0.6, drive=2.5)
-        m.D('snare', bar + i, S, snare, sg, f=sf, dec=0.13, nz=1.1)
-        m.D('snare', bar + i, G, snare, sg * 0.9, f=sf * 1.1, dec=0.07, nz=0.8)
-        m.D('hat', bar + i, hats, hat, hg, pan=0.25, dec=0.022)
+        kt += m.D('kick', bar + i, K, kick, kg, **KICKS[kp])
+        m.D('snare', bar + i, S, snare, sg, f=sf, dec=sd, nz=1.1)
+        m.D('snare', bar + i, G, snare, sg * 0.9, f=sf * 1.1, dec=sd * 0.55, nz=0.8)
+        m.D('hat', bar + i, hats, hat, hg, pan=0.25, dec=0.02)
         if rd:
             m.D('hat', bar + i, "x...x...x...x...", ride, hg * 0.9, pan=-0.3)
     return kt
@@ -65,504 +47,347 @@ def roll(m, bar, step0, steps, div=1, g0=0.25, g1=0.9, f0=190, f1=260):
         m.add('snare', m.bt(bar, step0 + i / div), snare(f=f0 + (f1 - f0) * r, dec=0.07, nz=0.9), g0 + (g1 - g0) * r)
 
 
-# ======================= NORMAL =======================
-def n1():
-    """Tiptoe: swung, plucky, a heartbeat kick under a sneaking bass."""
-    m = Mix(104, 16, swing=0.24)
-    Dm, Bb, A7, Em = "F3+A3+C4+E4", "F3+A3+Bb3+D4", "G3+Bb3+C#4+E4", "G3+Bb3+D4+E4"
-    bA = ["D2 . . D2 . . F2 . G2 . . G#2 A2 . . .", "D2 . . D2 . . C2 . . . A1 . C2 . C#2 .",
-          "Bb1 . . Bb1 . . D2 . F2 . . . Bb1 . . .", "A1 . . A1 . . C#2 . E2 . G2 . A2 . C#2 ."]
-    bB = ["G1 . . G1 . . Bb1 . D2 . . . G2 . . .", "D2 . . D2 . . F2 . A2 . . . D2 . C2 .",
-          "E2 . . E2 . . G2 . Bb2 . . . E2 . . .", "A1 . . A1 . . C#2 . E2 . G2 . A2 - - ."]
-    lA = ["A4 . . D5 . . . . F5 . E5 . D5 . . .", ". . A4 . C5 . D5 . . . . . . . . .",
-          "A4 . . D5 . . . . F5 . G5 . A5 . . .", ". . G5 . F5 . E5 . C#5 . . . . . . ."]
-    lB = ["D5 . . Bb4 . . G4 . . . A4 . Bb4 . D5 .", "F5 - - . E5 . D5 . . . A4 . . . . .",
-          "G5 . . E5 . . Bb4 . . . D5 . E5 . G5 .", "A5 . G5 . F5 . E5 . C#5 . . . A4 . . ."]
-    for r in (0, 4):
-        seqs(m, 'bass', r, bA, rubber, cut=260, env=1500, fdec=0.1, tr=12, gt=0.8)
-        seqs(m, 'lead', r, lA, pluck, cut=700, env=3800, fdec=0.06, adec=0.22)
-        chords(m, 'ep', r, ". . . . . . X . . . . . X . . .", [Dm, Dm, Bb, A7], epiano, gt=1.6)
-    seqs(m, 'bell', 4, lA, bell, tr=12, dec=0.5, idx=1.4)
-    for r in (8, 12):
-        seqs(m, 'bass', r, bB, rubber, cut=260, env=1500, fdec=0.1, tr=12, gt=0.8)
-        seqs(m, 'lead', r, lB, pluck, cut=700, env=3800, fdec=0.06, adec=0.22)
-        chords(m, 'ep', r, ". . . X . . . . . . X . . . X .", [Bb, Dm, Em, A7], epiano, gt=1.6)
-    seqs(m, 'bell', 12, lB, bell, tr=12, dec=0.5, idx=1.4)
-    kt = m.D('kick', 0, "X..x....X..x....|X..x....X.x..x..", kick, rep=8, f0=120, f1=48, dec=0.17, click=0.15, drive=1.4)
-    m.D('snap', 0, "....x.......x...", snap, rep=16)
-    m.D('hat', 0, "x.xox.xox.xox.xo", hat, rep=16, pan=0.2, dec=0.018)
-    m.D('hat', 8, "..x...x...x...x.", shaker, rep=8, pan=-0.3)
-    m.D('snap', 7, "..........x.x.xx", rim)
-    m.D('snap', 15, "........x..x.x.x", rim)
-    dk = duck(m.n, kt, 0.35, 0.1)
-    ld = rev(delay(m.get('lead'), m.sl * 3, 0.35, 0.22), 1.3, 0.16)
-    bl = rev(delay(m.get('bell'), m.sl * 3, 0.3, 0.2), 2.0, 0.3)
-    y = (0.6 * m.get('kick') + 0.5 * m.get('bass') * dk + 0.8 * pan(ld, -0.12) + 0.34 * pan(bl, 0.25)
-         + 0.62 * wide(rev(m.get('ep') * dk, 1.2, 0.25)) + 0.6 * rev(m.get('snap'), 0.7, 0.25) + 0.7 * m.get('hat'))
-    return master(y, -14.5, 1.05, m.body)
+def heart(m, bus, bar, step=0, g=1.0, gap=4.0):
+    m.add(bus, m.bt(bar, step), thud(62, 0.11), g)
+    m.add(bus, m.bt(bar, step + gap), thud(74, 0.08), g * 0.7)
 
 
-def n2():
-    """Midnight Snack: straight four-on-the-floor, rubber octave bass, chopped stabs."""
-    m = Mix(118, 16)
-    oct_ = lambda a, b, c, d, e, f: f"{a}2 . {a}3 . . {a}2 . {b} {a}2 . {a}3 . {c} . {d} {e}".replace('~', f)
-    bE = "E2 . E3 . . E2 . D3 E2 . E3 . G2 . A2 B2"
-    bC = "C2 . C3 . . C2 . B2 C2 . C3 . E2 . G2 C3"
-    bB = "B1 . B2 . . B1 . A2 B1 . B2 . D#2 . F#2 A2"
-    bA = "A1 . A2 . . A1 . G2 A1 . A2 . C2 . E2 G2"
-    bBm = "B1 . B2 . . B1 . A2 B1 . B2 . D2 . F#2 A2"
-    bD = "D2 . D3 . . D2 . C3 B1 . B2 . D#2 . F#2 B2"
-    Em, C, B7, Am, Bm, D = "G3+B3+D4+F#4", "G3+B3+C4+E4", "A3+B3+D#4+F#4", "G3+A3+C4+E4", "A3+B3+D4+F#4", "A3+D4+F#4"
-    lA = ["B4 . D5 E5 . . . . . . G5 . F#5 . E5 .", "D5 . . B4 . . . . . . . . . . . .",
-          "E5 . G5 B5 . . . . . . A5 . G5 . E5 .", "F#5 . . D#5 . . B4 . . . . . . . . ."]
-    lB = ["C5 . E5 . A5 . . G5 . . E5 . . . . .", "D5 . F#5 . B5 . . A5 . . F#5 . . . . .",
-          "E5 . G5 . C6 . . B5 . . G5 . E5 . . .", "A5 . F#5 . D5 . . . D#5 . F#5 . B5 . . ."]
-    for r in (0, 4):
-        seqs(m, 'bass', r, [bE, bE, bC, bB], rubber, cut=220, env=2400, fdec=0.07, res=3.2, tr=12, gt=0.7)
-        chords(m, 'stab', r, ". . X . . X . . . . X . . X . .", [Em, Em, C, B7], stab, cut=500, env=3200, fdec=0.06, adec=0.12, gt=0.7)
-        seqs(m, 'lead', r, lA, pluck, cut=900, env=4200, fdec=0.08, adec=0.25)
-    for r in (8, 12):
-        seqs(m, 'bass', r, [bA, bBm, bC, bD], rubber, cut=220, env=2400, fdec=0.07, res=3.2, tr=12, gt=0.7)
-        chords(m, 'stab', r, ". . X . . X . . . . X . . X . .", [Am, Bm, C, D if r == 8 else B7], stab, cut=500, env=3200, fdec=0.06, adec=0.12, gt=0.7)
-        seqs(m, 'lead', r, lB, pluck, cut=900, env=4200, fdec=0.08, adec=0.25)
-    seqs(m, 'bell', 4, lA, bell, tr=12, dec=0.45, idx=1.5)
-    seqs(m, 'bell', 12, lB, bell, dec=0.45, idx=1.5)
-    kt = m.D('kick', 0, "x...x...x...x...", kick, rep=16, f0=150, f1=50, dec=0.18, click=0.3)
-    m.D('clap', 0, "....x.......x...", clap, rep=16, dec=0.09)
-    m.D('hat', 0, "..x...x...x...x.", hat, 1.3, rep=16, dec=0.07, pan=-0.2)
-    m.D('hat', 0, "xo.oxo.oxo.oxo.o", hat, 0.7, rep=16, dec=0.015, pan=0.3)
-    m.D('hat', 4, "x.xxx.xxx.xxx.xx", shaker, 0.6, rep=12, pan=0.5)
-    m.D('clap', 7, ".............xxx", rim)
-    m.add('fx', m.bt(7, 0), riser(m.sl * 16, 400, 7000), 0.5)
-    m.add('fx', m.bt(15, 0), riser(m.sl * 16, 400, 7000), 0.5)
-    dk = duck(m.n, kt, 0.55, 0.13)
-    ld = rev(delay(m.get('lead'), m.sl * 3, 0.4, 0.25), 1.4, 0.18)
-    bl = rev(delay(m.get('bell'), m.sl * 3, 0.3, 0.2), 2.0, 0.3)
-    y = (0.62 * m.get('kick') + 0.5 * m.get('bass') * dk + 0.75 * pan(ld, -0.12) + 0.32 * pan(bl, 0.25) + 0.3 * m.get('fx') * dk
-         + 0.6 * rev(m.get('stab') * dk, 0.9, 0.22) + 0.6 * rev(m.get('clap'), 0.9, 0.25) + 0.6 * m.get('hat'))
-    return master(y, -13.5, 1.1, m.body)
+def mute(m, spans, fade=0.004):
+    e = np.ones(m.n)
+    f = int(fade * SR)
+    for bar, a, b in spans:
+        i, j = int(m.bt(bar, a) * SR), int(m.bt(bar, b) * SR)
+        e[i:j] = 0
+        e[i - f:i] = np.minimum(e[i - f:i], np.linspace(1, 0, f))
+        e[j:j + f] = np.minimum(e[j:j + f], np.linspace(0, 1, f))
+    return e
 
 
-def n3():
-    """Fridge Light: slow and cold, glass bells over a lub-dub kick."""
-    m = Mix(92, 12, swing=0.2)
-    F, E, D, E7 = "F3+A3+C4+E4", "E3+G3+B3+D4", "D3+F3+A3+C4+E4", "E3+G#3+B3+D4"
-    bF, bE = "F2 . . . . . . F2 . . C3 . . . . .", "E2 . . . . . . E2 . . B2 . . . D2 ."
-    bD, b7 = "D2 . . . . . . D2 . . A2 . . . . .", "E2 . . . . . . E2 . . G#2 . B2 . D3 ."
-    mA = ["E5 . . . C5 . . A4 . . B4 . C5 . . .", "D5 . . . B4 . . G4 . . . . . . E4 G4",
-          "A4 . . . F4 . . E4 . . F4 . A4 . . .", "G#4 . . . B4 . . . E5 - - - . . . ."]
-    mB = ["F5 . E5 . D5 . . A4 . . . . D5 . E5 .", "G5 . E5 . D5 . . B4 . . . . . . . .",
-          "A5 . G5 . E5 . . C5 . . E5 . . . . .", "G#5 . . . E5 . . B4 . . G#4 . . . . ."]
-    cA = [". . C4 . . . E4 . . . . . . . A3 .", ". . B3 . . . D4 . . . G3 . . . . .",
-          ". . A3 . . . D4 . . . . . . . F3 .", ". . B3 . . . G#3 . . . D4 . E4 . . ."]
-    for r in (0, 4):
-        seqs(m, 'bass', r, [bF, bE, bD, b7], rubber, cut=200, env=900, fdec=0.14, res=1.5, sb=0.9, gt=1.4)
-        seqs(m, 'bell', r, mA, bell, dec=0.9, idx=1.8)
-        for i, c in enumerate([F, E, D, E7]):
-            m.P('pad', r + i, c + " - - - - - - - - - - - - - - -", pad, cut=900, cut2=1900, att=0.4, rel=0.6, gt=1.0)
-    seqs(m, 'pl', 4, cA, pluck, cut=600, env=2600, fdec=0.09, adec=0.3)
-    seqs(m, 'bass', 8, [bD, bE, bF, b7], rubber, cut=200, env=900, fdec=0.14, res=1.5, sb=0.9, gt=1.4)
-    seqs(m, 'bell', 8, mB, bell, dec=0.9, idx=1.8)
-    seqs(m, 'pl', 8, [cA[2], cA[1], cA[0], cA[3]], pluck, cut=600, env=2600, fdec=0.09, adec=0.3)
-    for i, c in enumerate([D, E, F, E7]):
-        m.P('pad', 8 + i, c + " - - - - - - - - - - - - - - -", pad, cut=1100, cut2=2400, att=0.4, rel=0.6)
-    kt = m.D('kick', 0, "X..x......X..x..", kick, rep=12, f0=110, f1=46, dec=0.2, click=0.12, drive=1.3)
-    m.D('rim', 0, "....x.......x...", rim, rep=12, pan=-0.15)
-    m.D('rim', 4, "............x...", snap, 0.7, rep=8)
-    m.D('hat', 0, "x.x.x.x.x.x.x.xo", hat, rep=12, pan=0.25, dec=0.02)
-    m.D('hat', 4, "..x...x...x...x.", shaker, 0.8, rep=8, pan=-0.35)
-    dk = duck(m.n, kt, 0.4, 0.14)
-    bl = rev(delay(m.get('bell'), m.sl * 3, 0.4, 0.28), 2.4, 0.35)
-    y = (0.6 * m.get('kick') + 0.48 * m.get('bass') * dk + 0.75 * bl + 0.5 * rev(m.get('pad') * dk, 2.0, 0.3)
-         + 0.5 * pan(rev(delay(m.get('pl'), m.sl * 6, 0.3, 0.2, lp=2500), 1.4, 0.2), -0.25)
-         + 0.6 * rev(m.get('rim'), 0.9, 0.3) + 0.6 * m.get('hat'))
-    return master(y, -15, 1.0, m.body)
+def drumbus(x, drive=1.4, room=0.1, thr=-14, ratio=3, t60=0.35):
+    x = comp(sat(x * 0.9, drive), thr, ratio, 0.004, 0.09, 1.2)
+    return rev(x, t60, room, 0.005, 400, 9000, seed=3)
 
 
-# ======================= HARD (toned down, tense) =======================
-def h1():
-    """Lights Out: the Tiptoe motif an octave down over a closed, pulsing bass."""
-    m = Mix(108, 16)
-    pulse8 = lambda a, b="": f"{a} . {a} . {a} . {a} . {a} . {a} . {a} . {b or a + ' .'}"
-    bs = [pulse8("D2", "F2 E2"), pulse8("D2", "C2 C#2"), pulse8("Bb1", "A1 Bb1"), pulse8("A1", "C#2 E2"),
-          pulse8("D2", "F2 E2"), pulse8("Eb2", "D2 Eb2"), pulse8("G1", "Bb1 D2"), pulse8("A1", "G2 C#2")]
-    lA = ["A3 . . D4 . . . . F4 . E4 . D4 . . .", ". . A3 . C4 . D4 . . . . . . . . .",
-          "A3 . . D4 . . . . F4 . G4 . A4 . . .", ". . G4 . F4 . E4 . C#4 . . . . . . ."]
-    lB = ["D4 . . Eb4 . . . . D4 . . . A3 . . .", "Bb3 . . A3 . . . . G3 . . Bb3 . . D4 .",
-          "G4 . . F4 . . D4 . . . Bb3 . . . . .", "C#4 . . E4 . . G4 . Bb4 . . . A4 . . ."]
-    pads = ["D3+A3+E4", "D3+A3+F4", "Bb2+F3+D4", "A2+G3+C#4", "D3+A3+E4", "Eb3+Bb3+D4+A4", "G2+D3+Bb3", "A2+G3+Bb3+C#4"]
-    for r in (0, 8):
-        seqs(m, 'bass', r, bs, rubber, cut=150, env=650 if r == 0 else 1100, fdec=0.08, res=2.8, tr=12, gt=0.75)
-        for i, c in enumerate(pads):
-            m.P('pad', r + i, c + " - - - - - - - - - - - - - - -", pad, cut=600, cut2=1300, att=0.5, rel=0.7, hp=200)
-    seqs(m, 'lead', 0, lA + lB, pluck, cut=350, env=2200, fdec=0.07, adec=0.3, tr=12)
-    seqs(m, 'lead', 8, lA + lB, pluck, cut=450, env=3000, fdec=0.07, adec=0.3, tr=12)
-    seqs(m, 'bell', 12, lB, bell, tr=24, dec=0.6, idx=2.4, ratio=3.01)
+def chord_bar(spec):
+    """'Bb1:D4+F4+A4 / F2:A3+Eb4' -> [(step, root midi, voicing)]"""
+    parts = [p.strip() for p in spec.split('/')]
+    return [(i * 16 // len(parts), nn(p.split(':')[0]), p.split(':')[1]) for i, p in enumerate(parts)]
+
+
+def at(ch, step):
+    cur = ch[0]
+    for c in ch:
+        if c[0] <= step:
+            cur = c
+    return cur
+
+
+BASS = {
+    'normal': [(0, 3, 0), (6, 2, 0), (10, 3, 12), (14, 1.5, 0)],
+    'garage': [(0, 2, 0), (3, 1.5, 0), (7, 2, 12), (10, 3, 0), (14, 1.5, 7)],
+    'hard': [(i, 1.3, 0) for i in range(0, 14, 2)] + [(14, 1, 0), (15, 1, 12)],
+    'super': [(0, 5.5, 0), (6, 3.5, 0), (10, 2.5, 12), (13, 2.8, 0)],
+    'nightmare': [(0, 1, 0), (1, 1.5, 0), (3, 1, 0), (4, 1.5, 0), (6, 1.5, 0), (8, 1, 0), (9, 1.5, 0), (11, 1, 0), (12, 1.5, 1), (14, 1.5, 3)],
+}
+COMP = {
+    'normal': ([0, 3, 6, 11, 14], [2, 6, 9, 12]),
+    'garage': ([3, 6, 11, 14], [0, 3, 8, 11]),
+    'hard': ([0, 10], [3]),
+    'super': ([0, 3, 6, 9, 12, 14], [0, 3, 6, 10, 13]),
+    'nightmare': ([3, 6, 12], [3, 9, 12, 14]),
+}
+
+
+def build(c, mood):
+    dark = mood in ('hard', 'nightmare')
+    heavy = mood in ('super', 'nightmare')
+    bpm = c['bpm'] + (6 if mood == 'nightmare' else 0)
+    tr = {'normal': 0, 'hard': -2, 'super': 0, 'nightmare': -1}[mood]
+    garage = c.get('swing', 0) > 0
+    m = Mix(bpm, 24, swing=c.get('swing', 0))
+    A = [chord_bar(x) for x in c['A']]
+    B = [chord_bar(x) for x in c['B']]
+    hA, hB = c['hA'], c['hB']
+    plan = ([('intro', A[i], hA[i]) for i in range(4)] + [('A', A[i], hA[i]) for i in range(8)]
+            + [('B', B[i], hB[i]) for i in range(8)] + [('out', A[4 + i], hA[4 + i]) for i in range(4)])
+    key = c['key'] + tr
     kt = []
-    for b in range(16):
-        if b == 7:
-            kt += m.D('kick', b, "X..x........", kick, f0=110, f1=45, dec=0.2, click=0.1, drive=1.3)
-        else:
-            kt += m.D('kick', b, "X..x....x..x...." if b >= 8 else "X..x............", kick, f0=110, f1=45, dec=0.2, click=0.1, drive=1.3)
-            m.D('rim', b, "............x..." if b < 8 else "....x.......x...", rim, f=1500)
-        m.D('hat', b, "xxxxxxxxxxxxxxxx" if b != 7 else "xxxxxxxxxxxx....", tick, 0.5, pan=0.3 if b % 2 else -0.3, f=3400)
-        if b >= 8:
-            m.D('hat', b, "..x...x...x...x.", hat, 0.9, dec=0.03, pan=0.2)
-    m.add('fx', m.bt(7, 0), riser(m.sl * 16, 250, 5000), 0.7)
-    m.add('fx', m.bt(15, 4), riser(m.sl * 12, 250, 5000), 0.6)
-    dk = duck(m.n, kt, 0.45, 0.14)
-    ld = rev(delay(m.get('lead'), m.sl * 3, 0.45, 0.3, lp=2400), 1.8, 0.22)
-    y = (0.62 * m.get('kick') + 0.5 * m.get('bass') * dk + 0.8 * ld + 0.55 * rev(m.get('pad') * dk, 2.4, 0.35)
-         + 0.2 * rev(delay(m.get('bell'), m.sl * 3, 0.4, 0.3), 2.4, 0.4) + 0.55 * rev(m.get('rim'), 1.4, 0.35)
-         + 0.45 * m.get('hat') + 0.35 * m.get('fx'))
-    return master(y, -15, 1.0, m.body)
-
-
-def h2():
-    """Hold Your Breath: minimal pulse, a rolling low F and far-off stabs."""
-    m = Mix(122, 16)
-    roll_b = ". F2 F2 F2 . F2 F2 F2 . F2 F2 F2 . F2 F2 Gb2"
-    roll_c = ". F2 F2 F2 . F2 F2 F2 . Eb2 Eb2 Eb2 . Gb2 Gb2 Gb2"
-    kt = []
-    for b in range(16):
-        m.P('bass', b, roll_c if b % 4 == 3 else roll_b, rubber, cut=140, env=500 + 60 * b, fdec=0.05, res=2.5, sb=0.9, gt=0.6)
-        full = b >= 8
-        if b == 7:
-            kt += m.D('kick', b, "x...x...x...", kick, f0=130, f1=47, dec=0.2, click=0.2)
-            heart(m, 'kick', 7, 12, 0.9, 2)
-        else:
-            kt += m.D('kick', b, "x...x...x...x.x." if b % 4 == 3 else "x...x...x...x...", kick, f0=130, f1=47, dec=0.2, click=0.2)
-            m.D('hat', b, "xoxoxoxoxoxoxoxo", tick, 0.6, pan=0.25, f=4200)
-            m.D('hat', b, "..x...x...x...x.", hat, 1.0 if full else 0.5, dec=0.05 if full else 0.02, pan=-0.2)
-        if b >= 4 and b != 7:
-            m.D('clap', b, "....x.......x...", clap, dec=0.1, f=1100)
-        if full:
-            m.D('rim', b, ".......x..x....x" if b % 2 else "..x....x.....x..", rim, 0.8, pan=0.4, f=2100)
-    st = [(0, 3, "F4+Ab4+C5"), (1, 10, "Gb4+Bb4+Db5"), (2, 6, "Eb4+Ab4+C5"), (3, 3, "Gb4+A4+C5"), (3, 11, "Gb4+A4+C5")]
-    for r in (0, 4, 8, 12):
-        for b, s, c in st:
-            m.P('stab', r + b, ". " * s + c, stab, cut=400, env=2600, fdec=0.12, adec=0.3, gt=1.5)
-    for r in (4, 12):
-        m.P('lead', r, "C5 . . . . . Db5 . . . C5 . . . Ab4 . | . . . . . . . . . . . . . . . .", bell, dec=0.7, idx=2.6, ratio=2.99)
-        m.P('lead', r + 2, "F5 . . . . . Gb5 . . . F5 . . . Eb5 Db5", bell, dec=0.7, idx=2.6, ratio=2.99)
-    acid = "F3 F3 Ab3 F3 C4 F3 Gb3 F3 F3 Eb4 F3 C4 F3 Ab3 Gb3 F3"
-    for b in range(8, 16):
-        m.P('acid', b, acid, pluck, cut=250 + 140 * (b - 8), env=900 + 420 * (b - 8), fdec=0.05, res=4.0, adec=0.15, gt=0.6)
-    m.P('pad', 0, "F2+C3+F3" + " -" * 127, pad, cut=500, cut2=900, att=1.5, rel=1.0, hp=120, gt=1.0)
-    m.P('pad', 8, "Gb4+C5+F5" + " -" * 127, pad, cut=700, cut2=2600, att=4.0, rel=0.5, hp=400, gt=1.0)
-    m.add('fx', m.bt(6, 0), riser(m.sl * 32, 200, 6000), 0.8)
-    m.add('fx', m.bt(14, 0), riser(m.sl * 32, 200, 8000), 0.8)
-    dk = duck(m.n, kt, 0.6, 0.12)
-    cut = mute(m, [(7, 12, 16)])
-    y = (0.62 * m.get('kick') + 0.5 * m.get('bass') * dk * cut
-         + 0.62 * rev(delay(m.get('stab'), m.sl * 3, 0.55, 0.45, lp=2500), 2.2, 0.4)
-         + 0.34 * rev(delay(m.get('lead'), m.sl * 6, 0.4, 0.3), 2.4, 0.4) + 0.5 * delay(m.get('acid'), m.sl * 3, 0.4, 0.3) * dk
-         + 0.45 * rev(m.get('pad'), 2.4, 0.3) * dk + 0.55 * rev(m.get('clap'), 1.6, 0.35) + 0.5 * m.get('hat') * cut
-         + 0.4 * rev(m.get('rim'), 1.0, 0.3) + 0.36 * m.get('fx'))
-    return master(y, -14, 1.05, m.body)
-
-
-def h3():
-    """Footsteps: a broken ostinato through a resonant filter, steps in the dark."""
-    m = Mix(114, 16)
-    osC = "C4 . G3 C4 . Eb4 . G3 C4 . G3 D4 . Eb4 . G3"
-    osA = "C4 . Ab3 C4 . Eb4 . Ab3 C4 . Ab3 D4 . Eb4 . Ab3"
-    osF = "C4 . Ab3 C4 . F4 . Ab3 C4 . Ab3 Db4 . F4 . Ab3"
-    osG = "B3 . G3 B3 . D4 . G3 B3 . G3 F4 . D4 . Ab3"
-    bC, bA = "C2 - - . . . C2 . . . C2 - . . Bb1 B1", "Ab1 - - . . . Ab1 . . . Ab1 - . . G1 Ab1"
-    bF, bG = "F2 - - . . . F2 . . . F2 - . . Eb2 F2", "G1 - - . . . G1 . . . G2 - . . B1 D2"
-    ld = ["G4 - - - - - Ab4 - G4 - - - Eb4 - - -", "C5 - - - - - Bb4 - Ab4 - - - - - - -",
-          "Ab4 - - - - - Bb4 - Ab4 - - - F4 - - -", "D5 - - - - - - - B4 - - - G4 - - -"]
-    pd = ["C4+Eb4+G4", "C4+Eb4+Ab4", "C4+F4+Ab4", "B3+D4+G4"]
-    kt = []
-    for b in range(16):
+    holes = []
+    for b, (sec, ch, hk) in enumerate(plan):
         q = b % 4
-        sw = 0.5 - 0.5 * np.cos(np.pi * b / 8)
-        m.P('arp', b, [osC, osA, osF, osG][q], pluck, cut=280 + 500 * sw, env=1500 + 2500 * sw, fdec=0.06, res=3.5, adec=0.2, gt=0.7)
-        m.P('pad', b, pd[q] + " -" * 15, pad, cut=700, cut2=1500, att=0.4, rel=0.6, hp=250, gt=1.0)
-        if b == 7:
-            m.D('step', b, "x...x...x...x...", thud, f=85, dec=0.07)
-            m.D('step', b, "..x...x...x...x.", rim, 0.5, f=900)
-            continue
-        m.P('bass', b, [bC, bA, bF, bG][q], rubber, cut=170, env=1200, fdec=0.1, res=2.2, tr=12 if q != 2 else 0, gt=0.85)
-        kt += m.D('kick', b, "x.....x...x....." if b % 2 == 0 else "x.....x...x..x..", kick, f0=160, f1=50, dec=0.16, click=0.35)
-        m.D('snare', b, "....x.......x...", snare, f=215, dec=0.08, nz=0.9, tone=0.5)
-        m.D('hat', b, "x.x.x.xox.x.x.xo", hat, dec=0.018, pan=0.25)
-        if b >= 8:
-            m.D('hat', b, "..x...x...x...x.", hat, 1.1, dec=0.06, pan=-0.2)
-            m.P('lead', b, ld[q], lead, cut=700, env=1400, fdec=0.4, glide=-2 if q == 0 else 0, vib=0.004)
-    m.add('fx', m.bt(7, 0), riser(m.sl * 16, 250, 6000), 0.8)
-    m.add('fx', m.bt(15, 8), riser(m.sl * 8, 400, 8000), 0.6)
-    dk = duck(m.n, kt, 0.5, 0.12)
-    stp = m.get('step') * np.linspace(0.3, 1, m.n)
-    stp = stp * np.stack([np.linspace(1, 0.3, m.n), np.linspace(0.3, 1, m.n)])
-    y = (0.65 * m.get('kick') + 0.5 * m.get('bass') * dk + 0.6 * rev(delay(m.get('arp'), m.sl * 3, 0.45, 0.35), 1.2, 0.15)
-         + 0.4 * rev(m.get('pad') * dk, 2.2, 0.3) + 0.6 * rev(m.get('snare'), 0.9, 0.22) + 0.5 * m.get('hat')
-         + 0.55 * rev(delay(m.get('lead'), m.sl * 6, 0.3, 0.25), 2.0, 0.3) + 0.8 * rev(stp, 1.6, 0.5) + 0.3 * m.get('fx'))
-    return master(y, -14, 1.05, m.body)
-
-
-# ======================= SUPER (breakbeat hardcore) =======================
-def hardmix(m, kt, parts, rms=-10.5, clip=1.5, dr=2.0):
-    d = drumbus(m.get('kick') * 0.95 + m.get('snare') * 0.9 + m.get('hat'), dr, 0.1, -16, 4, 0.35)
-    dk = duck(m.n, kt, 0.5, 0.07)
-    y = d * 0.8
-    for g, x, side in parts:
-        y = y + g * (x * dk if side else x)
-    return master(y, rms, clip, m.body)
-
-
-def x1():
-    """Caught: 170 breakbeat, reese on F, dark minor stabs."""
-    m = Mix(170, 24)
-    kt = []
-    heart(m, 'kick', 0, 0, 0.9, 4)
-    heart(m, 'kick', 1, 0, 0.9, 4)
-    kt += brk(m, 2, "AB", kg=0.0, sg=0.45, hg=0.16, rd=False)
-    roll(m, 3, 8, 8, 2)
-    kt += brk(m, 4, "ABAC" * 4)
-    kt += brk(m, 20, "HHAC")
-    rs = ["F2 - - - - - - - - - F2 - Ab2 - - -", "F2 - - - - - Eb2 - - - - - Gb2 - - -"]
-    for b in range(4, 24, 2):
-        m.P('bass', b, rs[0], reese, cut=500 + 40 * (b - 4), lfo=170 / 60 / 4, gt=0.97)
-        m.P('bass', b + 1, rs[1] if b % 4 == 0 else "F2 - - - - - - - Ab2 - - - C3 - Bb2 -", reese, cut=650, lfo=170 / 60 / 2, gt=0.97)
-    m.P('bass', 0, "F2" + " -" * 63, reese, cut=180, lfo=0.2, depth=0.2, gt=1.0)
-    Fm, Gb, Db = "F4+Ab4+C5", "Gb4+Bb4+Db5", "F4+Ab4+Db5"
-    s1, s2 = ". . . X . . X . . . . . X . . .", ". . . X . . X . . X . . Y . . ."
-    for b in range(4, 20, 2):
-        m.P('stab', b, s1.replace('X', Fm if b % 8 < 4 else Db), stab, cut=600, env=4200, fdec=0.07, adec=0.14, bend=-1, gt=0.8)
-        m.P('stab', b + 1, s2.replace('X', Fm if b % 8 < 4 else Db).replace('Y', Gb), stab, cut=600, env=4200, fdec=0.07, adec=0.14, bend=-1, gt=0.8)
-    m.P('stab', 0, Fm + " . . . . . . . " * 2 + "| " + Gb + " . . . . . . . . . . . . . . .", stab, cut=400, env=2500, fdec=0.2, adec=0.6, gt=3)
-    ld = ["C5 . . C5 . . Db5 . C5 . . Ab4 . . Bb4 .", "C5 . . C5 . . Eb5 . Db5 . . C5 . . Ab4 .",
-          "F5 . . F5 . . Gb5 . F5 . . Db5 . . Eb5 .", "F5 . . Eb5 . . Db5 . C5 . . Bb4 . Ab4 G4 ."]
-    seqs(m, 'lead', 12, ld, lead, cut=900, env=3000, fdec=0.12, gt=0.8)
-    seqs(m, 'lead', 16, ld, lead, cut=1200, env=3500, fdec=0.12, gt=0.8)
-    seqs(m, 'lead', 20, ld[2:] + ld[2:], pluck, cut=700, env=4000, adec=0.2)
-    m.add('fx', m.bt(2, 0), riser(m.sl * 32, 300, 9000), 0.9)
-    m.add('fx', m.bt(4, 0), impact(), 1.0)
-    m.add('fx', m.bt(19, 0), riser(m.sl * 16, 500, 9000), 0.6)
-    m.add('fx', m.bt(20, 0), impact(48), 0.9)
-    return hardmix(m, kt, [(0.42, m.get('bass'), 1), (0.55, rev(m.get('stab'), 1.0, 0.22), 1),
-                           (0.48, rev(delay(m.get('lead'), m.sl * 3, 0.35, 0.25), 1.2, 0.18), 1), (0.3, rev(m.get('fx'), 1.5, 0.3), 0)])
-
-
-def x2():
-    """Freezer Burn: 174 two-step, growling bass, cold bells."""
-    m = Mix(174, 24)
-    kt = []
-    m.D('hat', 0, "x.xox.xox.xox.xo", hat, 0.14, rep=4, dec=0.02, pan=0.3)
-    heart(m, 'kick', 2, 0, 0.9, 4)
-    heart(m, 'kick', 3, 0, 0.9, 4)
-    roll(m, 3, 8, 8, 2)
-    kt += brk(m, 4, "TUTC" * 4, hats="xoxoxoxoxoxoxoxo", sf=215)
-    kt += brk(m, 20, "HHTC", sf=215)
-    riff = [[("E2", 3, 8), ("E2", 1, 16), ("G2", 3, 4), ("E2", 1, 16), ("F2", 2, 6), ("E2", 1, 12)],
-            [("E2", 3, 8), ("E2", 1, 16), ("B1", 3, 3), ("D2", 3, 12), ("F2", 1, 16)]]
-    pos = [[0, 4, 6, 10, 12, 14], [0, 4, 6, 10, 14]]
-    for b in range(4, 24):
-        r = b % 2
-        for (note, ln, rate), st in zip(riff[r], pos[r]):
-            hz = 174 / 60 * rate / 4
-            x = growl([nn(note) + 12], ln * m.sl * 0.95, rate=hz / 2, idx=3 + (b % 4), hi=1800 + 250 * (b % 4), ratio=1 if st % 4 == 0 else 2)
-            m.add('bass', m.bt(b, st), x)
-    be = ["B5 . . . . . G5 . . . . . F#5 . . .", ". . E5 . . . . . B4 . . . . . . .",
-          "B5 . . . . . G5 . . . . . A5 . . .", ". . F#5 . . . . . D5 . . . E5 . . ."]
-    for r in (0, 4, 12, 20):
-        seqs(m, 'bell', r, be, bell, dec=0.6, idx=2.2, ratio=3.01)
-    m.P('pad', 0, "E3+B3+E4+G4" + " -" * 63, pad, cut=500, cut2=3000, att=1.0, rel=0.3, hp=200, gt=1.0)
-    for r in (8, 16):
-        m.P('pad', r, "E4+G4+B4" + " -" * 63 + " | F4+A4+C5" + " -" * 31 + " | E4+G4+B4" + " -" * 31, pad, cut=1200, att=0.2, rel=0.3, hp=300, gt=1.0)
-    for b in range(8, 20, 4):
-        m.P('stab', b + 3, ". . . . . . . . E4+G4+B4 . . F4+A4+C5 . . . .", stab, cut=700, env=5000, fdec=0.06, adec=0.12, bend=2)
-    m.add('fx', m.bt(2, 0), riser(m.sl * 32, 300, 9000), 0.9)
-    m.add('fx', m.bt(4, 0), impact(), 1.0)
-    m.add('fx', m.bt(19, 0), riser(m.sl * 16, 500, 9000), 0.6)
-    m.add('fx', m.bt(20, 0), impact(46), 0.9)
-    return hardmix(m, kt, [(0.42, m.get('bass'), 1), (0.34, rev(delay(m.get('bell'), m.sl * 3, 0.45, 0.35), 2.0, 0.3), 0),
-                           (0.3, rev(m.get('pad'), 2.0, 0.25), 1), (0.45, rev(m.get('stab'), 1.0, 0.25), 1), (0.3, rev(m.get('fx'), 1.5, 0.3), 0)])
-
-
-def x3():
-    """Heartbeat Overdrive: the Tiptoe motif at 165 over a hardcore kick and breaks."""
-    m = Mix(165, 24)
-    mot = ["A4 . . D5 . . . . F5 . E5 . D5 . . .", ". . A4 . C5 . D5 . . . . . . . . .",
-           "A4 . . D5 . . . . F5 . G5 . A5 . . .", ". . G5 . F5 . E5 . C#5 . . . . . . ."]
-    rf = ["D4 . . D4 . F4 . D4 . . A4 . G4 . F4 E4", "D4 . . D4 . F4 . D4 . . Bb4 . A4 . G4 A4",
-          "Bb3 . . Bb3 . D4 . Bb3 . . F4 . E4 . D4 C4", "A3 . . A3 . C#4 . E4 . G4 . Bb4 A4 . . ."]
-    seqs(m, 'pl', 0, mot, pluck, cut=450, env=3000, adec=0.3)
-    for b in range(4):
-        heart(m, 'kick', b, 0, 0.9, 4)
-    roll(m, 3, 0, 16, 1, 0.15, 0.9)
-    kt = []
-    roots = ["D", "D", "Bb", "A"]
-    for b in range(4, 24):
-        brkonly = 12 <= b < 16
-        q = b % 4
-        if not brkonly:
-            kt += m.D('kick', b, "x...x...x...x..." if q != 3 else "x...x...x...x.xx", hkick, 0.85)
-            m.D('snare', b, "....x.......x...", snare, 0.6, f=205, dec=0.12)
-            m.D('hat', b, "..x...x...x...x.", hat, 0.3, dec=0.07, pan=-0.2)
-            m.D('hat', b, "xoxoxoxoxoxoxoxo", hat, 0.16, dec=0.015, pan=0.3)
-            rt = roots[q] + ("1" if roots[q] != "D" else "2")
-            m.P('bass', b, f". . {rt} . . . {rt} . . . {rt} . . . {rt} .", rubber, cut=300, env=1500, fdec=0.06, tr=12, gt=1.6)
-            m.P('lead', b, rf[q], lead, cut=800 + 60 * (b - 4), env=3000, fdec=0.1, gt=0.75)
-            if b >= 16:
-                m.P('pl', b, mot[q], stab, cut=900, env=5000, fdec=0.08, adec=0.16, tr=12, gt=1.0)
+        main = sec in ('A', 'B')
+        # ---- bass
+        if sec == 'intro':
+            for st, root, _ in ch:
+                m.add('bass', m.bt(b, st), sub([root + tr], (16 - st if len(ch) == 1 or st else 8) * m.sl * 0.95), 0.6 if b >= 2 else 0.0)
         else:
-            kt += brk(m, b, "ABAC"[q], sf=205)
-            rt = roots[q] + "2" if roots[q] == "D" else roots[q] + "1"
-            m.P('bass', b, rt + " -" * 15, reese, cut=700, lfo=165 / 60 / 2, tr=12 if roots[q] != "D" else 0, gt=0.97)
-            m.P('pl', b, mot[q], pluck, cut=600, env=4500, adec=0.25)
-    m.add('fx', m.bt(2, 0), riser(m.sl * 32, 300, 9000), 0.9)
-    m.add('fx', m.bt(4, 0), impact(), 1.0)
-    m.add('fx', m.bt(15, 0), riser(m.sl * 16, 500, 9000), 0.7)
-    m.add('fx', m.bt(16, 0), impact(46), 1.0)
-    return hardmix(m, kt, [(0.42, m.get('bass'), 1), (0.46, rev(m.get('lead'), 0.9, 0.15), 1),
-                           (0.5, rev(delay(m.get('pl'), m.sl * 3, 0.4, 0.3), 1.4, 0.22), 1), (0.3, rev(m.get('fx'), 1.5, 0.3), 0)], dr=1.8)
-
-
-# ======================= NIGHTMARE =======================
-def m1():
-    """Don't Look Back: 176, tritone stabs, sudden holes of silence."""
-    m = Mix(176, 28)
-    kt = []
-    for b in range(4):
-        heart(m, 'kick', b, 0, 0.9, 4)
-        m.D('tick', b, "x...x...x...x...", tick, 0.6, pan=0.4 if b % 2 else -0.4)
-    m.add('fx', m.bt(1, 8), clang(410, 0.6), 0.5, -0.5)
-    m.add('fx', m.bt(3, 0), clang(290, 0.7), 0.5, 0.5)
-    kt += brk(m, 4, "ABAB" + "ABA")
-    kt += m.D('kick', 11, "x.x.....", kick, f0=230, f1=55, dec=0.13, click=0.6, drive=2.5)
-    m.D('snare', 11, "....X...", snare, 0.8)
-    m.D('tick', 11, "........x.x.x.xx", tick, 0.7)
-    heart(m, 'tick', 11, 8, 1.0, 3)
-    kt += brk(m, 12, "UBUC" + "UBUB", hats="xoxoxoxoxoxoxoxo")
-    kt += brk(m, 20, "HH", rd=False)
-    roll(m, 22, 0, 32, 1, 0.12, 0.95, 180, 290)
-    kt += m.D('kick', 22, "x...x...x...x...x.x.x.x.xxxxxxxx", kick, f0=230, f1=55, dec=0.1, click=0.6, drive=2.5)
-    kt += brk(m, 24, "UBUC", hats="xoxoxoxoxoxoxoxo")
-    m.P('bass', 0, "C2" + " -" * 63, reese, cut=160, lfo=0.15, depth=0.3, gt=1.0)
-    rb = ["C2 - - - - - - - - - - - Db2 - - -", "C2 - - - - - - - Gb2 - - - F2 - Eb2 -"]
-    for b in range(4, 11, 2):
-        m.P('bass', b, rb[0], reese, cut=600, lfo=176 / 60 / 4, gt=0.97)
-        if b + 1 < 11:
-            m.P('bass', b + 1, rb[1], reese, cut=800, lfo=176 / 60 / 2, gt=0.97)
-    m.P('bass', 11, "C2 - - - - - - -", reese, cut=700, glide=-12, gt=1.0)
-    pb = "C2 C2 . C2 C2 . C2 . C2 C2 . C2 Db2 . Eb2 ."
-    for b in list(range(12, 20)) + list(range(24, 28)):
-        m.P('bass', b, pb if b % 4 != 3 else "C2 C2 . C2 Gb2 - - . F2 F2 . F2 Eb2 . Db2 .", reese, cut=700 + 50 * (b % 8), lfo=3, gt=0.8)
-    m.P('bass', 20, "C2" + " -" * 31, reese, cut=500, lfo=176 / 60, glide=-5, gt=1.0)
-    scr = "C4+Gb4+B4"
-    for b, s in [(4, 6), (5, 11), (6, 3), (7, 14), (8, 6), (9, 9), (10, 3), (13, 6), (15, 11), (17, 3), (18, 14), (19, 6), (25, 6), (26, 11), (27, 3), (27, 9)]:
-        m.P('stab', b, ". " * s + scr, stab, cut=900, env=5000, fdec=0.09, adec=0.2, bend=3 if s % 2 else -3, tr=(b % 3 == 2), gt=1.5)
-    m.P('pad', 0, "C4+Db4+Gb4" + " -" * 63, pad, cut=400, cut2=1600, att=2.0, rel=0.3, hp=300, gt=1.0)
-    m.P('pad', 12, "G4+Ab4+Db5" + " -" * 127, pad, cut=900, cut2=3500, att=1.0, rel=0.1, hp=400, bend=2.0, spread=0.3, gt=1.0)
-    m.P('pad', 20, "C5+Db5+Gb5" + " -" * 63, pad, cut=600, cut2=5000, att=3.0, rel=0.05, hp=500, bend=3.0, spread=0.35, gt=1.0)
-    m.P('pad', 24, "G4+Ab4+Db5+Gb5" + " -" * 63, pad, cut=2500, att=0.05, rel=0.2, hp=400, spread=0.3, gt=1.0)
-    al = "G5 . . . . . Gb5 . . . . . . . . . | G5 . . . . . Gb5 . . . F5 . . . . ."
-    for r in (12, 16, 24):
-        m.P('bell', r, al, bell, dec=0.5, idx=3.0, ratio=2.76, rep=2)
-    m.add('fx', m.bt(2, 0), riser(m.sl * 32, 300, 9000), 0.9)
-    m.add('fx', m.bt(4, 0), impact(), 1.0)
-    m.add('fx', m.bt(12, 0), impact(50), 1.0)
-    m.add('fx', m.bt(22, 0), riser(m.sl * 32, 300, 11000), 1.0)
-    m.add('fx', m.bt(24, 0), impact(44), 1.0)
-    hole = mute(m, [(11, 8, 16)])
-    return hardmix(m, kt, [(0.42, m.get('bass') * hole, 1), (0.55, rev(m.get('stab'), 1.4, 0.3) * hole, 1),
-                           (0.34, rev(m.get('pad'), 2.0, 0.3) * hole, 1), (0.3, rev(delay(m.get('bell'), m.sl * 3, 0.5, 0.4), 1.6, 0.3) * hole, 0),
-                           (0.5, rev(m.get('tick'), 1.2, 0.3), 0), (0.3, rev(m.get('fx'), 1.5, 0.3), 0)], rms=-10, clip=1.6)
-
-
-def m2():
-    """Eyes in the Dark: 170 industrial, clanging metal, something passing behind you."""
-    m = Mix(170, 24)
-    kt = []
-    kp = ["x..x..x...x..x..", "x..x..x...x.x.x.", "x..x..x...x..x..", "x.x...x..x..xxxx"]
-    for b in range(24):
-        q = b % 4
-        if b < 2:
+            pat = BASS['garage' if garage and mood == 'normal' else mood]
+            if sec == 'out' and not dark:
+                pat = [(0, 6, 0), (10, 4, 0)]
+            for st, ln, off in pat:
+                if mood == 'nightmare' and b == 11 and st >= 8:
+                    continue
+                root = at(ch, st)[1] + tr
+                d = ln * m.sl * 0.9
+                if mood == 'normal':
+                    x = rubber([root + off], d, cut=240, env=1700, fdec=0.08, sb=0.7)
+                elif mood == 'hard':
+                    x = rubber([root + off], d, cut=140, env=450 + 60 * (b % 8), fdec=0.06, res=2.8, sb=0.8)
+                elif mood == 'super':
+                    x = reese([root + off], d, cut=560 + 30 * (b % 8), lfo=bpm / 60 / (4 if q % 2 == 0 else 2))
+                else:
+                    x = reese([root + (off if off < 12 else 0)], d, cut=700 + 50 * (b % 8), lfo=3, det=0.28)
+                m.add('bass', m.bt(b, st), x)
+        # ---- chords
+        if sec == 'intro':
+            for st, _, v in ch:
+                m.P('comp', b, ". " * st + v, keys, tr=tr, gt=(16 - st if len(ch) == 1 or st else 8) * 0.9, bright=0.5 + 0.15 * b)
+        else:
+            steps = COMP['garage' if garage and mood == 'normal' else mood][b % 2]
+            if sec == 'out':
+                steps = [0, 6] if not dark else [0]
+            for st in steps:
+                v = at(ch, st)[2]
+                if mood == 'normal':
+                    m.P('comp', b, ". " * st + v, keys, tr=tr, gt=1.6, bright=1.0)
+                elif mood == 'hard':
+                    m.P('comp', b, ". " * st + v, keys, tr=tr, gt=5.0, bright=0.4)
+                elif mood == 'super':
+                    m.P('comp', b, ". " * st + v, keys, tr=tr, gt=1.4, bright=1.25)
+                    m.P('stab', b, ". " * st + v, stab, tr=tr, gt=1.2, cut=600, env=3600, fdec=0.06, adec=0.12)
+                else:
+                    m.P('comp', b, ". " * st + v, keys, tr=tr, gt=1.2, bright=0.7)
+                    m.P('stab', b, ". " * st + v, stab, tr=tr, gt=1.4, cut=800, env=4500, fdec=0.07, adec=0.16, bend=-2 if st % 2 else 2)
+            if not heavy:
+                for i, (st, _, v) in enumerate(ch):
+                    ln = (16 - st if i == len(ch) - 1 else ch[i + 1][0] - st)
+                    m.P('pad', b, ". " * st + v + " -" * (ln - 1), pad, tr=tr, cut=1100 if not dark else 550, cut2=1700 if not dark else 1000,
+                        att=0.15, rel=0.3, hp=250, gt=1.0)
+        # ---- hook
+        if sec == 'intro':
+            if b < 2 or not heavy:
+                m.P('bell', b, hk, bell, tr=tr + (0 if dark else 12), dec=0.5, idx=1.5 if not dark else 2.4, ratio=3.5 if not dark else 3.01)
+        elif mood == 'normal':
+            m.P('hook', b, hk, pluck, tr=tr, gt=1.4, cut=900, env=4500, fdec=0.08, adec=0.28)
+            m.P('hook', b, hk, lead, 0.5, tr=tr, gt=1.2, cut=1000, env=1800, fdec=0.1)
+            if sec == 'B':
+                m.P('bell', b, hk, bell, tr=tr + 12, dec=0.45, idx=1.5)
+        elif mood == 'hard':
+            m.P('hook', b, hk, pluck, tr=tr - 12, gt=1.4, cut=380 + 25 * (b % 8), env=2300, fdec=0.07, adec=0.3)
+            if sec == 'B':
+                m.P('bell', b, hk, bell, tr=tr, dec=0.6, idx=2.4, ratio=3.01)
+        elif mood == 'super':
+            m.P('hook', b, hk, lead, tr=tr, gt=1.3, cut=1300, env=3500, fdec=0.1)
+            m.P('hook', b, hk, pluck, 0.6, tr=tr + 12, gt=1.2, cut=900, env=5000, adec=0.2)
+            if sec == 'B':
+                m.P('bell', b, hk, bell, tr=tr + 12, dec=0.35, idx=2.0)
+        else:
+            if sec != 'A' or q < 2:
+                m.P('hook', b, hk, lead, tr=tr, gt=1.3, cut=950, env=3200, fdec=0.1, vib=0.006)
+                m.P('hook', b, hk, pluck, 0.6, tr=tr - 12, gt=1.2, cut=600, env=4000, adec=0.2)
+            m.P('bell', b, ". " * (0 if b % 2 == 0 else 8) + "C4", bell, tr=key - 60 + (7 if b % 2 == 0 else 8) + 12, dec=0.45, idx=3.0, ratio=2.76)
+        # ---- drums
+        tk = dict(f=3400 if mood == 'hard' else 4200)
+        if sec == 'intro':
             heart(m, 'kick', b, 0, 0.9, 4)
-            heart(m, 'kick', b, 8, 0.9, 4)
-            continue
-        if b == 16:
-            for s in (0, 4, 8, 11, 14):
-                heart(m, 'tick', b, s, 1.0, 1.5)
-            m.D('tick', b, "x.x.x.x.x.xxxxxx", tick, 0.6)
-            continue
-        if b in (7, 15) :
-            kt += m.D('kick', b, "x..x..x.", hkick, 0.85)
-            for i in range(16):
-                t = m.bt(b, 8 + i * 0.5)
-                m.add('kick', t, hkick(dur=0.09, tail=0.05), 0.5 + 0.03 * i)
-                kt.append(t)
-            m.D('snare', b, "....X...", snare, 0.8, f=180, dec=0.2)
-            continue
-        kt += m.D('kick', b, kp[q], hkick, 0.85, tail=0.14, dur=0.22)
-        m.D('snare', b, "....X.......X...", snare, 0.8, f=180, dec=0.2, nz=1.3)
-        m.D('hat', b, "xoxoxoxoxoxoxoxo" if b >= 8 else "x.x.x.x.x.x.x.x.", hat, 0.2, dec=0.02, pan=0.3)
-        if b >= 4:
-            m.D('fx', b, "..x.......x....." if q % 2 == 0 else "......x.......x.", clang, 0.35, pan=-0.6 if q < 2 else 0.6, f=330 + 90 * q, dec=0.25)
-        if b >= 2:
-            notes = [("E2", 0, 6), ("E2", 6, 4), ("F2", 10, 3), ("E2", 13, 3)] if q != 3 else [("E2", 0, 6), ("Bb2", 6, 4), ("G2", 10, 3), ("F2", 13, 3)]
-            for nt, st, ln in notes:
-                m.add('bass', m.bt(b, st), growl([nn(nt) + 12], ln * m.sl * 0.95, rate=170 / 60 * (1 if st == 0 else 2), idx=5, hi=2200, ratio=2 if st else 1, drive=5))
-    m.P('pad', 0, "E4+F4+B4" + " -" * 31, pad, cut=500, cut2=2500, att=1.5, rel=0.2, hp=300, spread=0.3, gt=1.0)
-    m.P('pad', 8, "E4+F4+B4" + " -" * 127, pad, cut=1200, cut2=2600, att=0.3, rel=0.1, hp=400, spread=0.3, gt=1.0)
-    m.P('pad', 17, "F4+Gb4+C5" + " -" * 111, pad, cut=1500, cut2=4500, att=0.1, rel=0.2, hp=400, spread=0.35, bend=1.0, gt=1.0)
-    al = "B5 . . . . . . . C6 . . . . . . . | B5 . . . . . . . F5 . . . E5 . . ."
-    for r in (8, 12, 17, 20):
-        m.P('bell', r, al, bell, dec=0.45, idx=3.2, ratio=2.41)
-    for b in range(17, 24):
-        m.P('stab', b, ". . . E4+B4+F5 . . . . . . E4+B4+F5 . . . . .", stab, cut=900, env=5000, fdec=0.07, adec=0.14, bend=-2)
-    for i, b in enumerate((3, 6, 10, 13, 16, 19, 22)):
-        w = riser(m.sl * 24, 500, 5000, 3.0, down=i % 2 == 1)
-        w = w * np.stack([np.linspace(1, 0, w.shape[1]), np.linspace(0, 1, w.shape[1])])[::(1 if i % 2 else -1)]
-        m.add('whoosh', m.bt(b, 0), w, 1.0)
-    m.add('fx', m.bt(2, 0), impact(), 1.0)
-    m.add('fx', m.bt(8, 0), impact(48), 1.0)
-    m.add('fx', m.bt(17, 0), impact(44), 1.1)
-    hole = mute(m, [(16, 0, 16)])
-    return hardmix(m, kt, [(0.4, m.get('bass'), 1), (0.34, rev(m.get('pad'), 2.0, 0.3) * hole, 1),
-                           (0.3, rev(delay(m.get('bell'), m.sl * 3, 0.5, 0.4), 1.6, 0.3) * hole, 0), (0.45, rev(m.get('stab'), 1.2, 0.3), 1),
-                           (0.4, rev(m.get('whoosh'), 1.5, 0.3), 0), (0.5, rev(m.get('tick'), 1.2, 0.3), 0), (0.3, rev(m.get('fx'), 1.8, 0.35), 0)],
-                   rms=-10, clip=1.6, dr=1.8)
+            if mood == 'nightmare':
+                heart(m, 'kick', b, 8, 0.9, 4)
+            if dark:
+                m.D('tick', b, "x.x.x.x.x.x.x.x." if b < 2 else "xxxxxxxxxxxxxxxx", tick, 0.5, pan=0.3 if b % 2 else -0.3, **tk)
+            else:
+                m.D('hat', b, "x.x-x.xox.x-x.xo", hat, 0.15, pan=0.25, dec=0.02)
+            if b == 3:
+                roll(m, 3, 8, 8, 2 if heavy else 1, 0.15, 0.8 if heavy else 0.5)
+        elif mood == 'normal':
+            kinds = c.get('dn', "TUTVTUTF" + "UJUVUJUF" + "HHHF")[b - 4]
+            if garage:
+                kinds = "GGGFGGGF" [(b - 4) % 8] if sec != 'out' else "HHHF"[q]
+            kt += brk(m, b, kinds, kg=0.85, sg=0.7, hg=0.2, sf=215, kp='light', sd=0.09)
+            if sec == 'B':
+                m.D('hat', b, "..x...x...x...x.", hat, 0.22, dec=0.06, pan=-0.2)
+                m.D('hat', b, "x-xox-xox-xox-xo", shaker, 0.5, pan=0.5)
+            if garage:
+                m.D('rim', b, "..x......x......", rim, 0.6, pan=-0.3)
+        elif mood == 'hard':
+            hole = sec == 'A' and b == 11
+            kt += m.D('kick', b, "x.........x." if hole else ("x.....x........." if sec == 'out' else "x.........x....."), kick, 0.9, **KICKS['soft'])
+            m.D('rim', b, "....x......." if hole else ("........x......." if sec == 'out' else "....x.......x..."), rim, 0.9, f=1500)
+            m.D('tick', b, "xxxxxxxxxxxx" if hole else "xxxxxxxxxxxxxxxx", tick, 0.5, pan=0.3 if b % 2 else -0.3, **tk)
+            if not hole:
+                m.D('snare', b, ".......o.o.....o" if q != 3 else ".......o.o..o.oo", snare, 0.45, f=220, dec=0.06, nz=0.8)
+            if sec == 'B':
+                m.D('hat', b, "..x...x...x...x.", hat, 0.2, dec=0.05, pan=-0.2)
+                m.D('snare', b, "....x.......x...", snare, 0.35, f=210, dec=0.08)
+            if hole:
+                heart(m, 'kick', b, 12, 1.0, 2)
+                holes.append((b, 12, 16))
+            if q == 0:
+                heart(m, 'tick', b, 0, 0.5, 4)
+        elif mood == 'super':
+            if sec == 'out':
+                kinds = "HHAC"[q]
+            else:
+                kinds = ("ABACABAC" if sec == 'A' else "UBUCUBAC")[(b - 4) % 8]
+            kt += brk(m, b, kinds, hats="x.xox.xox.xox.xo" if sec == 'A' else "xoxoxoxoxoxoxoxo", rd=sec == 'B', sf=205)
+            if b in (11, 19):
+                roll(m, b, 12, 4, 2, 0.3, 0.9, 210, 300)
+        else:
+            if b == 11:
+                kt += m.D('kick', b, "x.x.....", kick, **KICKS['heavy'])
+                m.D('snare', b, "....X...", snare, 0.8)
+                m.D('tick', b, "........x.x.x.xx", tick, 0.7)
+                heart(m, 'tick', b, 8, 1.0, 3)
+                holes.append((b, 8, 16))
+            elif b == 19:
+                kt += m.D('kick', b, "x.x.....", kick, **KICKS['heavy'])
+                m.D('snare', b, "....X...", snare, 0.8)
+                for i in range(16):
+                    t = m.bt(b, 8 + i * 0.5)
+                    m.add('kick', t, kick(**KICKS['heavy']), 0.45 + 0.035 * i)
+                    kt.append(t)
+            elif b in (22, 23):
+                kt += m.D('kick', b, "x...x...x...x..." if b == 22 else "x.x.x.x.xxxxxxxx", kick, **KICKS['heavy'])
+                roll(m, b, 0, 16, 1 if b == 22 else 2, 0.12 if b == 22 else 0.5, 0.5 if b == 22 else 1.0, 190, 300)
+            else:
+                kinds = "HH"[q] if sec == 'out' else "UBUC"[q]
+                kt += brk(m, b, kinds, hats="xoxoxoxoxoxoxoxo", rd=sec == 'B', sf=195)
+                if sec == 'B' and q % 2:
+                    for i in range(8):
+                        m.add('hat', m.bt(b, 12 + i * 0.5), hat(dec=0.012), 0.16, 0.4)
+    # ---- one-shots and long layers
+    m.add('fx', m.bt(2, 0), riser(m.sl * 32, 300, 9000), 0.9 if heavy else 0.6)
+    m.add('fx', m.bt(19, 0), riser(m.sl * 16, 500, 9000), 0.6)
+    if heavy:
+        for b_, f_ in ((4, 55), (12, 50), (20, 46)):
+            m.add('fx', m.bt(b_, 0), impact(f_), 1.0)
+    if dark:
+        m.add('fx', m.bt(10, 0), riser(m.sl * 28 if mood == 'hard' else m.sl * 24, 250, 6000), 0.7)
+        cl = [key - 12, key - 11, key - 6] if mood == 'nightmare' else [key - 12 + 7, key - 12 + 8]
+        tone = "+".join(["C4"] * len(cl))
+        for b0, ln, c1, c2, bd in ((0, 64, 400, 1500, 0), (12, 128, 800, 3200, 2.0 if mood == 'nightmare' else 0), (20, 64, 600, 2600, 0)):
+            x = pad(cl, ln * m.sl, cut=c1, cut2=c2, att=m.sl * ln * 0.4, rel=0.2, hp=350, spread=0.3, bend=bd)
+            m.add('tens', m.bt(b0, 0), x)
+    if mood == 'nightmare':
+        m.add('fx', m.bt(1, 8), clang(410, 0.6), 0.5, -0.5)
+        m.add('fx', m.bt(3, 0), clang(290, 0.7), 0.5, 0.5)
+        m.add('fx', m.bt(22, 0), riser(m.sl * 32, 300, 11000), 1.0)
+    # ---- mix
+    hole = mute(m, holes) if holes else 1.0
+    dk = duck(m.n, kt, {'normal': 0.4, 'hard': 0.45, 'super': 0.5, 'nightmare': 0.5}[mood], 0.07)
+    dr = m.get('kick') * 0.95 + m.get('snare') * 0.9 + m.get('hat') + m.get('rim') * 0.8
+    d3 = m.sl * 3
+    if mood == 'normal':
+        y = (drumbus(dr, 1.3, 0.08) * 0.78 + 0.5 * m.get('bass') * dk + 0.6 * wide(rev(m.get('comp') * dk, 1.0, 0.2))
+             + 0.72 * pan(rev(delay(m.get('hook'), d3, 0.35, 0.22), 1.2, 0.16), -0.08) + 0.3 * pan(rev(delay(m.get('bell'), d3, 0.3, 0.2), 1.8, 0.3), 0.2)
+             + 0.3 * rev(m.get('pad') * dk, 1.8, 0.3) + 0.3 * m.get('fx'))
+        return master(y, -13, 1.15, m.body)
+    if mood == 'hard':
+        y = (drumbus(dr, 1.2, 0.12, t60=0.6) * 0.7 + 0.52 * m.get('bass') * dk * hole + 0.5 * wide(rev(bq(m.get('comp'), 'lp', 2200) * dk, 1.8, 0.3)) * hole
+             + 0.85 * rev(delay(m.get('hook'), d3, 0.45, 0.32, lp=2400), 1.6, 0.22) * hole + 0.2 * rev(delay(m.get('bell'), d3, 0.4, 0.3), 2.2, 0.4) * hole
+             + 0.4 * rev(m.get('pad') * dk, 2.2, 0.35) * hole + 0.22 * rev(m.get('tens'), 2.0, 0.3) * hole
+             + 0.4 * rev(m.get('tick'), 1.0, 0.25) + 0.32 * m.get('fx'))
+        return master(shelf(y, 5000, -2), -14, 1.05, m.body)
+    y = (drumbus(dr, 2.0 if mood == 'super' else 2.3, 0.1, -16, 4) * 0.8 + 0.42 * m.get('bass') * dk * hole
+         + 0.5 * wide(rev(m.get('comp') * dk, 0.9, 0.18)) * hole + 0.42 * rev(m.get('stab') * dk, 1.0, 0.22) * hole
+         + 0.55 * rev(delay(m.get('hook'), d3, 0.35, 0.22), 1.1, 0.16) * dk * hole + 0.26 * rev(delay(m.get('bell'), d3, 0.45, 0.35), 1.6, 0.3) * hole
+         + 0.2 * rev(m.get('tens'), 2.0, 0.3) * dk * hole + 0.45 * rev(m.get('tick'), 1.2, 0.3) + 0.3 * rev(m.get('fx'), 1.5, 0.3))
+    return master(y, -10.5 if mood == 'super' else -10, 1.5 if mood == 'super' else 1.6, m.body)
 
 
-def m3():
-    """Last Bite: 180, the floor rises a semitone every four bars until it cuts."""
-    m = Mix(180, 24)
-    kt = []
-    ost = "A4+Bb4! . A4+Bb4? A4+Bb4 . A4+Bb4? A4+Bb4! . A4+Bb4? A4+Bb4 . A4+Bb4! A4+Bb4? . A4+Bb4 A4+Bb4?"
-    al = "E5 . . . . . . . F5 . . . . . . . | E5 . . . . . . . F5 . . . G#5 . . ."
-    rb = ["A1 - - - - - A1 - - - A1 - C2 - - -", "A1 - - - - - A1 - Bb1 - - - G#1 - - -"]
-    for b in range(4):
-        heart(m, 'kick', b, 0, 0.9, 3)
-        heart(m, 'kick', b, 8, 0.9, 3)
-        m.P('ost', b, ost, stab, cut=250 + 100 * b, env=900 + 500 * b, fdec=0.05, adec=0.1, gt=0.7, voices=3)
-    m.P('pad', 0, "A3+E4+Bb4" + " -" * 63, pad, cut=400, cut2=2500, att=2.0, rel=0.1, hp=250, gt=1.0)
-    roll(m, 3, 8, 8, 2)
-    for sec in range(5):
-        b0 = 4 + sec * 4
-        tr = sec
-        kt += brk(m, b0, "ABAC" if sec % 2 == 0 else "UBUC", hats="xoxoxoxoxoxoxoxo" if sec >= 2 else "x.xox.xox.xox.xo", sf=200 + 8 * sec)
-        for i in range(4):
-            m.P('ost', b0 + i, ost, stab, tr=tr, cut=500 + 150 * sec, env=2500 + 600 * sec, fdec=0.05, adec=0.1, gt=0.7, voices=3)
-            m.P('bass', b0 + i, rb[i % 2], reese, tr=tr + 12, cut=550 + 80 * sec, lfo=180 / 60 / (4 if i % 2 == 0 else 2), gt=0.95)
-        m.P('bell', b0, al, bell, tr=tr, dec=0.4, idx=3.0, ratio=2.76, rep=2)
-        m.P('pad', b0, "A4+C5+E5" + " -" * 63, pad, tr=tr, cut=900 + 300 * sec, att=0.05, rel=0.1, hp=350, bend=1.0, gt=1.0)
-        m.add('fx', m.bt(b0, 0), impact(55 - 2 * sec), 1.0)
-        m.add('fx', m.bt(b0 + 3, 0), riser(m.sl * 16, 400, 9000 + 500 * sec), 0.7)
-        if sec >= 3:
-            m.P('lead', b0, "A5 - - . A5 - - . Bb5 - - . A5 - G5 - | A5 - - . A5 - - . C6 - - . Bb5 - A5 -", lead, tr=tr, cut=1500, env=3000, fdec=0.1, rep=2, gt=0.85)
-    roll(m, 23, 0, 16, 2, 0.2, 1.0, 200, 320)
-    return hardmix(m, kt, [(0.42, m.get('bass'), 1), (0.5, rev(m.get('ost'), 0.8, 0.15), 1), (0.3, rev(m.get('pad'), 1.8, 0.3), 1),
-                           (0.3, rev(delay(m.get('bell'), m.sl * 3, 0.5, 0.4), 1.6, 0.3), 0), (0.36, rev(m.get('lead'), 1.0, 0.2), 1),
-                           (0.3, rev(m.get('fx'), 1.5, 0.3), 0)], rms=-10, clip=1.6)
+# ============================ compositions ============================
+Bb9, A7s, Dm9, Cm9, F13 = "Bb1:D4+F4+A4+C5", "A1:C#4+G4+C5", "D2:C4+E4+F4+A4", "C2:Bb3+D4+Eb4+G4", "F2:A3+Eb4+G4"
+Gm9, C9, Fma9, A7b = "G1:Bb3+D4+F4+A4", "C2:Bb3+D4+E4+G4", "F2:A3+C4+E4+G4", "A1:C#4+G4+Bb4"
 
+TIPTOE = dict(  # D minor, light two-step dnb
+    bpm=172, key=74,
+    A=[Bb9, A7s, Dm9, Cm9 + " / " + F13] * 2,
+    B=[Gm9, C9, Fma9, A7s] * 2,
+    hA=["A4 . D5 . . F5 . E5 . . D5 . A4 . . .", "C5 . . Bb4 . . A4 . . . G4 . A4 . C#5 .",
+        "D5 . . . . . F5 . E5 . D5 . . A4 . .", "G4 . Bb4 . D5 . . Eb5 . . D5 . C5 . A4 .",
+        "A4 . D5 . . F5 . E5 . . D5 . A4 . . .", "C5 . . Bb4 . . A4 . . . G4 . A4 . C#5 .",
+        "D5 . . . . . F5 . A5 . G5 . . F5 . .", "E5 . . D5 . . C5 . . A4 . . D5 - - ."],
+    hB=["Bb4 . . D5 . . F5 . . . G5 . F5 . D5 .", "E5 . . G5 . . Bb5 . A5 . . G5 . . E5 .",
+        "A5 . . . G5 . E5 . . C5 . . E5 . G5 .", "G5 . . F5 . . E5 . C#5 . . . A4 . C5 .",
+        "Bb4 . . D5 . . F5 . . . G5 . F5 . D5 .", "E5 . . G5 . . Bb5 . A5 . . G5 . . E5 .",
+        "A5 . . . G5 . E5 . . C5 . . A4 . C5 .", "C#5 . . E5 . . G5 . Bb5 . A5 . . . . ."])
 
-SONGS = [
-    ('normal_1_tiptoe', n1), ('normal_2_midnight_snack', n2), ('normal_3_fridge_light', n3),
-    ('hard_1_lights_out', h1), ('hard_2_hold_your_breath', h2), ('hard_3_footsteps', h3),
-    ('super_1_caught', x1), ('super_2_freezer_burn', x2), ('super_3_heartbeat_overdrive', x3),
-    ('nightmare_1_dont_look_back', m1), ('nightmare_2_eyes_in_the_dark', m2), ('nightmare_3_last_bite', m3),
-]
+SNACK = dict(  # E minor, swung 2-step
+    bpm=138, swing=0.26, key=76,
+    A=["A1:C4+E4+G4+B4", "D2:C4+E4+F#4+A4", "G1:B3+D4+F#4+A4", "C2:B3+D4+E4+G4",
+       "F#2:A3+C4+E4", "B1:A3+C4+D#4+F#4", "E2:B3+D4+F#4+G4", "E2:B3+D4+F#4+G4"],
+    B=["C2:B3+D4+E4+G4", "B1:A3+D4+F#4", "A1:C4+E4+G4+B4", "B1:A3+D#4+G4"] * 2,
+    hA=["E5 . . G5 . . E5 . . D5 . . B4 . . .", "C5 . . E5 . . F#5 . . . A5 . . . . .",
+        "D5 . . F#5 . . D5 . . B4 . . A4 . . .", "B4 . . D5 . . E5 . . . G5 . . . . .",
+        "C5 . . E5 . . C5 . . A4 . . . . C5 .", "D#5 . . F#5 . . A5 . . . C6 . B5 . A5 .",
+        "G5 . . F#5 . . D5 . . B4 . . E5 - - -", ". . . . . . . . B4 . D5 . E5 . G5 ."],
+    hB=["G5 . E5 . . D5 . E5 . . G5 . . . B5 .", "A5 . F#5 . . D5 . F#5 . . A5 . . . . .",
+        "G5 . E5 . . C5 . E5 . . B5 . . A5 . .", "G5 . . F#5 . . D#5 . . . B4 . D#5 . F#5 .",
+        "G5 . E5 . . D5 . E5 . . G5 . . . B5 .", "A5 . F#5 . . D5 . F#5 . . A5 . . . . .",
+        "G5 . E5 . . C5 . E5 . . B5 . . A5 . .", "B5 . . A5 . . F#5 . . D#5 . . F#5 - - ."])
+
+CREEP = dict(  # G minor, bass creeping down a step at a time
+    bpm=166, key=79, dn="HHHHHHHF" + "TUTVTUTF" + "HHHF",
+    A=["G2:Bb3+D4+F4+A4", "F#2:A3+C4+Eb4", "F2:Bb3+D4+G4", "E2:G3+Bb3+D4",
+       "Eb2:G3+Bb3+D4+F4", "D2:A3+C4+F4", "C2:Bb3+D4+Eb4+G4", "D2:F#3+C4+F4"],
+    B=["C2:Bb3+D4+Eb4+G4", "F2:A3+Eb4+G4", "Bb1:A3+C4+D4+F4", "Eb2:G3+Bb3+D4+F4",
+       "A1:G3+C4+Eb4", "D2:F#3+C4+Eb4", "G2:Bb3+D4+F4+A4", "D2:F#3+C4+F4"],
+    hA=["D5 . . . Bb4 . D5 . . G5 . . F5 . D5 .", "C5 . . . A4 . C5 . . Eb5 . . D5 . C5 .",
+        "Bb4 . . . G4 . Bb4 . . D5 . . C5 . Bb4 .", "A4 . . . G4 . . Bb4 . . D5 . . . . .",
+        "G5 . . . F5 . D5 . . Bb4 . . D5 . F5 .", "F5 . . . D5 . C5 . . A4 . . C5 . D5 .",
+        "Eb5 . . . D5 . C5 . . G4 . . Bb4 . C5 .", "D5 . . C5 . . A4 . F#4 . . A4 . C5 . Eb5"],
+    hB=["G5 . . Eb5 . . D5 . . C5 . . D5 . Eb5 .", "G5 . . Eb5 . . C5 . . A4 . . C5 . Eb5 .",
+        "F5 . . D5 . . C5 . . A4 . . Bb4 . D5 .", "G5 . . . F5 . D5 . . Bb4 . . . . . .",
+        "Eb5 . . C5 . . A4 . . G4 . . A4 . C5 .", "Eb5 . . D5 . . C5 . . F#4 . . A4 . C5 .",
+        "Bb4 . . D5 . . G5 . . . A5 . G5 . . .", "F5 . . . D5 . . C5 . . A4 . F#4 . . ."])
+
+Fm9, Db9, C7s, C7b = "F2:Ab3+C4+Eb4+G4", "Db2:F3+Ab3+C4+Eb4", "C2:E4+Bb4+Eb5", "C2:E4+Bb4+Db5"
+CAUGHT = dict(  # F minor, breakbeat hardcore
+    bpm=174, key=77,
+    A=[Fm9, Fm9, Db9, C7s, Fm9, "Ab1:Gb3+C4+Eb4+Bb4", Db9, "G1:F3+Bb3+Db4 / C2:E4+G4+Bb4"],
+    B=["Bb1:Ab3+C4+Db4+F4", "C2:E4+G4+Bb4", Fm9, "Eb2:Ab3+C4+Eb4+G4", Db9, C7s, Fm9, C7b],
+    hA=["C5 . C5 Eb5 . F5 . . G5 . F5 . Eb5 . C5 .", "Bb4 . C5 . . . . . . . Ab4 Bb4 C5 . Eb5 .",
+        "F5 . F5 Ab5 . G5 . . F5 . Eb5 . C5 . Ab4 .", "G4 . Bb4 . . E5 . . Eb5 . . Db5 . . C5 .",
+        "C5 . C5 Eb5 . F5 . . G5 . F5 . Eb5 . C5 .", "Bb4 . C5 . . . Eb5 . . Gb5 . . Eb5 . C5 .",
+        "F5 . F5 Ab5 . C6 . . Bb5 . Ab5 . G5 . F5 .", "G5 . . F5 . Db5 . Bb4 . E5 . . G5 . Bb5 ."],
+    hB=["Db5 . C5 . Bb4 . . F5 . . Db5 . C5 . Bb4 .", "C5 . Bb4 . G4 . . E5 . . C5 . Bb4 . G4 .",
+        "Ab4 . C5 . Eb5 . . G5 . . F5 . . . . .", ". . . . C5 Eb5 F5 . G5 . Ab5 . G5 . Eb5 .",
+        "F5 . . Ab5 . . C6 . . . Bb5 . Ab5 . F5 .", "E5 . . G5 . . Bb5 . . . Ab5 . G5 . E5 .",
+        "F5 . . . . . C5 . Eb5 . F5 . . C5 . .", "Db5 . . C5 . . Bb4 . G4 . . E4 . G4 Bb4 C5"])
+
+FREEZER = dict(  # A minor
+    bpm=176, key=81,
+    A=["F2:A3+C4+E4+G4", "E2:G#3+D4+G4", "A1:G3+B3+C4+E4", "G1:F3+A3+Bb3+D4 / C2:Bb3+E4+A4",
+       "F2:A3+C4+E4+G4", "E2:G#3+D4+F4", "A1:G3+B3+C4+E4", "A1:G3+B3+C4+E4"],
+    B=["D2:F3+A3+C4+E4", "G1:F3+B3+E4", "C2:B3+D4+E4+G4", "F2:A3+C4+E4+G4",
+       "B1:A3+D4+F4", "E2:G#3+D4+G4", "A1:G3+B3+C4+E4", "E2:G#3+D4+F4"],
+    hA=["E5 . . C5 . . A4 . C5 . E5 . . G5 . .", "G#5 . . E5 . . D5 . . C5 . B4 . . G#4 .",
+        "A4 . C5 . E5 . . A5 . . G5 . E5 . . .", "D5 . . Bb4 . . D5 . E5 . . G5 . . A5 .",
+        "E5 . . C5 . . A4 . C5 . E5 . . G5 . .", "F5 . . E5 . . D5 . . B4 . . G#4 . B4 D5",
+        "C5 . . . . . E5 . . A5 . . . G5 . E5", "A5 - - . . . . . E5 . G5 . A5 . C6 ."],
+    hB=["F5 . E5 . . D5 . . A4 . . D5 . E5 F5 .", "E5 . D5 . . B4 . . G4 . . B4 . D5 E5 .",
+        "E5 . D5 . . C5 . . G4 . . C5 . D5 E5 .", "G5 . . . E5 . . C5 . . A4 . . . . .",
+        "D5 . . F5 . . A5 . . . F5 . D5 . B4 .", "D5 . . E5 . . G5 . . . G#5 . B5 . . .",
+        "A5 . . E5 . . C5 . . A4 . . C5 . E5 .", "F5 . . D5 . . B4 . G#4 . . . E5 . G#5 ."])
+
+OVERDRIVE = dict(  # D minor, cousin of Tiptoe
+    bpm=170, key=74,
+    A=[Dm9, "C2:C4+E4+F4+A4", Bb9, A7s, Gm9, A7b, Dm9, A7s],
+    B=[Bb9, C9, Dm9, Dm9, Gm9, C9, Fma9, A7b],
+    hA=["D5 . F5 . A5 . . G5 . . F5 . D5 . . .", "E5 . F5 . A5 . . G5 . . E5 . C5 . . .",
+        "D5 . F5 . A5 . . C6 . . A5 . F5 . . .", "E5 . . C#5 . . Bb4 . . G4 . . A4 . C#5 E5",
+        "D5 . . Bb4 . . G4 . Bb4 . D5 . . F5 . .", "E5 . . C#5 . . Bb4 . C#5 . E5 . . G5 . .",
+        "F5 . . . E5 . D5 . . A4 . . D5 . . .", ". . C#5 . E5 . G5 . Bb5 . A5 . . . . ."],
+    hB=["A5 . . F5 . . D5 . F5 . . A5 . . . .", "G5 . . E5 . . D5 . E5 . . G5 . . Bb5 .",
+        "A5 . . . . . F5 . E5 . D5 . . . . .", ". . . . A4 C5 D5 . F5 . E5 . D5 . C5 .",
+        "Bb4 . D5 . F5 . . A5 . . G5 . F5 . D5 .", "Bb4 . D5 . E5 . . G5 . . E5 . D5 . C5 .",
+        "A4 . C5 . E5 . . G5 . . A5 . . . . .", "Bb5 . . A5 . . G5 . E5 . . C#5 . . A4 ."])
+
+SONGS = []
+for i, (nm, c) in enumerate([('tiptoe', TIPTOE), ('midnight_snack', SNACK), ('creep', CREEP)], 1):
+    SONGS.append((f'normal_{i}_{nm}', lambda c=c: build(c, 'normal')))
+for i, (nm, c) in enumerate([('tiptoe', TIPTOE), ('midnight_snack', SNACK), ('creep', CREEP)], 1):
+    SONGS.append((f'hard_{i}_{nm}', lambda c=c: build(c, 'hard')))
+for i, (nm, c) in enumerate([('caught', CAUGHT), ('freezer_burn', FREEZER), ('overdrive', OVERDRIVE)], 1):
+    SONGS.append((f'super_{i}_{nm}', lambda c=c: build(c, 'super')))
+for i, (nm, c) in enumerate([('caught', CAUGHT), ('freezer_burn', FREEZER), ('overdrive', OVERDRIVE)], 1):
+    SONGS.append((f'nightmare_{i}_{nm}', lambda c=c: build(c, 'nightmare')))
