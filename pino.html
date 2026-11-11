@@ -347,7 +347,7 @@ body.hard .hardtag{display:inline-block}
 #patrol.watch .vig{background:radial-gradient(120% 90% at 50% 55%,rgba(60,0,0,0) 42%,rgba(60,0,0,.5) 100%)}
 #patrol .pk{position:absolute;right:0;bottom:22%;width:min(46vw,230px);height:auto;transform:translateX(105%);transition:transform .5s cubic-bezier(.3,1.2,.5,1),filter .3s}
 #patrol.warn .pk{transform:translateX(105%)}
-#patrol.watch .pk{transform:translateX(42%) rotate(-6deg);filter:none}
+#patrol.watch .pk{transform:translateX(42%) rotate(-6deg)}
 #patrol.lean .pk{transform:translateX(18%) rotate(-1deg) scale(1.28);transform-origin:100% 100%;transition:transform .32s cubic-bezier(.2,1.4,.4,1)}
 #patrol.lean .pt,#patrol.lean .nohand,#patrol.lean .pksay{display:none}
 #patrol .pksay{position:absolute;right:10px;bottom:calc(22% + min(46vw,230px)*1.12);max-width:min(48vw,220px);margin:0;padding:9px 13px 8px;
@@ -365,6 +365,8 @@ html[lang="ja"] #patrol .pksay,html[lang="ja"] #tutTxt,html[lang="ja"] #coach .c
 #patrol .pt{position:absolute;left:50%;top:calc(var(--midY,240px) - 55px);transform:translateX(-50%);animation:ptBob .5s ease-in-out infinite alternate}
 @keyframes ptBob{to{transform:translateX(-50%) translateY(-6px) scale(1.04)}}
 #cele .cele-yell{display:none;width:min(48vw,230px);height:auto}
+#cele .cele-img,#cele .cele-yell,#patrol .pk,#pkShove,#pkLaugh,#yell img{filter:drop-shadow(2px 0 0 #FFF8EC) drop-shadow(-2px 0 0 #FFF8EC) drop-shadow(0 2px 0 #FFF8EC) drop-shadow(0 -2px 0 #FFF8EC) drop-shadow(0 3px 0 rgba(58,36,22,.4))}
+body.lowspec :is(#cele .cele-img,#cele .cele-yell,#patrol .pk,#pkShove,#pkLaugh,#yell img){filter:none}
 #cele.kouga{transform:none}
 #cele.kouga .cele-yell{display:block}
 #cele.kouga .cele-in{align-items:flex-end}
