@@ -1446,7 +1446,7 @@ const marimba=(n,o)=>fm(NOTE(n),Object.assign({ratio:4,index:1.1,mdecay:0.04,dur
 const kalimba=(n,o)=>fm(NOTE(n),Object.assign({ratio:2,index:0.8,mdecay:0.08,dur:0.55,vol:0.17,send:0.45},o));
 const bell=(n,o)=>fm(NOTE(n),Object.assign({ratio:3.5,index:2,mdecay:0.35,dur:1.2,vol:0.09,send:0.7},o));
 const woodblock=(n,o)=>fm(NOTE(n),Object.assign({ratio:1.5,index:3,mdecay:0.015,dur:0.09,vol:0.16,send:0.15},o));
-function pop(f0,f1,vol,dur,o){ if(!(o&&o.bus)){ const k=SFXP(); f0*=k; f1*=k; }
+function blip(f0,f1,vol,dur,o){ if(!(o&&o.bus)){ const k=SFXP(); f0*=k; f1*=k; }
   const a=audio(); if(!a) return; o=o||{}; const t=a.currentTime+(o.delay||0);
   const osc=a.createOscillator(); osc.type='sine'; osc.frequency.setValueAtTime(f0,t); osc.frequency.exponentialRampToValueAtTime(f1,t+dur*0.7);
   const g=a.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(vol,t+0.003); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
@@ -1682,18 +1682,18 @@ const sfx={
     o.start(t); lfo.start(t); o.stop(t+0.9); lfo.stop(t+0.9);
     bell(100,{vol:0.03,delay:0.6}); bell(104,{vol:0.022,delay:0.68});
   },
-  grab(p){ if(p){ marimba(88,{vol:0.18}); bell(95,{vol:0.08,delay:0.05}); bell(100,{vol:0.05,delay:0.1}); } else { marimba(84,{vol:0.16}); pop(900,600,0.08,0.06); } },
-  miss(){ pop(260,120,0.2,0.16,{send:0.1}); woodblock(55,{vol:0.1,delay:0.03}); },
+  grab(p){ if(p){ marimba(88,{vol:0.18}); bell(95,{vol:0.08,delay:0.05}); bell(100,{vol:0.05,delay:0.1}); } else { marimba(84,{vol:0.16}); blip(900,600,0.08,0.06); } },
+  miss(){ blip(260,120,0.2,0.16,{send:0.1}); woodblock(55,{vol:0.1,delay:0.03}); },
   eat(i,m){
     const sh=TIER_SHIFT[Math.min(4,Math.max(1,Math.round(m*2)/2))]||0, n=penta(i-1)+sh;
-    pop(520+i*60,190,0.24,0.11,{pan:(rnd()-.5)*0.3}); marimba(n,{vol:0.13,delay:0.01}); sNoise(1500,0.9,0.08,0.035,'lowpass',0.01);
+    blip(520+i*60,190,0.24,0.11,{pan:(rnd()-.5)*0.3}); marimba(n,{vol:0.13,delay:0.01}); sNoise(1500,0.9,0.08,0.035,'lowpass',0.01);
     if(m>=4) bell(n+12,{vol:0.04,delay:0.02});
   },
   lucky(){ [84,88,91,96,100].forEach((n,i)=>bell(n,{vol:0.07,delay:i*0.045})); kalimba(72,{vol:0.1}); },
   tier(){ [76,79,84].forEach((n,i)=>kalimba(n,{vol:0.13,delay:i*0.05})); bell(96,{vol:0.07,delay:0.15}); },
   speed(){ whoosh(600,4200,0.26,0.16); [84,88,91].forEach((n,i)=>marimba(n,{vol:0.1,delay:0.08+i*0.04})); },
   thud(){ thump(70,0.4,{dur:0.3}); },
-  toss(){ whoosh(400,3400,0.36,0.24,{pan:0.35}); pop(420,900,0.07,0.12,{delay:0.02}); },
+  toss(){ whoosh(400,3400,0.36,0.24,{pan:0.35}); blip(420,900,0.07,0.12,{delay:0.02}); },
   yay(){
     [79,84,88].forEach((n,i)=>marimba(n,{vol:0.14,delay:i*0.07})); kalimba(60,{vol:0.12,delay:0.14}); bell(96,{vol:0.07,delay:0.22}); bell(103,{vol:0.04,delay:0.3});
   },
@@ -1758,6 +1758,20 @@ function sheenCanvas(){
     for(let k=0;k<4;k++){ x+=(rnd()-0.5)*70; y+=(rnd()-0.5)*70; g.lineTo(x,y); } g.stroke(); }
   return c;
 }
+function lidInCanvas(){
+  const w=512,h=328,c=cv(w,h),g=c.getContext('2d');
+  g.fillStyle='#DACBAA'; g.fillRect(0,0,w,h);
+  for(let i=0;i<900;i++){ g.fillStyle=rnd()<0.5?'rgba(255,250,236,.10)':'rgba(120,96,66,.07)'; g.fillRect(rnd()*w,rnd()*h,1+rnd()*5,1); }
+  let gr=g.createLinearGradient(0,0,0,h); gr.addColorStop(0,'rgba(74,52,34,.46)'); gr.addColorStop(0.2,'rgba(74,52,34,.24)'); gr.addColorStop(0.55,'rgba(74,52,34,.08)'); gr.addColorStop(1,'rgba(74,52,34,0)');
+  g.fillStyle=gr; g.fillRect(0,0,w,h);
+  g.fillStyle='rgba(58,36,22,.15)'; g.beginPath(); g.moveTo(0,0); g.lineTo(w,0); g.lineTo(w,h*0.2); g.quadraticCurveTo(w*0.5,h*0.31,0,h*0.2); g.closePath(); g.fill();
+  for(const x of [0,w]){ gr=g.createLinearGradient(x,0,x?w-70:70,0); gr.addColorStop(0,'rgba(74,52,34,.3)'); gr.addColorStop(1,'rgba(74,52,34,0)'); g.fillStyle=gr; g.fillRect(x?w-70:0,0,70,h); }
+  g.strokeStyle='rgba(58,36,22,.16)'; g.lineWidth=2; g.setLineDash([9,7]);
+  g.beginPath(); g.moveTo(26,h-30); g.lineTo(w-26,h-30); g.stroke(); g.setLineDash([]);
+  g.fillStyle='rgba(255,252,240,.3)'; g.fillRect(0,h-8,w,8);
+  return c;
+}
+function lidInTex(){ const t=new THREE.CanvasTexture(lidInCanvas()); t.encoding=THREE.sRGBEncoding; t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(1/W,1/D); t.offset.set(0.5,0.5); return t; }
 function envCube(){
   const face=(top,bot,win)=>{ const c=cv(64,64),g=c.getContext('2d'),gr=g.createLinearGradient(0,0,0,64);
     gr.addColorStop(0,top); gr.addColorStop(1,bot); g.fillStyle=gr; g.fillRect(0,0,64,64);
@@ -1959,12 +1973,12 @@ function panelGeos(pts,len){
   uv.needsUpdate=true;
   return {face,body:new THREE.ExtrudeGeometry(sh,{depth:T,bevelEnabled:false,curveSegments:1})};
 }
-function wallGeos(fn,len,nseg){
-  const body=panelGeos([new THREE.Vector2(-len/2,0),new THREE.Vector2(len/2,0)].concat(cutLine(fn,len/2,-len/2,segN(900,300))),len);
+function wallGeos(fn,len,nseg,flat){
+  const body=panelGeos([new THREE.Vector2(-len/2,0),new THREE.Vector2(len/2,0)].concat(cutLine(fn,len/2,-len/2,flat?1:segN(360,180))),len);
   const segs=[];
   for(let i=0;i<nseg;i++){
     const a=-len/2+len*i/nseg, b=-len/2+len*(i+1)/nseg;
-    const pts=cutLine(fn,a,b,segN(80,30)).concat([new THREE.Vector2(b,H),new THREE.Vector2(a,H)]);
+    const pts=cutLine(fn,a,b,flat?1:segN(36,18)).concat([new THREE.Vector2(b,H),new THREE.Vector2(a,H)]);
     if(pts.every(p=>p.y>H-0.003)) { segs.push(null); continue; }
     segs.push(Object.assign(panelGeos(pts,len),{mid:(a+b)/2}));
   }
@@ -2037,7 +2051,7 @@ function shapeLathe(kind,segs,phiStart,phiLen){
   }
   g.computeVertexNormals(); return g;
 }
-function rareGeo(kind){ return shapeLathe(kind,segN(120,32),0,Math.PI*2); }
+function rareGeo(kind){ return shapeLathe(kind,segN(56,28),0,Math.PI*2); }
 function resample(pts,n){
   const L=[0]; for(let i=1;i<pts.length;i++) L.push(L[i-1]+pts[i].distanceTo(pts[i-1]));
   const out=[]; let j=0;
@@ -2046,7 +2060,7 @@ function resample(pts,n){
   return out;
 }
 function bittenGeo(kind){
-  const g=new THREE.LatheGeometry(resample(pinoPts,segN(60,24)),segN(110,32)), pos=g.attributes.position, n=pos.count;
+  const g=new THREE.LatheGeometry(resample(pinoPts,segN(30,16)),segN(48,24)), pos=g.attributes.position, n=pos.count;
   const cols=new Float32Array(n*3), choc=col('#3A2016'), cream=col('#E9DBB8');
   const C=new THREE.Vector3(0.04,0.48,0.35), R=new THREE.Vector3(0.33,0.27,0.31);
   for(let i=0;i<n;i++){
@@ -2070,8 +2084,8 @@ const G={
   back:new THREE.BoxGeometry(W,H,T),
   top:topPieces(),
   wallF:wallGeos(dF,W,NF),
-  wallR:wallGeos(x=>dS(x+D/2),D,NS),
-  wallL:wallGeos(x=>dS(D/2-x),D,NS),
+  wallR:wallGeos(x=>dS(x+D/2),D,NS,true),
+  wallL:wallGeos(x=>dS(D/2-x),D,NS,true),
   lid:new THREE.BoxGeometry(W+0.03,T,D+0.03),
   filmL:new THREE.BoxGeometry(FW/2+FILM_OFF-0.003,FH,FD),
   filmR:new THREE.BoxGeometry(FW/2-FILM_OFF-0.003,FH,FD),
@@ -2131,6 +2145,7 @@ function buildMaterials(){
     tape:std('#FBFBF8',0.28),
     tray:std('#4A2C1E',0.3),
     inner:std('#D6D8D4',0.9,{side:THREE.DoubleSide}),
+    lidIn:new THREE.MeshStandardMaterial({map:lidInTex(),roughness:0.95}),
     dimple:std('#55331F',0.3),
     cup:std('#4A2C1E',0.3,{side:THREE.DoubleSide}),
     choco:frostRim(std('#5B3420',0.36,{metalness:0.05,gradientMap:CHOCO_RAMP}),0.5),
@@ -2217,7 +2232,7 @@ function makeBox(){
   const topPiece=(geo,parent)=>{const m1=new THREE.Mesh(geo.body,M.card),m2=new THREE.Mesh(geo.face,FM.top);
     m1.castShadow=m1.receiveShadow=true; m2.receiveShadow=true; parent.add(m1,m2); return [m1,m2];};
   topPiece(G.top.left,g); topPiece(G.top.right,g);
-  const lidTop=topPiece(G.top.lid,g);
+  const lidTop=topPiece(G.top.lid,g); lidTop[0].material=[M.lidIn,M.card];
   const front=[], sides=[];
   G.wallF.segs.forEach((sg,i)=>{ if(sg) front.push({m:panel(g,sg,FM.front,'f'),k:'f',i}); });
   front.sort((a,b)=>Math.abs(a.i-(NF-1)/2)-Math.abs(b.i-(NF-1)/2));
@@ -2258,7 +2273,9 @@ function makeBox(){
   g.traverse(o=>{ if(o.isMesh&&[G.tray,G.cup,G.pino,G.heart,G.star,G.dimple].includes(o.geometry)) o.receiveShadow=false; });
   lidPivot.traverse(o=>{ if(o.isMesh) o.receiveShadow=false; });
   inkify(g);
-  return {group:g,tearList,lidPivot,pinos,pick,filmL,filmR,tapeF,tapeT,ftab,
+  const inside=[pick]; g.children.forEach(o=>{ if(o.isMesh&&[G.tray,G.cup,G.pino,G.heart,G.star,G.dimple].includes(o.geometry)) inside.push(o); });
+  inside.forEach(o=>o.visible=false);
+  return {group:g,inside,tearList,lidPivot,pinos,pick,filmL,filmR,tapeF,tapeT,ftab,
     filmP:0,filmStep:0,tearP:0,segIdx:0,eaten:0,jitter:0,eatStart:0};
 }
 
@@ -2627,8 +2644,9 @@ function lidAngle(p){
   if(p<TEAR_FRONT+TEAR_SIDE) return -0.06-0.9*((p-TEAR_FRONT)/TEAR_SIDE);
   return -0.96-0.9*easeOut((p-TEAR_FRONT-TEAR_SIDE)/(1-TEAR_FRONT-TEAR_SIDE));
 }
+function showInside(b){ if(b&&b.inside){ b.inside.forEach(o=>o.visible=true); b.inside=null; } }
 function addTear(amount){
-  const b=cur; b.tearP=Math.min(1,b.tearP+amount);
+  const b=cur; showInside(b); b.tearP=Math.min(1,b.tearP+amount);
   const L=b.tearList; let snd=0;
   while(b.segIdx<L.length&&L[b.segIdx].at<=b.tearP){
     const s=L[b.segIdx], m=s.m;
@@ -3516,7 +3534,7 @@ function pickDecoy(){ const r=rnd(), e=['taiyaki','eggplant','egg','fishbone','t
   return DECOYS[k]||(DECOYS[k]=DECOY_MAKE[k]()); }
 function decoyIn(kind){
   if(kind){ decoyAway(true); DECOY=DECOYS[kind]||(DECOYS[kind]=DECOY_MAKE[kind]()); } else if(!(DECOY&&DECOY.visible)) DECOY=pickDecoy(); const g=DECOY, tok=g.userData.mv=(g.userData.mv||0)+1; g.visible=true; g.position.set(0,3.2,0); g.rotation.set(0,(rnd()-0.5)*0.18,0); g.scale.set(1,1,1); g.userData.out=false;
-  g.position.z=0; tween(0.26,k=>{ if(g.userData.mv!==tok) return; g.position.y=3.2*(1-k*k); },()=>{ if(g.userData.mv!==tok) return; g.position.y=0; thump(90,0.3,{dur:0.18}); pop(500,240,0.12,0.1);
+  g.position.z=0; tween(0.26,k=>{ if(g.userData.mv!==tok) return; g.position.y=3.2*(1-k*k); },()=>{ if(g.userData.mv!==tok) return; g.position.y=0; thump(90,0.3,{dur:0.18}); blip(500,240,0.12,0.1);
     tween(0.28,k=>{ const w=(1-k)*Math.cos(k*Math.PI*2.4); g.scale.set(1+0.06*w,1-0.14*w,1+0.06*w); },()=>g.scale.set(1,1,1)); });
 }
 function decoyAway(instant){
