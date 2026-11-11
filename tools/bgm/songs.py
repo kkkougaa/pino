@@ -278,13 +278,9 @@ def build(c, mood):
             if mood == 'nightmare':
                 heart(m, 'kick', b, 8, 0.9, 4)
             if dark:
-                m.D('tick', b, "x...x...x...x..." if b < 2 else "x.x.x.x.x.x.x.x.", tck, 0.5, pan=0.3 if b % 2 else -0.3)
-            else:
-                m.D('hat', b, "x.x.x.x.x.x.x.x.", hc, 0.3, pan=0.25)
+                m.D('tick', b, "x.......x.......", tck, 0.5, pan=0.3 if b % 2 else -0.3)
             if b >= 2:
                 kt += brk(m, b, 'T' if b == 2 else 'F', kg=0.9, sg=0.75, hg=0.25, kp='heavy' if heavy else ('soft' if dark else 'light'), big=heavy)
-            if b == 3:
-                roll(m, 3, 12, 4, 2, 0.3, 0.9)
         elif mood == 'normal':
             kinds = c.get('dn', "TUTVTUTF" + "UJUVUJUF" + "HHHF")[b - 4]
             if garage:
@@ -294,7 +290,7 @@ def build(c, mood):
                 m.D('rim', b, "..x......x......", rimc, 0.6, pan=-0.3)
         elif mood == 'hard':
             hole = sec == 'A' and b == 11
-            m.D('tick', b, "x.x.x.x.x.x." if hole else "x.x.x.x.x.x.x.x.", tck, 0.5, pan=0.3 if b % 2 else -0.3)
+            m.D('tick', b, "x.......x..." if hole else "x.......x.......", tck, 0.5, pan=0.3 if b % 2 else -0.3)
             if hole:
                 kt += m.D('kick', b, "x.........x.", k_soft, 0.9)
                 m.D('snare', b, "....x.......", sn, 0.7, p=0.94, big=False)
