@@ -368,25 +368,25 @@ def build(c, mood):
         stem['d'], stem['over'] = x, over
         return x
     dk = duck(m.n, kt, {'normal': 0.4, 'hard': 0.45, 'super': 0.5, 'nightmare': 0.5}[mood], 0.07)
-    dr = (norm(bq(m.get('kick'), 'hp', 35), -17) + norm(m.get('snare'), -12.5) + norm(bq(m.get('hat'), 'lp', 11000), -28)
+    dr = (norm(bq(m.get('kick'), 'hp', 35), -21) + norm(m.get('snare'), -12.5) + norm(bq(m.get('hat'), 'lp', 11000), -28)
           + norm(m.get('rim'), -24))
     d3 = m.sl * 3
     fx = norm(m.get('fx'), -22)
     low = bq(bassz, 'hp', 60) + norm(m.get('sub'), -17) if not heavy else norm(m.get('reese'), -14.5) + bq(bassz, 'hp', 120)
     if mood == 'normal':
-        y = (DR(drumbus(dr, 1.3, 0.08), 3.0) + low * dk + wide(rev(comp_ * dk, 1.0, 0.2))
+        y = (DR(drumbus(dr, 1.3, 0.08), 1.5) + low * dk + wide(rev(comp_ * dk, 1.0, 0.2))
              + pan(rev(delay(hook, d3, 0.35, 0.2), 1.2, 0.16), -0.08) + pan(rev(delay(bell_, d3, 0.3, 0.2), 1.8, 0.3), 0.2)
              + rev(pad_ * dk, 1.8, 0.3) + fx)
         y = ratio(stem, y)
         return master(y, -13, 1.15, m.body)
     if mood == 'hard':
-        y = (DR(drumbus(dr, 1.2, 0.14, t60=0.6), 1.5) + bq(low, 'lp', 900) * dk * hole + wide(rev(bq(comp_, 'lp', 2200) * 0.7 * dk, 1.8, 0.3)) * hole
+        y = (DR(drumbus(dr, 1.2, 0.14, t60=0.6), 0.5) + bq(low, 'lp', 900) * dk * hole + wide(rev(bq(comp_, 'lp', 2200) * 0.7 * dk, 1.8, 0.3)) * hole
              + rev(delay(bq(hook, 'lp', 3500), d3, 0.45, 0.32, lp=2400), 1.6, 0.22) * hole + rev(delay(bell_, d3, 0.4, 0.3), 2.2, 0.4) * 0.8 * hole
              + rev(pad_ * dk, 2.2, 0.35) * 1.2 * hole + norm(m.get('tens'), -29) * hole
              + norm(rev(m.get('tick'), 1.0, 0.25), -27) + fx)
         y = ratio(stem, y)
         return master(shelf(y, 5000, -2), -14, 1.05, m.body)
-    y = (DR(drumbus(dr, 1.7 if mood == 'super' else 2.0, 0.1, -16, 4), 4.0) + low * dk * hole
+    y = (DR(drumbus(dr, 1.7 if mood == 'super' else 2.0, 0.1, -16, 4), 2.5) + low * dk * hole
          + wide(rev(comp_ * dk, 0.9, 0.18)) * hole + rev(stab_ * dk, 1.0, 0.22) * hole
          + rev(delay(hook + hook2, d3, 0.35, 0.22), 1.1, 0.16) * dk * hole + rev(delay(bell_, d3, 0.45, 0.35), 1.6, 0.3) * hole
          + (norm(m.get('tens'), -26) * dk * hole if dark else 0) + (norm(rev(m.get('tick'), 1.2, 0.3), -22) if dark else 0) + rev(fx, 1.5, 0.3))
