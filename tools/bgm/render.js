@@ -1,8 +1,8 @@
-// node render.js <outDir>  -> main.wav, rage.wav (needs playwright)
+// node render.js <outDir> [kinds]  -> main.wav, hard.wav, rage.wav (needs playwright)
 const { chromium } = require('playwright'); const fs=require('fs'), path=require('path');
 (async()=>{ const out=process.argv[2]||'.', b=await chromium.launch(), p=await b.newPage();
   await p.setContent('<meta charset="utf-8">'); await p.addScriptTag({path:path.join(__dirname,'compose.js')});
-  for(const k of ['main','rage']){
+  for(const k of (process.argv[3]?process.argv[3].split(','):['main','hard','rage'])){
     const r=await p.evaluate(async k=>{ const x=await PinoBGM.compose(k), n=x.length, i16=new Int16Array(n*2); let pk=0;
       for(let c=0;c<2;c++) for(let i=0;i<n;i++) pk=Math.max(pk,Math.abs(x.ch[c][i]));
       const g=pk>0.98?0.98/pk:1; for(let i=0;i<n;i++){ i16[i*2]=x.ch[0][i]*g*32767; i16[i*2+1]=x.ch[1][i]*g*32767; }

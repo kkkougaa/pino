@@ -406,7 +406,7 @@ body.hard .rows .hardrow{display:block}
 body.hard .gauges .fever .g,body.hard .gauges .mood .g{width:min(26vw,120px)}
 body.hard .gauges .mood .g{height:18px}
 #rageFx{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity 1.2s;
-  background:radial-gradient(125% 90% at 50% 50%,rgba(220,30,40,0) 48%,rgba(220,30,40,.3) 76%,rgba(200,20,30,.55) 100%)}
+  background:radial-gradient(100% 72% at 50% 55%,rgba(14,2,6,0) 40%,rgba(18,3,8,.62) 78%,rgba(6,0,2,.92) 100%)}
 #nmAura{position:fixed;inset:-4%;pointer-events:none;z-index:2;opacity:0;transition:opacity .8s;
   background:radial-gradient(ellipse 72% 64% at 50% 50%,transparent 60%,rgba(150,60,255,.18) 76%,rgba(110,20,220,.4) 91%,rgba(70,0,160,.56) 100%)}
 body.nmMax #nmAura{opacity:1;animation:auraBeat .95s ease-out infinite}
@@ -425,9 +425,7 @@ body.nmMax #nmDim{opacity:.68}
 @keyframes auraFlow{0%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(1.5%,-2%) rotate(3deg)}100%{transform:translate(-2%,1.5%) rotate(-2deg)}}
 body.rage #rageFx,body.titleFx #rageFx{opacity:1;animation:rageBeat 1.25s ease-in-out infinite}
 @keyframes rageBeat{0%{opacity:.72}10%{opacity:1}20%{opacity:.84}30%{opacity:.97}62%,100%{opacity:.72}}
-#rageFx::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(190,15,25,.26),transparent 32%),linear-gradient(to bottom,rgba(110,0,10,.22),transparent 22%)}
-#rageFx::after{content:"";position:absolute;inset:-10%;background:radial-gradient(55% 38% at 8% 92%,rgba(255,70,40,.2),transparent 70%),radial-gradient(55% 38% at 92% 88%,rgba(255,70,40,.18),transparent 70%);animation:rageDrift 5s ease-in-out infinite alternate}
-@keyframes rageDrift{to{transform:translate(3%,-2%) scale(1.06)}}
+#rageFx::before{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 3px rgba(255,70,55,.95),inset 0 0 30px 6px rgba(255,36,36,.75)}
 body.rage .mood .g{box-shadow:0 0 0 3px rgba(224,65,94,.55),0 2px 0 rgba(58,36,22,.25)}
 .angerFloat{position:fixed;pointer-events:none;z-index:2;opacity:0;animation:angerUp 2.4s ease-out forwards;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
 @keyframes angerUp{0%{opacity:0;transform:translateY(10px) scale(.6) rotate(-10deg)}15%{opacity:.85;transform:translateY(0) scale(1.05) rotate(6deg)}30%{transform:translateY(-8px) scale(.95) rotate(-4deg)}100%{opacity:0;transform:translateY(-70px) scale(1) rotate(8deg)}}
@@ -641,9 +639,8 @@ html[lang="ja"] #shout p{font-weight:400;font-size:clamp(13px,3.9vw,17px);line-h
 @keyframes shoutOut{to{transform:translateX(-50%) scale(.7) translateY(-10px);opacity:0}}
 .legal{margin:12px 0 0;font-size:calc(var(--k,1)*(11px));line-height:1.45;opacity:.6;text-align:center}
 /* nightmare */
-body.nightmare #rageFx{background:radial-gradient(125% 90% at 50% 50%,rgba(120,30,220,0) 46%,rgba(120,30,220,.32) 74%,rgba(90,10,180,.6) 100%);animation-duration:.95s}
-body.nightmare #rageFx::before{background:linear-gradient(to top,rgba(110,20,200,.3),transparent 34%),linear-gradient(to bottom,rgba(60,0,110,.26),transparent 24%)}
-body.nightmare #rageFx::after{background:radial-gradient(55% 38% at 8% 92%,rgba(190,90,255,.24),transparent 70%),radial-gradient(55% 38% at 92% 88%,rgba(190,90,255,.22),transparent 70%)}
+body.nightmare #rageFx{background:radial-gradient(100% 72% at 50% 55%,rgba(10,2,18,0) 40%,rgba(12,3,22,.64) 78%,rgba(4,0,10,.93) 100%);animation-duration:.95s}
+body.nightmare #rageFx::before{box-shadow:inset 0 0 0 3px rgba(196,110,255,.95),inset 0 0 30px 6px rgba(140,40,255,.75)}
 .dbgbtn{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translateX(-50%);z-index:8;font:700 12px var(--ui),sans-serif;padding:5px 10px;border-radius:999px;border:2px dashed #fff;background:rgba(110,30,200,.85);color:#fff;cursor:pointer}
 .dbgbtn[hidden]{display:none}
 .grade{position:relative}
@@ -4333,9 +4330,9 @@ function loop(t){
       if(want){ hb.classList.remove('pop-in'); void hb.offsetWidth; hb.classList.add('pop-in'); woodblock(cov?72:84,{vol:0.12}); } } }
   { const on=((rage&&state!=='idle'&&state!=='over')||document.body.classList.contains('titleFx'))&&!LOW.on;
     emberL.forEach((l,i)=>{ const f=on?(0.75+0.25*Math.sin(now*(11+i*3.7)+i)*Math.sin(now*4.3+i*2.1)+0.12*(rnd()-0.5))*(document.body.classList.contains('nmMax')?2.4:nightmare?1.8:1):0;
-      l.intensity+=(f*1.1-l.intensity)*Math.min(1,rdt*(on?14:4)); if(on) l.color.set(nightmare?'#A84CFF':'#FF7A2A'); }); }
+      l.intensity+=(f*0.28-l.intensity)*Math.min(1,rdt*(on?14:4)); if(on) l.color.set(nightmare?'#A84CFF':'#FF7A2A'); }); }
   { const want=((rage&&state!=='idle'&&state!=='over')||document.body.classList.contains('titleFx'))&&!reduceMotion; const ph=(now%1.25)/1.25, beat=ph<0.1?ph/0.1:ph<0.2?1-(ph-0.1)/0.1*0.5:ph<0.3?0.5+(ph-0.2)/0.1*0.4:Math.max(0,0.9-(ph-0.3)/0.4*0.9);
-    rageLight.intensity+=((want?(0.55+0.55*beat)*(nightmare?1.15:1):0)-rageLight.intensity)*Math.min(1,rdt*10); rageLight.color.set(nightmare?'#A040FF':'#FF2A2A');
+    rageLight.intensity+=((want?(0.11+0.11*beat)*(nightmare?1.15:1):0)-rageLight.intensity)*Math.min(1,rdt*10); rageLight.color.set(nightmare?'#A040FF':'#FF2A2A');
     if(want&&!paused&&rnd()<rdt*9){ const left=rnd()<0.5, x=left?rnd()*innerWidth*0.22:innerWidth*(0.78+rnd()*0.22);
       fx.burst(x,innerHeight*(0.94+rnd()*0.08),{n:1,dir:-Math.PI/2,spread:0.6,speed:60+rnd()*70,gravity:-38,drag:0.9,life:1.6+rnd()*0.9,size:2+rnd()*2.2,shape:'ember',colors:[nightmare?'violet':'fire']}); }
   }
