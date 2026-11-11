@@ -61,7 +61,7 @@ def gs(p=1.25):
 
 
 def hc():
-    return hit(H + ('CHH_1' if rng.random() < 0.6 else 'Hard_CHH_01'), 1.0, dec=0.04, jit=0.03)
+    return hit(H + 'CHH_1', 1.0, dec=0.03)
 
 
 def oh(dec=0.1):
@@ -85,16 +85,14 @@ def tck(p=1.4):
     return hit(E + 'Click', p, jit=0.02) * 0.5
 
 
-def brk(m, bar, kinds, hats="x.x.x.x.x.x.x.x.", kg=1.0, sg=0.9, hg=0.3, ride=False, sf=1.0, kp='heavy', big=True):
+def brk(m, bar, kinds, hats="..x...x...x...x.", kg=1.0, sg=0.9, hg=0.3, ride=False, sf=1.0, kp='heavy', big=True):
     kt = []
     for i, k in enumerate(kinds):
         K, S, G = BRK[k]
         kt += m.D('kick', bar + i, K, KICKS[kp], kg)
         m.D('snare', bar + i, S, sn, sg, p=sf, big=big)
         m.D('snare', bar + i, G, gs, sg * 0.75, p=sf * 1.08)
-        m.D('hat', bar + i, hats, hc, hg, pan=0.25)
-        if ride:
-            m.D('hat', bar + i, "..x...x...x...x.", oh, hg * 0.8, pan=-0.3)
+        m.D('hat', bar + i, hats, hc, hg, pan=0.15, hum=0.0)
     return kt
 
 
@@ -300,7 +298,7 @@ def build(c, mood):
                 kinds = "HHHF"[q] if sec == 'out' else ("TUTVTUTF" if sec == 'A' else "UJUVUJUF")[(b - 4) % 8]
                 if garage and sec != 'out':
                     kinds = "GGGFGGGF"[(b - 4) % 8]
-                kt += brk(m, b, kinds, hats="x.x.x.x.x.x.x.x.", kg=0.95, sg=0.7, hg=0.2, sf=0.94, kp='soft', big=False)
+                kt += brk(m, b, kinds, hats="..x...x...x...x.", kg=0.95, sg=0.7, hg=0.2, sf=0.94, kp='soft', big=False)
                 m.D('rim', b, "..x......x......" if q % 2 == 0 else ".....x.....x....", rimc, 0.5, pan=-0.3)
             if q == 0:
                 heart(m, 'tick', b, 0, 0.5, 4)
@@ -309,7 +307,7 @@ def build(c, mood):
                 kinds = "HHAC"[q]
             else:
                 kinds = ("ABACABAC" if sec == 'A' else "UBUCUBAC")[(b - 4) % 8]
-            kt += brk(m, b, kinds, hats="x.x.x.x.x.x.x.x.", ride=sec == 'B', sf=1.0)
+            kt += brk(m, b, kinds, hats="..x...x...x...x.", ride=sec == 'B', sf=1.0)
             if b in (11, 19):
                 roll(m, b, 12, 4, 2, 0.3, 0.9)
         else:
@@ -328,7 +326,7 @@ def build(c, mood):
                 roll(m, b, 0, 16, 1 if b == 22 else 2, 0.12 if b == 22 else 0.5, 0.5 if b == 22 else 1.0)
             else:
                 kinds = "HH"[q] if sec == 'out' else "UBUC"[q]
-                kt += brk(m, b, kinds, hats="x.x.x.x.x.x.x.x.", ride=sec == 'B', sf=0.95)
+                kt += brk(m, b, kinds, hats="..x...x...x...x.", ride=sec == 'B', sf=0.95)
     # ---- one-shots and long layers
     for b_ in (4, 12, 20):
         m.add('hat', m.bt(b_, 0), crash(), 0.5 if mood != 'hard' else 0.25, -0.2)
@@ -364,7 +362,7 @@ def build(c, mood):
         stem['d'], stem['over'] = x, over
         return x
     dk = duck(m.n, kt, {'normal': 0.4, 'hard': 0.45, 'super': 0.5, 'nightmare': 0.5}[mood], 0.07)
-    dr = (norm(bq(m.get('kick'), 'hp', 35), -21) + norm(m.get('snare'), -12.5) + norm(bq(m.get('hat'), 'lp', 11000), -28)
+    dr = (norm(bq(m.get('kick'), 'hp', 35), -21) + norm(m.get('snare'), -12.5) + norm(bq(m.get('hat'), 'lp', 10000), -32)
           + norm(m.get('rim'), -24))
     d3 = m.sl * 3
     fx = norm(m.get('fx'), -22)
