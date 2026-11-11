@@ -10,17 +10,17 @@ import numpy as np
 from engine import *  # noqa
 from inst import hit, zyn, soundfont, norm
 
-BRK = {
-    'A': ("x.x.......xx....", "....X.......X...", ".......o.o.....o"),
-    'B': ("x.x.......x.....", "....X.........X.", ".......o.o..o..."),
-    'C': ("x.x...x...x.....", "....X..o.X..X.XX", "................"),
-    'T': ("x.........x.....", "....X.......X...", ".......o.o.....o"),
-    'U': ("x.........xx....", "....X.......X...", ".o....o..o...oo."),
-    'V': ("x......x..x.....", "....X.......X...", "......o......o.o"),
-    'F': ("x.........x.....", "....X..o.o..X.oX", "................"),
-    'H': ("x.....x.........", "........X.......", "..............o."),
-    'G': ("x.....x...x.....", "....X.......X...", ".......o.....o.o"),
-    'J': ("x..x......x..x..", "....X.......X...", ".......o.o.....o"),
+BRK = {  # kick, snare, ghost snare: kept sparse on purpose
+    'A': ("x.........x.....", "....X.......X...", ".........o......"),
+    'B': ("x.........x.....", "....X.......X...", "..............o."),
+    'C': ("x.........x.....", "....X.......X.x.", "................"),
+    'T': ("x.........x.....", "....X.......X...", "................"),
+    'U': ("x.........xx....", "....X.......X...", "................"),
+    'V': ("x......x..x.....", "....X.......X...", "................"),
+    'F': ("x.........x.....", "....X.......X..x", "................"),
+    'H': ("x.....x.........", "........X.......", "................"),
+    'G': ("x.....x...x.....", "....X.......X...", "...............o"),
+    'J': ("x.........x..x..", "....X.......X...", "................"),
 }
 V, E = 'VariBreaks/VP ', 'ElectricEmpireKit/EE_'
 
@@ -42,7 +42,7 @@ def k_soft():
 
 
 def k_heavy():
-    return sat(lay(hit(E + 'Kick_Hard_2') * 0.9, hit(H + 'HardHse_K_03_B') * 0.6, hit(E + 'Kick_Dist') * 0.4), 2.0) * 0.9
+    return sat(lay(hit(E + 'Kick_Hard_2') * 0.9, hit(H + 'HardHse_K_03_B') * 0.6, hit(E + 'Kick_Dist') * 0.25), 1.4) * 0.9
 
 
 KICKS = {'light': k_light, 'soft': k_soft, 'heavy': k_heavy}
@@ -85,21 +85,21 @@ def tck(p=1.4):
     return hit(E + 'Click', p, jit=0.02) * 0.5
 
 
-def brk(m, bar, kinds, hats="x-xox-xox-xox-xo", kg=1.0, sg=0.9, hg=0.3, ride=False, sf=1.0, kp='heavy', big=True):
+def brk(m, bar, kinds, hats="x.x.x.x.x.x.x.x.", kg=1.0, sg=0.9, hg=0.3, ride=False, sf=1.0, kp='heavy', big=True):
     kt = []
     for i, k in enumerate(kinds):
         K, S, G = BRK[k]
         kt += m.D('kick', bar + i, K, KICKS[kp], kg)
         m.D('snare', bar + i, S, sn, sg, p=sf, big=big)
-        m.D('snare', bar + i, G.replace('o', '-'), gs, sg * 0.75, p=sf * 1.08)
+        m.D('snare', bar + i, G, gs, sg * 0.75, p=sf * 1.08)
         m.D('hat', bar + i, hats, hc, hg, pan=0.25)
-        m.D('hat', bar + i, "..x...x...x...x.", oh, hg * 0.8, pan=-0.3)
         if ride:
-            m.D('hat', bar + i, "x...x...x...x...", rd, hg * 0.8, pan=0.4)
+            m.D('hat', bar + i, "..x...x...x...x.", oh, hg * 0.8, pan=-0.3)
     return kt
 
 
 def roll(m, bar, step0, steps, div=1, g0=0.25, g1=0.9, f0=190, f1=260):
+    step0, steps, div = step0 + max(0, steps - 4), min(steps, 4), 1
     n = int(steps * div)
     for i in range(n):
         r = i / max(1, n - 1)
@@ -278,9 +278,9 @@ def build(c, mood):
             if mood == 'nightmare':
                 heart(m, 'kick', b, 8, 0.9, 4)
             if dark:
-                m.D('tick', b, "x.x.x.x.x.x.x.x." if b < 2 else "xxxxxxxxxxxxxxxx", tck, 0.5, pan=0.3 if b % 2 else -0.3)
+                m.D('tick', b, "x...x...x...x..." if b < 2 else "x.x.x.x.x.x.x.x.", tck, 0.5, pan=0.3 if b % 2 else -0.3)
             else:
-                m.D('hat', b, "x.x-x.xox.x-x.xo", hc, 0.3, pan=0.25)
+                m.D('hat', b, "x.x.x.x.x.x.x.x.", hc, 0.3, pan=0.25)
             if b >= 2:
                 kt += brk(m, b, 'T' if b == 2 else 'F', kg=0.9, sg=0.75, hg=0.25, kp='heavy' if heavy else ('soft' if dark else 'light'), big=heavy)
             if b == 3:
@@ -294,7 +294,7 @@ def build(c, mood):
                 m.D('rim', b, "..x......x......", rimc, 0.6, pan=-0.3)
         elif mood == 'hard':
             hole = sec == 'A' and b == 11
-            m.D('tick', b, "xxxxxxxxxxxx" if hole else "xxxxxxxxxxxxxxxx", tck, 0.5, pan=0.3 if b % 2 else -0.3)
+            m.D('tick', b, "x.x.x.x.x.x." if hole else "x.x.x.x.x.x.x.x.", tck, 0.5, pan=0.3 if b % 2 else -0.3)
             if hole:
                 kt += m.D('kick', b, "x.........x.", k_soft, 0.9)
                 m.D('snare', b, "....x.......", sn, 0.7, p=0.94, big=False)
@@ -304,7 +304,7 @@ def build(c, mood):
                 kinds = "HHHF"[q] if sec == 'out' else ("TUTVTUTF" if sec == 'A' else "UJUVUJUF")[(b - 4) % 8]
                 if garage and sec != 'out':
                     kinds = "GGGFGGGF"[(b - 4) % 8]
-                kt += brk(m, b, kinds, hats="x.x-x.xox.x-x.xo", kg=0.95, sg=0.7, hg=0.2, sf=0.94, kp='soft', big=False)
+                kt += brk(m, b, kinds, hats="x.x.x.x.x.x.x.x.", kg=0.95, sg=0.7, hg=0.2, sf=0.94, kp='soft', big=False)
                 m.D('rim', b, "..x......x......" if q % 2 == 0 else ".....x.....x....", rimc, 0.5, pan=-0.3)
             if q == 0:
                 heart(m, 'tick', b, 0, 0.5, 4)
@@ -313,32 +313,26 @@ def build(c, mood):
                 kinds = "HHAC"[q]
             else:
                 kinds = ("ABACABAC" if sec == 'A' else "UBUCUBAC")[(b - 4) % 8]
-            kt += brk(m, b, kinds, hats="x.xox.xox.xox.xo" if sec == 'A' else "xoxoxoxoxoxoxoxo", ride=sec == 'B', sf=1.0)
+            kt += brk(m, b, kinds, hats="x.x.x.x.x.x.x.x.", ride=sec == 'B', sf=1.0)
             if b in (11, 19):
                 roll(m, b, 12, 4, 2, 0.3, 0.9)
         else:
             if b == 11:
                 kt += m.D('kick', b, "x.x.....", k_heavy)
                 m.D('snare', b, "....X...", sn, 0.8)
-                m.D('tick', b, "........x.x.x.xx", tck, 0.7)
+                m.D('tick', b, "........x...x...", tck, 0.7)
                 heart(m, 'tick', b, 8, 1.0, 3)
                 holes.append((b, 8, 16))
             elif b == 19:
                 kt += m.D('kick', b, "x.x.....", k_heavy)
                 m.D('snare', b, "....X...", sn, 0.8)
-                for i in range(16):
-                    t = m.bt(b, 8 + i * 0.5)
-                    m.add('kick', t, k_heavy()[:int(0.08 * SR)], 0.45 + 0.035 * i)
-                    kt.append(t)
+                kt += m.D('kick', b, "........x.x.x.x.", k_heavy, 0.8)
             elif b in (22, 23):
-                kt += m.D('kick', b, "x...x...x...x..." if b == 22 else "x.x.x.x.xxxxxxxx", k_heavy)
+                kt += m.D('kick', b, "x.......x......." if b == 22 else "x...x...x...x...", k_heavy)
                 roll(m, b, 0, 16, 1 if b == 22 else 2, 0.12 if b == 22 else 0.5, 0.5 if b == 22 else 1.0)
             else:
                 kinds = "HH"[q] if sec == 'out' else "UBUC"[q]
-                kt += brk(m, b, kinds, hats="xoxoxoxoxoxoxoxo", ride=sec == 'B', sf=0.95)
-                if sec == 'B' and q % 2:
-                    for i in range(8):
-                        m.add('hat', m.bt(b, 12 + i * 0.5), hc(), 0.3, 0.4)
+                kt += brk(m, b, kinds, hats="x.x.x.x.x.x.x.x.", ride=sec == 'B', sf=0.95)
     # ---- one-shots and long layers
     for b_ in (4, 12, 20):
         m.add('hat', m.bt(b_, 0), crash(), 0.5 if mood != 'hard' else 0.25, -0.2)
@@ -374,7 +368,7 @@ def build(c, mood):
         stem['d'], stem['over'] = x, over
         return x
     dk = duck(m.n, kt, {'normal': 0.4, 'hard': 0.45, 'super': 0.5, 'nightmare': 0.5}[mood], 0.07)
-    dr = (norm(bq(m.get('kick'), 'hp', 35), -13) + norm(m.get('snare'), -12.5) + norm(bq(m.get('hat'), 'lp', 11000), -28)
+    dr = (norm(bq(m.get('kick'), 'hp', 35), -17) + norm(m.get('snare'), -12.5) + norm(bq(m.get('hat'), 'lp', 11000), -28)
           + norm(m.get('rim'), -24))
     d3 = m.sl * 3
     fx = norm(m.get('fx'), -22)
