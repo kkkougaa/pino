@@ -34,7 +34,7 @@ H = 'HardElectro1/'
 
 
 def k_light():
-    return sat(lay(hit(E + 'Kick_Power') * 0.9, hit(H + 'HardHse_K_02') * 0.55, hit(E + 'Click') * 0.25), 1.3)
+    return sat(lay(hit(E + 'Kick_Power') * 0.9, hit(H + 'HardHse_K_02') * 0.55), 1.3)
 
 
 def k_soft():
@@ -278,7 +278,8 @@ def build(c, mood):
             if mood == 'nightmare':
                 heart(m, 'kick', b, 8, 0.9, 4)
             if dark:
-                m.D('tick', b, "x...x...x...x..." if b < 2 else "x.x.x.x.x.x.x.x.", tck, 0.5, pan=0.3 if b % 2 else -0.3)
+                if b >= 2:
+                    m.D('hat', b, "x.x.x.x.x.x.x.x.", hc, 0.2, pan=0.25)
             else:
                 m.D('hat', b, "x.x.x.x.x.x.x.x.", hc, 0.3, pan=0.25)
             if b >= 2:
@@ -294,7 +295,6 @@ def build(c, mood):
                 m.D('rim', b, "..x......x......", rimc, 0.6, pan=-0.3)
         elif mood == 'hard':
             hole = sec == 'A' and b == 11
-            m.D('tick', b, "x.x.x.x.x.x." if hole else "x.x.x.x.x.x.x.x.", tck, 0.5, pan=0.3 if b % 2 else -0.3)
             if hole:
                 kt += m.D('kick', b, "x.........x.", k_soft, 0.9)
                 m.D('snare', b, "....x.......", sn, 0.7, p=0.94, big=False)
@@ -305,7 +305,6 @@ def build(c, mood):
                 if garage and sec != 'out':
                     kinds = "GGGFGGGF"[(b - 4) % 8]
                 kt += brk(m, b, kinds, hats="x.x.x.x.x.x.x.x.", kg=0.95, sg=0.7, hg=0.2, sf=0.94, kp='soft', big=False)
-                m.D('rim', b, "..x......x......" if q % 2 == 0 else ".....x.....x....", rimc, 0.5, pan=-0.3)
             if q == 0:
                 heart(m, 'tick', b, 0, 0.5, 4)
         elif mood == 'super':
@@ -320,7 +319,6 @@ def build(c, mood):
             if b == 11:
                 kt += m.D('kick', b, "x.x.....", k_heavy)
                 m.D('snare', b, "....X...", sn, 0.8)
-                m.D('tick', b, "........x...x...", tck, 0.7)
                 heart(m, 'tick', b, 8, 1.0, 3)
                 holes.append((b, 8, 16))
             elif b == 19:
