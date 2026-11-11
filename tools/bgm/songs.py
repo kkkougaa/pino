@@ -4,7 +4,7 @@ normal_N and hard_N share a composition (hard is the toned-down, tenser take);
 super_N and nightmare_N share one (nightmare is the more anxious take).
 Language throughout: light drum'n'bass / 2-step, jazzy 9th chords on electric piano,
 a syncopated synth hook in place of a vocal. Drums are kit samples, the electric piano
-and vibes come from a soundfont, hooks/bass/pads are ZynAddSubFX presets (see inst.py).
+and vibes come from a soundfont, drums are electronic kit samples, hooks/bass/pads are ZynAddSubFX presets (see inst.py).
 """
 import numpy as np
 from engine import *  # noqa
@@ -30,62 +30,62 @@ def lay(*xs):
     return sum(np.pad(x, (0, n - len(x))) for x in xs)
 
 
-P = 'The Black Pearl 1.0/'
 H = 'HardElectro1/'
 
 
 def k_light():
-    return bq(lay(hit(P + 'PearlKick-Hard', 1.1) * 0.9, hit(E + 'Kick_Lite_2') * 0.7, hit(V + 'Kick 1', 1.1) * 0.4), 'hp', 35)
+    return sat(lay(hit(E + 'Kick_Power') * 0.9, hit(H + 'HardHse_K_02') * 0.55, hit(E + 'Click') * 0.25), 1.3)
 
 
 def k_soft():
-    return lay(hit(P + 'PearlKick-Med') * 0.9, bq(hit(E + 'Kick_Low_1'), 'lp', 1800) * 0.6)
+    return lay(hit(E + 'Kick_Low_2') * 0.9, bq(hit(E + 'Kick_Lite_1'), 'lp', 2500) * 0.5)
 
 
 def k_heavy():
-    return sat(lay(hit(P + 'PearlKick-Hardest') * 0.9, hit(V + 'Kick 2', 1.05) * 0.7, hit(H + 'HardHse_K_02') * 0.4), 1.8) * 0.9
+    return sat(lay(hit(E + 'Kick_Hard_2') * 0.9, hit(H + 'HardHse_K_03_B') * 0.6, hit(E + 'Kick_Dist') * 0.4), 2.0) * 0.9
 
 
 KICKS = {'light': k_light, 'soft': k_soft, 'heavy': k_heavy}
 
 
-def sn(p=1.18, big=True):
-    """Acoustic rimshot pitched up like a sped-up break, with an electronic crack on top."""
+def sn(p=1.0, big=True):
+    """Electronic snare: body, crack and a clap on top."""
     if big:
-        return sat(lay(hit(P + 'PearlSnareRimshot-Hardest', p, dec=0.16, jit=0.01), hit(V + 'Snare 2', p * 0.95) * 0.6,
-                       hit(H + 'PowR_SN_1', 1.0) * 0.35), 1.4) * 0.9
-    return lay(hit(P + 'PearlSnareRimshot-Hard', p, dec=0.13, jit=0.01), hit(V + 'Snare 2', p) * 0.4) * 0.85
+        return sat(lay(hit(E + 'Snare_3', p, jit=0.01), hit(V + 'Snare 2', p) * 0.7, hit(H + 'PowR_SN_1', p) * 0.5,
+                       hit(H + 'Clap_1', 1.0, dec=0.08) * 0.35), 1.5) * 0.9
+    return lay(hit(E + 'Snare_3', p * 1.05, jit=0.01), hit(V + 'Snare 2', p * 1.05) * 0.5, hit(E + 'Clap', 1.0, dec=0.05) * 0.25) * 0.85
 
 
 def gs(p=1.25):
-    return hit(P + ('PearlSnare-Soft' if rng.random() < 0.6 else 'PearlSnare-Med'), p, dec=0.06, jit=0.03) * 1.1
+    return hit(V + 'Snare 1', p, dec=0.05, jit=0.03) * 0.9
 
 
 def hc():
-    return hit(P + ('SabianHatClosed-Hard' if rng.random() < 0.5 else 'SabianHatClosed-Med'), 1.1, dec=0.05, jit=0.03) * 1.3
+    return hit(H + ('CHH_1' if rng.random() < 0.6 else 'Hard_CHH_01'), 1.0, dec=0.04, jit=0.03)
 
 
 def oh(dec=0.1):
-    return hit(P + 'SabianHatSemiOpen-Hard', 1.05, dec=dec) * 1.2
+    return hit(H + 'Hard_Hse_OHH_1', 1.0, dec=dec) * 1.1
 
 
 def rd():
-    return hit(P + 'PaisteRide-Med', 1.0, dec=0.3)
+    return hit(E + 'Hat_Cl_Dirty', 1.2, dec=0.05) * 0.8
 
 
 def crash():
-    return hit(P + 'SabianCrash-Hard', 1.0, dec=0.9)
+    n = int(1.6 * SR)
+    return bq(noise(n), 'hp', 3500) * np.exp(-tarr(n) / 0.35) * 0.5
 
 
 def rimc(p=1.0):
-    return hit(P + 'PearlSideStick-Hard', p) * 1.2
+    return hit(E + 'Click', p) * 1.0
 
 
 def tck(p=1.4):
     return hit(E + 'Click', p, jit=0.02) * 0.5
 
 
-def brk(m, bar, kinds, hats="x-xox-xox-xox-xo", kg=1.0, sg=0.9, hg=0.3, ride=False, sf=1.18, kp='heavy', big=True):
+def brk(m, bar, kinds, hats="x-xox-xox-xox-xo", kg=1.0, sg=0.9, hg=0.3, ride=False, sf=1.0, kp='heavy', big=True):
     kt = []
     for i, k in enumerate(kinds):
         K, S, G = BRK[k]
@@ -125,7 +125,7 @@ def mute(m, spans, fade=0.004):
 def drumbus(x, drive=1.4, room=0.1, thr=-14, ratio=3, t60=0.35):
     x = norm(x, -14)
     x = comp(sat(x * 1.6, drive), thr, ratio, 0.006, 0.09, 1.2) + 0.5 * comp(x, -30, 8, 0.001, 0.06, 4.0)
-    return rev(x, t60, room, 0.005, 400, 9000, seed=3)
+    return rev(shelf(x, 5000, -3.5), t60, room, 0.005, 400, 9000, seed=3)
 
 
 def chord_bar(spec):
@@ -175,7 +175,7 @@ EP = lambda q, n: soundfont(0, 4, q, n)
 VIBES = lambda q, n: soundfont(0, 11, q, n)
 Z = lambda preset: (lambda q, n: zyn.render(preset, q, n))
 SOUND = {
-    'normal': dict(hook='Plucked/0001-Plucked 1', bass='Bass/0003-Bass 3 _analog_'),
+    'normal': dict(hook='Plucked/0001-Plucked 1', bass='Bass/0035-FM Bass 1'),
     'hard': dict(hook='Plucked/0003-Plucked 3', bass='Bass/0006-Analogue Bass'),
     'super': dict(hook='Collection/0034-Hard Saw', hook2='Plucked/0001-Plucked 1', bass='Collection/0047-Distorted Bass'),
     'nightmare': dict(hook='Collection/0042-Sharp Synth', hook2='Collection/0034-Hard Saw', bass='Collection/0047-Distorted Bass'),
@@ -289,7 +289,7 @@ def build(c, mood):
             kinds = c.get('dn', "TUTVTUTF" + "UJUVUJUF" + "HHHF")[b - 4]
             if garage:
                 kinds = "GGGFGGGF" [(b - 4) % 8] if sec != 'out' else "HHHF"[q]
-            kt += brk(m, b, kinds, kg=0.9, sg=0.75, hg=0.2, sf=1.18, kp='light', big=False, ride=sec == 'B')
+            kt += brk(m, b, kinds, kg=0.9, sg=0.75, hg=0.2, sf=1.0, kp='light', big=False, ride=sec == 'B')
             if garage:
                 m.D('rim', b, "..x......x......", rimc, 0.6, pan=-0.3)
         elif mood == 'hard':
@@ -297,14 +297,14 @@ def build(c, mood):
             m.D('tick', b, "xxxxxxxxxxxx" if hole else "xxxxxxxxxxxxxxxx", tck, 0.5, pan=0.3 if b % 2 else -0.3)
             if hole:
                 kt += m.D('kick', b, "x.........x.", k_soft, 0.9)
-                m.D('snare', b, "....x.......", sn, 0.7, p=1.08, big=False)
+                m.D('snare', b, "....x.......", sn, 0.7, p=0.94, big=False)
                 heart(m, 'kick', b, 12, 1.0, 2)
                 holes.append((b, 12, 16))
             else:
                 kinds = "HHHF"[q] if sec == 'out' else ("TUTVTUTF" if sec == 'A' else "UJUVUJUF")[(b - 4) % 8]
                 if garage and sec != 'out':
                     kinds = "GGGFGGGF"[(b - 4) % 8]
-                kt += brk(m, b, kinds, hats="x.x-x.xox.x-x.xo", kg=0.95, sg=0.7, hg=0.2, sf=1.08, kp='soft', big=False)
+                kt += brk(m, b, kinds, hats="x.x-x.xox.x-x.xo", kg=0.95, sg=0.7, hg=0.2, sf=0.94, kp='soft', big=False)
                 m.D('rim', b, "..x......x......" if q % 2 == 0 else ".....x.....x....", rimc, 0.5, pan=-0.3)
             if q == 0:
                 heart(m, 'tick', b, 0, 0.5, 4)
@@ -313,7 +313,7 @@ def build(c, mood):
                 kinds = "HHAC"[q]
             else:
                 kinds = ("ABACABAC" if sec == 'A' else "UBUCUBAC")[(b - 4) % 8]
-            kt += brk(m, b, kinds, hats="x.xox.xox.xox.xo" if sec == 'A' else "xoxoxoxoxoxoxoxo", ride=sec == 'B', sf=1.1)
+            kt += brk(m, b, kinds, hats="x.xox.xox.xox.xo" if sec == 'A' else "xoxoxoxoxoxoxoxo", ride=sec == 'B', sf=1.0)
             if b in (11, 19):
                 roll(m, b, 12, 4, 2, 0.3, 0.9)
         else:
@@ -335,7 +335,7 @@ def build(c, mood):
                 roll(m, b, 0, 16, 1 if b == 22 else 2, 0.12 if b == 22 else 0.5, 0.5 if b == 22 else 1.0)
             else:
                 kinds = "HH"[q] if sec == 'out' else "UBUC"[q]
-                kt += brk(m, b, kinds, hats="xoxoxoxoxoxoxoxo", ride=sec == 'B', sf=1.04)
+                kt += brk(m, b, kinds, hats="xoxoxoxoxoxoxoxo", ride=sec == 'B', sf=0.95)
                 if sec == 'B' and q % 2:
                     for i in range(8):
                         m.add('hat', m.bt(b, 12 + i * 0.5), hc(), 0.3, 0.4)
@@ -362,7 +362,7 @@ def build(c, mood):
     comp_ = m.part('comp', EP, -20)
     hook = m.part('hook', Z(S['hook']), -18)
     hook2 = m.part('hook2', Z(S['hook2']), -22) if 'hook2' in S else 0
-    bassz = m.part('bass', Z(S['bass']), -18 if not heavy else -22)
+    bassz = sat(m.part('bass', Z(S['bass']), -12 if not heavy else -16), 2.0) * (0.2 if not heavy else 0.13)
     bell_ = m.part('bell', VIBES if mood != 'nightmare' else Z('SynthPiano/0004-Fantasy Bell'), -25)
     pad_ = m.part('pad', Z('Pads/0065-Soft Pad'), -26) if not heavy else 0
     stab_ = m.part('stab', Z('Rhodes/0008-Synth Rhodes1'), -21) if heavy else 0
@@ -374,11 +374,11 @@ def build(c, mood):
         stem['d'], stem['over'] = x, over
         return x
     dk = duck(m.n, kt, {'normal': 0.4, 'hard': 0.45, 'super': 0.5, 'nightmare': 0.5}[mood], 0.07)
-    dr = (norm(shelf(bq(m.get('kick'), 'hp', 45), 90, -5, hi=False), -15) + norm(m.get('snare'), -12.5) + norm(bq(m.get('hat'), 'lp', 11000), -26)
+    dr = (norm(bq(m.get('kick'), 'hp', 35), -13) + norm(m.get('snare'), -12.5) + norm(bq(m.get('hat'), 'lp', 11000), -28)
           + norm(m.get('rim'), -24))
     d3 = m.sl * 3
     fx = norm(m.get('fx'), -22)
-    low = bq(bassz, 'hp', 110) + norm(m.get('sub'), -19) if not heavy else norm(m.get('reese'), -16) + bq(bassz, 'hp', 150)
+    low = bq(bassz, 'hp', 60) + norm(m.get('sub'), -17) if not heavy else norm(m.get('reese'), -14.5) + bq(bassz, 'hp', 120)
     if mood == 'normal':
         y = (DR(drumbus(dr, 1.3, 0.08), 3.0) + low * dk + wide(rev(comp_ * dk, 1.0, 0.2))
              + pan(rev(delay(hook, d3, 0.35, 0.2), 1.2, 0.16), -0.08) + pan(rev(delay(bell_, d3, 0.3, 0.2), 1.8, 0.3), 0.2)
