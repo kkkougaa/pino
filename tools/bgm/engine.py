@@ -550,6 +550,19 @@ class Mix:
                 times.append(t)
         return times
 
+    def N(self, bus, bar, pat, g=1.0, gt=0.9, tr=0, vel=96):
+        """Queue notes for a hosted instrument (rendered later with Mix.part)."""
+        ev, _ = parse(pat)
+        q = self.b.setdefault('~' + bus, [])
+        for st, ms, ln, v in ev:
+            for mm in ms:
+                q.append((self.tt(bar * 16 + st), mm + tr, ln * self.sl * gt, vel * v * g))
+
+    def part(self, bus, fn, db):
+        from inst import norm
+        q = self.b.get('~' + bus)
+        return norm(fn(q, self.n), db) if q else np.zeros((2, self.n))
+
     def get(self, bus):
         return self.b.get(bus, np.zeros((2, self.n)))
 

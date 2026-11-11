@@ -1,4 +1,4 @@
-"""Render the BGM sketches to mp3.  python3 make.py [name-filter ...]  (needs numpy, scipy, numba, ffmpeg)"""
+"""Render the BGM sketches to mp3.  python3 make.py [name-filter ...]  (needs numpy, scipy, numba, ffmpeg and the packages listed in inst.py)"""
 import os, subprocess, sys, time
 import numpy as np
 from scipy.io import wavfile
