@@ -159,13 +159,16 @@ COMP = {
 
 
 def ratio(stem, y):
-    """Print how loud the drum bus is against everything else (BGM_DEBUG=1)."""
+    """Set the drum bus `over` dB above the rest of the mix, measured above 300 Hz."""
     import os
+    d = stem['d']
+    r = y - d
+    f = lambda x: 20 * np.log10(np.sqrt((x ** 2).mean()) + 1e-9)
+    g = 10 ** ((f(bq(r, 'hp', 300)) + stem['over'] - f(bq(d, 'hp', 300))) / 20)
     if os.environ.get('BGM_DEBUG'):
-        d = stem['d']
-        r = y - d
-        f = lambda x: 20 * np.log10(np.sqrt((x ** 2).mean()) + 1e-9)
-        print(f"   drums {f(d):.1f} dB, rest {f(r):.1f} dB, drums-rest {f(d) - f(r):+.1f} dB")
+        for lo, hi in ((30, 150), (150, 600), (600, 3000), (3000, 16000)):
+            print(f"   {lo:5d}-{hi:5d} Hz  drums-rest {f(bq(d * g, 'bp', (lo, hi))) - f(bq(r, 'bp', (lo, hi))):+.1f} dB")
+    return r + d * g
 
 
 EP = lambda q, n: soundfont(0, 4, q, n)
@@ -278,8 +281,10 @@ def build(c, mood):
                 m.D('tick', b, "x.x.x.x.x.x.x.x." if b < 2 else "xxxxxxxxxxxxxxxx", tck, 0.5, pan=0.3 if b % 2 else -0.3)
             else:
                 m.D('hat', b, "x.x-x.xox.x-x.xo", hc, 0.3, pan=0.25)
+            if b >= 2:
+                kt += brk(m, b, 'T' if b == 2 else 'F', kg=0.9, sg=0.75, hg=0.25, kp='heavy' if heavy else ('soft' if dark else 'light'), big=heavy)
             if b == 3:
-                roll(m, 3, 8, 8, 2 if heavy else 1, 0.15, 0.8 if heavy else 0.5)
+                roll(m, 3, 12, 4, 2, 0.3, 0.9)
         elif mood == 'normal':
             kinds = c.get('dn', "TUTVTUTF" + "UJUVUJUF" + "HHHF")[b - 4]
             if garage:
@@ -365,32 +370,33 @@ def build(c, mood):
     hole = mute(m, holes) if holes else 1.0
     stem = {}
 
-    def DR(x):
-        stem['d'] = x
+    def DR(x, over):
+        stem['d'], stem['over'] = x, over
         return x
     dk = duck(m.n, kt, {'normal': 0.4, 'hard': 0.45, 'super': 0.5, 'nightmare': 0.5}[mood], 0.07)
-    dr = m.get('kick') * 0.95 + m.get('snare') * 0.9 + m.get('hat') + m.get('rim') * 0.8
+    dr = (norm(shelf(bq(m.get('kick'), 'hp', 45), 90, -5, hi=False), -15) + norm(m.get('snare'), -12.5) + norm(bq(m.get('hat'), 'lp', 11000), -26)
+          + norm(m.get('rim'), -24))
     d3 = m.sl * 3
     fx = norm(m.get('fx'), -22)
     low = bq(bassz, 'hp', 110) + norm(m.get('sub'), -19) if not heavy else norm(m.get('reese'), -16) + bq(bassz, 'hp', 150)
     if mood == 'normal':
-        y = (DR(norm(drumbus(dr, 1.3, 0.08), -10.5)) + low * dk + wide(rev(comp_ * dk, 1.0, 0.2))
+        y = (DR(drumbus(dr, 1.3, 0.08), 3.0) + low * dk + wide(rev(comp_ * dk, 1.0, 0.2))
              + pan(rev(delay(hook, d3, 0.35, 0.2), 1.2, 0.16), -0.08) + pan(rev(delay(bell_, d3, 0.3, 0.2), 1.8, 0.3), 0.2)
              + rev(pad_ * dk, 1.8, 0.3) + fx)
-        ratio(stem, y)
+        y = ratio(stem, y)
         return master(y, -13, 1.15, m.body)
     if mood == 'hard':
-        y = (DR(norm(drumbus(dr, 1.2, 0.14, t60=0.6), -11.5)) + bq(low, 'lp', 900) * dk * hole + wide(rev(bq(comp_, 'lp', 2200) * 0.7 * dk, 1.8, 0.3)) * hole
+        y = (DR(drumbus(dr, 1.2, 0.14, t60=0.6), 1.5) + bq(low, 'lp', 900) * dk * hole + wide(rev(bq(comp_, 'lp', 2200) * 0.7 * dk, 1.8, 0.3)) * hole
              + rev(delay(bq(hook, 'lp', 3500), d3, 0.45, 0.32, lp=2400), 1.6, 0.22) * hole + rev(delay(bell_, d3, 0.4, 0.3), 2.2, 0.4) * 0.8 * hole
              + rev(pad_ * dk, 2.2, 0.35) * 1.2 * hole + norm(m.get('tens'), -29) * hole
              + norm(rev(m.get('tick'), 1.0, 0.25), -27) + fx)
-        ratio(stem, y)
+        y = ratio(stem, y)
         return master(shelf(y, 5000, -2), -14, 1.05, m.body)
-    y = (DR(norm(drumbus(dr, 1.7 if mood == 'super' else 2.0, 0.1, -16, 4), -9)) + low * dk * hole
+    y = (DR(drumbus(dr, 1.7 if mood == 'super' else 2.0, 0.1, -16, 4), 4.0) + low * dk * hole
          + wide(rev(comp_ * dk, 0.9, 0.18)) * hole + rev(stab_ * dk, 1.0, 0.22) * hole
          + rev(delay(hook + hook2, d3, 0.35, 0.22), 1.1, 0.16) * dk * hole + rev(delay(bell_, d3, 0.45, 0.35), 1.6, 0.3) * hole
          + (norm(m.get('tens'), -26) * dk * hole if dark else 0) + (norm(rev(m.get('tick'), 1.2, 0.3), -22) if dark else 0) + rev(fx, 1.5, 0.3))
-    ratio(stem, y)
+    y = ratio(stem, y)
     return master(y, -10.5 if mood == 'super' else -10, 1.5 if mood == 'super' else 1.6, m.body)
 
 
