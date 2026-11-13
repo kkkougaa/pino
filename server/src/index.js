@@ -1,8 +1,9 @@
 // Kouga challenge ranking server (Cloudflare Worker + D1). One board for a limited event (EVENT_START..EVENT_END):
 // each player (X handle) counts once, with their best approved run.
 //   GET  /api/event                                   -> {start,end,now,open}
-//   POST /api/start   {mode,xid,nick}                 -> {token}           one token per run (event open only)
-//   POST /api/submit  {token,score,summary}           -> {status,rank,best}
+//   POST /api/start   {mode,xid?,nick?}               -> {token}           one token per run (event open only)
+//                     no xid/nick: an anonymous token, so a player can decide to join after seeing the result
+//   POST /api/submit  {token,score,summary,xid?,nick?} -> {status,rank,best}  xid/nick are needed for an anonymous token
 //   GET  /api/board?xid=<handle>                      -> {event,players,top:[10],me}
 //   admin (header X-Admin-Key: <ADMIN_KEY>):
 //   GET  /api/admin/scores?status=review|ok|rejected|deleted&limit=100
@@ -46,14 +47,17 @@ async function myRank(env, ev, xid) {
   return { rank: r.r, score: mine.s };
 }
 
+const upsertPlayer = (env, xid, nick, now) => env.DB.prepare('INSERT INTO players (xid, nick, created, updated) VALUES (?, ?, ?, ?) ON CONFLICT(xid) DO UPDATE SET nick = excluded.nick, updated = excluded.updated').bind(xid, nick, now, now).run();
+
 async function start(req, env) {
   const b = await req.json().catch(() => ({})), ip = ipOf(req), now = Date.now(), ev = eventOf(env, now);
   if (!ev.open) return json({ error: 'closed', event: ev }, 403, env);
   if (!MODES.includes(b.mode)) return json({ error: 'bad mode' }, 400, env);
-  const xid = cleanXid(b.xid), nick = cleanNick(b.nick);
-  if (!xid || !nick) return json({ error: 'nickname and X handle needed' }, 400, env);
+  const anon = b.xid == null && b.nick == null;
+  const xid = anon ? '' : cleanXid(b.xid), nick = anon ? '' : cleanNick(b.nick);
+  if (!anon && (!xid || !nick)) return json({ error: 'nickname and X handle needed' }, 400, env);
   if (await countSince(env, 'tokens', ip, now - 3600e3) >= LIMIT_START_PER_HOUR) return json({ error: 'too many runs' }, 429, env);
-  await env.DB.prepare('INSERT INTO players (xid, nick, created, updated) VALUES (?, ?, ?, ?) ON CONFLICT(xid) DO UPDATE SET nick = excluded.nick, updated = excluded.updated').bind(xid, nick, now, now).run();
+  if (!anon) await upsertPlayer(env, xid, nick, now);
   const token = newId();
   await env.DB.prepare('INSERT INTO tokens (id, xid, mode, ip, created, used) VALUES (?, ?, ?, ?, ?, 0)').bind(token, xid, b.mode, ip, now).run();
   return json({ token }, 200, env);
@@ -69,15 +73,21 @@ async function submit(req, env) {
   if (now - tk.created > TOKEN_TTL_MS) return json({ error: 'token expired' }, 410, env);
   const ev = eventOf(env, tk.created);   // a run started inside the event counts, even if it ends just after
   if (!ev.open) return json({ error: 'closed' }, 403, env);
+  let xid = tk.xid;
+  if (!xid) {   // anonymous token: the player joins now, after seeing the result
+    const nick = cleanNick(b.nick); xid = cleanXid(b.xid);
+    if (!xid || !nick) return json({ error: 'nickname and X handle needed' }, 400, env);
+    await upsertPlayer(env, xid, nick, now);
+  }
   const spent = await env.DB.prepare('UPDATE tokens SET used = 1 WHERE id = ? AND used = 0').bind(b.token).run();
   if (!spent.meta || spent.meta.changes !== 1) return json({ error: 'token already used' }, 409, env);
   const s = b.summary || {}, score = b.score;
   const verdict = judge(tk.mode, score, s, (now - tk.created) / 1000);
   await env.DB.prepare(`INSERT INTO scores (id, token, xid, mode, score, elapsed, eaten, boxes, combo, lucky, patrols, rage, nightmare, status, reason, ip, created)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-    .bind(newId(), b.token, tk.xid, tk.mode, Number.isInteger(score) ? score : 0, +s.elapsed || 0, s.eaten | 0, s.boxes | 0, s.combo | 0, s.lucky | 0, s.patrols | 0,
+    .bind(newId(), b.token, xid, tk.mode, Number.isInteger(score) ? score : 0, +s.elapsed || 0, s.eaten | 0, s.boxes | 0, s.combo | 0, s.lucky | 0, s.patrols | 0,
       s.rage ? 1 : 0, s.nightmare ? 1 : 0, verdict.status, verdict.reason, ip, tk.created).run();
-  const me = await myRank(env, ev, tk.xid);
+  const me = await myRank(env, ev, xid);
   return json({ status: verdict.status === 'ok' ? 'ok' : 'held', rank: me ? me.rank : null, best: me ? me.score : null }, 200, env);   // why a run was held stays on the server
 }
 

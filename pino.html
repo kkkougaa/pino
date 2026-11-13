@@ -779,6 +779,8 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 .rktext .new{font:800 11px/1 var(--sys);color:#FFFBEF;background:#E0412F;border-radius:4px;padding:4px 6px 3px;transform:rotate(-3deg)}
 .rktext .up{font:800 12.5px/1 var(--sys);color:#13A58B}
 .rankrow .chip{flex:none}
+.rankrow .chip[hidden]{display:none}
+.rankrow .chip.keep{background:#E0412F;color:#FFFBEF;border-color:#B8301F}
 #rankOv,#boardOv,#askOv,#unlockOv{z-index:55}
 #rankOv{z-index:57}
 .rankcard .rkf{display:block;margin:10px 0 0;font:700 13px/1.3 var(--sys);color:#7A5A40}
@@ -842,6 +844,14 @@ body.paused :is(#shout,#yell,#patrol,#pkShove,#pkLaugh,.angerFloat,#hideBtn,.ope
 .unlockcard p{margin:0 0 18px;font:700 16px/1.6 var(--sys);color:#3A2416;word-break:keep-all;white-space:pre-line}
 .unlockcard .asktitle{min-height:44px;display:flex;align-items:center;justify-content:center;margin:0 0 10px}
 .unlockcard .asktitle img{max-width:100%;height:auto}
+/* unlock news is a banner at the top: it never covers the result buttons */
+#unlockOv{align-items:flex-start;background:none;pointer-events:none}
+#unlockOv .card.unlockcard{pointer-events:auto;cursor:pointer;max-width:340px;width:100%;padding:12px 16px 12px;transition:opacity .3s,transform .3s}
+#unlockOv.out .card.unlockcard{opacity:0;transform:translateY(-24px) rotate(var(--rot,0deg))}
+#unlockOv .unlockcard .asktitle{min-height:32px;margin:0 0 4px}
+#unlockOv .unlockcard p{margin:0;font-size:13.5px;line-height:1.5}
+#unlockOv #unlockOk{display:none}
+#unlockOv .card.unlockcard::before{display:none}
 .askcard .asktitle{min-height:40px;display:flex;align-items:center;justify-content:center;margin:0 0 10px}
 .askcard .asktitle img{max-width:100%;height:auto}
 .askcard p{margin:0 0 18px;font:700 16px/1.6 var(--sys);color:#3A2E28;word-break:keep-all;white-space:pre-line}
@@ -1185,7 +1195,7 @@ bootStep(0.1);</script>
     </dl>
     <p class="res best" id="rBest"></p>
     <p class="res small" id="shareMsg" role="status"></p>
-    <div class="rankrow" id="rankRow" hidden><div class="rkstamp" id="rkStamp" hidden><b id="rkNo"></b><small data-i18n="rankUnit"></small></div><div class="rktext"><p id="rankMsg" role="status"></p><p class="rkbest" id="rankBest"></p></div><button class="chip" id="rankOpen" type="button" data-i18n="rankView"></button></div>
+    <div class="rankrow" id="rankRow" hidden><div class="rkstamp" id="rkStamp" hidden><b id="rkNo"></b><small data-i18n="rankUnit"></small></div><div class="rktext"><p id="rankMsg" role="status"></p><p class="rkbest" id="rankBest"></p></div><button class="chip" id="rankOpen" type="button" data-i18n="rankView"></button><button class="chip keep" id="rankKeep" type="button" data-i18n="rankKeepBtn" hidden></button></div>
     <div class="resbtns">
       <button class="btn" id="again" data-i18n="again"></button>
       <button class="btn ghost ico" id="homeBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.5 12 4.5l8.5 7M6.2 9.6V19.5h4.3v-5h3v5h4.3V9.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vh" data-i18n="home"></span></button>
@@ -1224,7 +1234,7 @@ var I18N={
     fx_miss:'MISS −1초', 
     ready:'준비~', go_:'START!', modeNormal:'연습', modeHard:'하드', modeSuper:'초하드', superNote:'점수 ×5 · 폭주하면 ×6', superTag:'초하드', superUnlock:'초하드 모드 해금!', hardUnlock:'하드 모드 해금!', unlockTxtHard:'시간 제한은 없지만\n코우가에게 들키면 끝! 점수는 1.7배예요', hardNote:'점수 ×1.7 · 화나면 ×2.5 · 폭주하면 ×6',
     melt_over:'피노가 녹았다!', meltTitle:'녹아버렸다…!', meltLab:'녹기까지',
-    cause_moved:'쳐다보는 중에 움직였어!', cause_late:'제때 못 숨겼어!', cause_silent:'발소리 없이 왔어!', cause_recheck:'…다시 돌아봤어!', cause_feint:'가는 척이었어!', cause_melt:'피노가 다 녹아버렸어…', cause_pizza:'피자 냄새로 들켰어!', co_sus:'의심 게이지예요. 시간이 지나고 피노를 먹을수록 차올라요. 꽉 차면… 코우가가 화를 내고, 난이도가 올라가요!', co_warn:'발소리! 코우가가 와요. 「숨기기」를 눌러 상자를 숨겨요!', co_watch:'코우가가 보고 있어요. 떠날 때까지 아무것도 만지지 마요!', co_melt:'상자를 열면 피노가 녹기 시작해요. 다 녹기 전에 6알 다 먹어요!', co_pizza:'피자 상자예요! 옆으로 쓸어서 치워요. 열면 냄새로 들켜요', co_dare:'코우가가 오는 중에 먹으면 점수 ×5! 대신 늦게 숨기면 들켜요', co_rage:'코우가가 화났어요! 순찰이 잦아지고 예고가 짧아져요. 게이지가 다 차면… 폭주!', co_recheck:'…다시 돌아봤어요! 바로 다시 숨겨요', co_feint:'가는 척이었어요! 완전히 떠날 때까지 기다려요', rc_lines:['어디서 피노 냄새가 나는데?!','네 녀석, 피노 먹고 있던 거 아니지?!','부스럭 소리가 난 것 같은데?!','뭔가 수상한데!','다시 와서 확인할 테니까, 가만히 있어!','분명 여기서 소리가 났는데!?','이 근처에서 피노의 기운이 느껴지는데!!!!','네 녀석, 뭐 먹고있었지!','분명 박스 뜯는 소리가 났는데!'], fe_lines:['진짜 안 먹는 거 맞아?!','이 몸이 다 보고 있다고!','네 녀석…! 지켜보고 있을 거야!','수상하다니까 네 녀석!!!!','네 녀석, 엄청 수상하다고!','도둑질 하다가 걸린 표정 같은데 아냐?!','단 냄새가 계속 나는 것 같은데!!','수상하다고!!!!!!!!!!'], rankBtn:'랭킹', rankUp:'↑{n}', rankJoin:'랭킹 참가하기', rankTitle:'코우가 챌린지 랭킹', rankNick:'닉네임 (12자까지)', rankXid:'X 아이디 (@없이)', rankXidNote:'X 아이디는 운영자만 볼 수 있어요. 순위 확인과 연락에 쓰여요.', rankSave:'참가하고 시작', rankSkip:'그냥 시작', rankSaveOnly:'저장', rankCancel:'취소', rankNeed:'닉네임과 X 아이디를 넣어 주세요', rankPeriod:'{a} ~ {b}', rankLeft:'남은 시간 {t}', rankSoon:'{t} 뒤 시작', rankOver:'종료 · 최종 순위', rankMe:'내 순위', rankMeNone:'아직 기록이 없어요', rankAsk:'랭킹전이 진행 중이에요!\n닉네임과 아이디를 등록하고 플레이해야 점수가 기록돼요!', rankAskJoin:'닉네임 등록하기', rankAskPlay:'그냥 플레이하기', rankJoinShort:'닉네임 등록', rankUnit:'위', rankNow:'이벤트 랭킹', rankBestS:'최고 {s}점', rankNew:'기록 갱신!', w_rankto:'위까지', w_rankup:'위 달성!', rk_lead:'1위 독주 중!', rk_top10:'TOP 10 진입!', rk_first:'1위 달성!', rankHeld:'기록을 확인한 뒤 반영돼요', rankFail:'랭킹에 보내지 못했어요', rankView:'랭킹 보기', rankEmpty:'아직 기록이 없어요', rankLoading:'불러오는 중…', rankDay:'{n}일 ', rankHour:'{n}시간 ', rankMin:'{n}분', coTap:'탭해서 계속', x5:'×5', timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_away:'휙!', yell_pizza:['이 피자 냄새는 뭐야?! 피자녀석?!','피자?! 아니 피노도 먹었잖아!?','피자 녀석이랑 한 패냐?!?!','피자 녀석이 시킨 거 아냐?!','피자... 뭐야! 이 피노 박스 더미는?!?!'], pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:['이 몸의 피노가 없어졌잖아!?!\n누구야!!!','피노가 줄어들었는데?!\n어떤 녀석이야!!!','빈 피노박스?!\n어떤 놈이야!!!'], nm_on:'코우가가 폭주한다!', shout_nm:['피노 돌려줘!!!!!!!!!!','피노 내놔!!!!!!!!!!!','잡히기만 해봐라!!!!!','크아아아아아!!!!\n피노!!!!!','이 몸의 손에\n잡히기만 해봐라!!!!!'], dbgNm:'나이트메어', dbgMax:'최고 난이도', autoOn:'자동 플레이: 켜짐', autoOff:'자동 플레이: 꺼짐', legal:'본 게임은 비공식\u2060·\u2060비영리 팬 게임으로, 모리나가유업\u2060·\u2060롯데 및 관계사와 무관합니다.\n「피노」는 모리나가유업, 「유키미다이후쿠」는 롯데의 상표이며, 그 밖의 상표\u2060·\u2060캐릭터\u2060·\u2060이미지의 권리는 각 권리자에게 있습니다.', crGame:'게임 제작 코우가', crArt:'일러스트 A', recheck:'…응?!', quit:'그만하기',
+    cause_moved:'쳐다보는 중에 움직였어!', cause_late:'제때 못 숨겼어!', cause_silent:'발소리 없이 왔어!', cause_recheck:'…다시 돌아봤어!', cause_feint:'가는 척이었어!', cause_melt:'피노가 다 녹아버렸어…', cause_pizza:'피자 냄새로 들켰어!', co_sus:'의심 게이지예요. 시간이 지나고 피노를 먹을수록 차올라요. 꽉 차면… 코우가가 화를 내고, 난이도가 올라가요!', co_warn:'발소리! 코우가가 와요. 「숨기기」를 눌러 상자를 숨겨요!', co_watch:'코우가가 보고 있어요. 떠날 때까지 아무것도 만지지 마요!', co_melt:'상자를 열면 피노가 녹기 시작해요. 다 녹기 전에 6알 다 먹어요!', co_pizza:'피자 상자예요! 옆으로 쓸어서 치워요. 열면 냄새로 들켜요', co_dare:'코우가가 오는 중에 먹으면 점수 ×5! 대신 늦게 숨기면 들켜요', co_rage:'코우가가 화났어요! 순찰이 잦아지고 예고가 짧아져요. 게이지가 다 차면… 폭주!', co_recheck:'…다시 돌아봤어요! 바로 다시 숨겨요', co_feint:'가는 척이었어요! 완전히 떠날 때까지 기다려요', rc_lines:['어디서 피노 냄새가 나는데?!','네 녀석, 피노 먹고 있던 거 아니지?!','부스럭 소리가 난 것 같은데?!','뭔가 수상한데!','다시 와서 확인할 테니까, 가만히 있어!','분명 여기서 소리가 났는데!?','이 근처에서 피노의 기운이 느껴지는데!!!!','네 녀석, 뭐 먹고있었지!','분명 박스 뜯는 소리가 났는데!'], fe_lines:['진짜 안 먹는 거 맞아?!','이 몸이 다 보고 있다고!','네 녀석…! 지켜보고 있을 거야!','수상하다니까 네 녀석!!!!','네 녀석, 엄청 수상하다고!','도둑질 하다가 걸린 표정 같은데 아냐?!','단 냄새가 계속 나는 것 같은데!!','수상하다고!!!!!!!!!!'], rankBtn:'랭킹', rankUp:'↑{n}', rankJoin:'랭킹 참가하기', rankTitle:'코우가 챌린지 랭킹', rankNick:'닉네임 (12자까지)', rankXid:'X 아이디 (@없이)', rankXidNote:'X 아이디는 운영자만 볼 수 있어요. 순위 확인과 연락에 쓰여요.', rankSave:'참가하고 시작', rankSkip:'그냥 시작', rankSaveOnly:'저장', rankCancel:'취소', rankNeed:'닉네임과 X 아이디를 넣어 주세요', rankPeriod:'{a} ~ {b}', rankLeft:'남은 시간 {t}', rankSoon:'{t} 뒤 시작', rankOver:'종료 · 최종 순위', rankMe:'내 순위', rankMeNone:'아직 기록이 없어요', rankAsk:'랭킹전이 진행 중이에요!\n닉네임과 아이디를 등록하고 플레이해야 점수가 기록돼요!', rankAskJoin:'닉네임 등록하기', rankAskPlay:'그냥 플레이하기', rankJoinShort:'닉네임 등록', rankKeep:'이 점수, 랭킹에 올릴래요?', rankKeepBtn:'기록하기', rankSaveRec:'등록하고 기록하기', rankUnit:'위', rankNow:'이벤트 랭킹', rankBestS:'최고 {s}점', rankNew:'기록 갱신!', w_rankto:'위까지', w_rankup:'위 달성!', rk_lead:'1위 독주 중!', rk_top10:'TOP 10 진입!', rk_first:'1위 달성!', rankHeld:'기록을 확인한 뒤 반영돼요', rankFail:'랭킹에 보내지 못했어요', rankView:'랭킹 보기', rankEmpty:'아직 기록이 없어요', rankLoading:'불러오는 중…', rankDay:'{n}일 ', rankHour:'{n}시간 ', rankMin:'{n}분', coTap:'탭해서 계속', x5:'×5', timeHard:'버틴 시간', mood:'의심', patrol_fake:'…기분 탓인가?', pizza_hint:'피자?! 치워버려!', pizza_away:'휙!', yell_pizza:['이 피자 냄새는 뭐야?! 피자녀석?!','피자?! 아니 피노도 먹었잖아!?','피자 녀석이랑 한 패냐?!?!','피자 녀석이 시킨 거 아냐?!','피자... 뭐야! 이 피노 박스 더미는?!?!'], pizzaTitle:'피자 냄새로 들켰다…!', rage_on:'코우가가 화났다!', shout_rage:['이 몸의 피노가 없어졌잖아!?!\n누구야!!!','피노가 줄어들었는데?!\n어떤 녀석이야!!!','빈 피노박스?!\n어떤 놈이야!!!'], nm_on:'코우가가 폭주한다!', shout_nm:['피노 돌려줘!!!!!!!!!!','피노 내놔!!!!!!!!!!!','잡히기만 해봐라!!!!!','크아아아아아!!!!\n피노!!!!!','이 몸의 손에\n잡히기만 해봐라!!!!!'], dbgNm:'나이트메어', dbgMax:'최고 난이도', autoOn:'자동 플레이: 켜짐', autoOff:'자동 플레이: 꺼짐', legal:'본 게임은 비공식\u2060·\u2060비영리 팬 게임으로, 모리나가유업\u2060·\u2060롯데 및 관계사와 무관합니다.\n「피노」는 모리나가유업, 「유키미다이후쿠」는 롯데의 상표이며, 그 밖의 상표\u2060·\u2060캐릭터\u2060·\u2060이미지의 권리는 각 권리자에게 있습니다.', crGame:'게임 제작 코우가', crArt:'일러스트 A', recheck:'…응?!', quit:'그만하기',
     patrol_warn:'코우가가 온다!', patrol_watch:'쉿…', hint_cover:'↓ 쓸어서 상자 덮기!', hideBtn:'숨기기!', unhideBtn:'꺼내기', patrol_caught:'들켰다!', hardTag:'하드',
     yell:['네 녀석!!!!!','범인 잡았다!!!!!!!!!!!!','역시 네 녀석이었구나!!!!!!!!!!','이 자식...!!!! 피노 뱉어내!!!!!','가만 안둬!!!!!!'], fx_heart:'하트', fx_star:'별',
     fx_combo:'COMBO', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
@@ -1282,7 +1292,7 @@ var I18N={
     fx_miss:'MISS −1秒', 
     ready:'よーい…', go_:'START!', modeNormal:'練習', modeHard:'ハード', modeSuper:'超ハード', superNote:'スコア×5 · 暴走で×6', superTag:'超ハード', superUnlock:'超ハードモード解放！', hardUnlock:'ハードモード解放！', unlockTxtHard:'時間制限はないけど\nコウガにバレたらおしまい！スコアは1.7倍', hardNote:'スコア×1.7 · 怒ると×2.5 · 暴走で×6',
     melt_over:'ピノが溶けた！', meltTitle:'溶けちゃった…！', meltLab:'溶けるまで',
-    cause_moved:'見られてる時に動いた！', cause_late:'かくすのが間に合わなかった！', cause_silent:'足音なしで来た！', cause_recheck:'…また振り返った！', cause_feint:'帰るふりだった！', cause_melt:'ピノが溶けちゃった…', cause_pizza:'ピザのにおいでバレた！', co_sus:'あやしさゲージ。時間がたつほど、ピノを食べるほどたまっていく。満タンになると…コウガが怒って、難易度が上がる！', co_warn:'足音！コウガが来る。「かくす！」を押して箱をかくそう！', co_watch:'コウガが見てる。いなくなるまで何もさわらないで！', co_melt:'箱をあけるとピノが溶けはじめる。溶ける前に6粒食べよう！', co_pizza:'ピザの箱！横にスワイプしてどかそう。あけるとにおいでバレる', co_dare:'コウガが近づいてる間に食べるとスコア×5！でも、かくすのが遅れるとバレる', co_rage:'コウガが怒った！見回りが増えて予告も短くなる。ゲージが満タンになると…暴走！', co_recheck:'…また振り返った！すぐかくし直そう', co_feint:'帰るふりだった！完全にいなくなるまで待とう', rc_lines:['どっかからピノのにおいがするぜ？！','お前、ピノ食ってたんじゃねぇだろうな？！','ガサッて音がした気がするぜ？！','なんか怪しいぜ！','また見に来るからな、おとなしくしてんだぜ！','確かにここで音がしたんだがな！？','この辺からピノの気配がするぜ！！！！','お前、何か食ってただろ！','確かに箱を開ける音がしたぜ！'], fe_lines:['ほんとに食ってねぇんだな？！','俺様が全部見てるんだからな！','てめぇ…！見張ってるからな！','怪しいって言ってんだろ、お前！！！！','お前、めちゃくちゃ怪しいぜ！','盗み食いがバレた顔してんじゃねぇか？！','ずっと甘いにおいがするんだがな！！','怪しいって言ってんだ！！！！！！！！！！'], rankBtn:'ランキング', rankUp:'↑{n}', rankJoin:'ランキングに参加', rankTitle:'コウガチャレンジ ランキング', rankNick:'ニックネーム（12文字まで）', rankXid:'XのID（@なし）', rankXidNote:'XのIDは運営しか見られません。順位の確認と連絡に使います。', rankSave:'参加してスタート', rankSkip:'参加せずにスタート', rankSaveOnly:'保存', rankCancel:'キャンセル', rankNeed:'ニックネームとXのIDを入力してください', rankPeriod:'{a} ～ {b}', rankLeft:'残り {t}', rankSoon:'開始まで {t}', rankOver:'終了・最終順位', rankMe:'あなたの順位', rankMeNone:'まだ記録がありません', rankAsk:'ランキング開催中！\nニックネームとXのIDを登録してプレイすると、スコアが記録されます！', rankAskJoin:'ニックネームを登録する', rankAskPlay:'そのままプレイする', rankJoinShort:'ニックネーム登録', rankUnit:'位', rankNow:'イベントランキング', rankBestS:'ベスト {s}点', rankNew:'記録更新！', w_rankto:'位まで', w_rankup:'位 達成！', rk_lead:'1位 独走中！', rk_top10:'TOP10入り！', rk_first:'1位 達成！', rankHeld:'記録は確認後に反映されます', rankFail:'ランキングに登録できませんでした', rankView:'ランキングを見る', rankEmpty:'まだ記録がありません', rankLoading:'読み込み中…', rankDay:'{n}日', rankHour:'{n}時間', rankMin:'{n}分', coTap:'タップでつづける', x5:'×5', timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_away:'ポイッ！', yell_pizza:['このピザのにおいはなんなんだ？！ピザ野郎？！','ピザ？！いや、ピノも食ってるじゃねぇか！？','ピザ野郎とグルか？！？！','ピザ野郎の差し金か？！','ピザ…なんだ！このピノの箱の山は？！？！'], pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:['俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!','ピノが減ってるじゃねぇか?!\nどこのどいつだ!!!','ピノの箱が空っぽ?!\nどいつの仕業だ!!!'], nm_on:'コウガが暴走した！', shout_nm:['ピノ返せ!!!!!!!!!!','ピノよこせ!!!!!!!!!!!','捕まえたらただじゃおかねぇ!!!!!','グオオオオオ!!!!\nピノ!!!!!','俺様の手に\n捕まったら覚悟しろ!!!!!'], dbgNm:'ナイトメア', dbgMax:'最高難易度', autoOn:'オートプレイ：オン', autoOff:'オートプレイ：オフ', legal:'本ゲームは非公式\u2060・\u2060非営利のファンゲームであり、森永乳業\u2060・\u2060ロッテおよび関係各社とは関係ありません。\n「ピノ」は森永乳業、「雪見だいふく」はロッテの商標であり、その他の商標\u2060・\u2060キャラクター\u2060・\u2060画像の権利は各権利者に帰属します。', crGame:'ゲーム制作 コウガ', crArt:'イラスト A', recheck:'…ん？！', quit:'やめる',
+    cause_moved:'見られてる時に動いた！', cause_late:'かくすのが間に合わなかった！', cause_silent:'足音なしで来た！', cause_recheck:'…また振り返った！', cause_feint:'帰るふりだった！', cause_melt:'ピノが溶けちゃった…', cause_pizza:'ピザのにおいでバレた！', co_sus:'あやしさゲージ。時間がたつほど、ピノを食べるほどたまっていく。満タンになると…コウガが怒って、難易度が上がる！', co_warn:'足音！コウガが来る。「かくす！」を押して箱をかくそう！', co_watch:'コウガが見てる。いなくなるまで何もさわらないで！', co_melt:'箱をあけるとピノが溶けはじめる。溶ける前に6粒食べよう！', co_pizza:'ピザの箱！横にスワイプしてどかそう。あけるとにおいでバレる', co_dare:'コウガが近づいてる間に食べるとスコア×5！でも、かくすのが遅れるとバレる', co_rage:'コウガが怒った！見回りが増えて予告も短くなる。ゲージが満タンになると…暴走！', co_recheck:'…また振り返った！すぐかくし直そう', co_feint:'帰るふりだった！完全にいなくなるまで待とう', rc_lines:['どっかからピノのにおいがするぜ？！','お前、ピノ食ってたんじゃねぇだろうな？！','ガサッて音がした気がするぜ？！','なんか怪しいぜ！','また見に来るからな、おとなしくしてんだぜ！','確かにここで音がしたんだがな！？','この辺からピノの気配がするぜ！！！！','お前、何か食ってただろ！','確かに箱を開ける音がしたぜ！'], fe_lines:['ほんとに食ってねぇんだな？！','俺様が全部見てるんだからな！','てめぇ…！見張ってるからな！','怪しいって言ってんだろ、お前！！！！','お前、めちゃくちゃ怪しいぜ！','盗み食いがバレた顔してんじゃねぇか？！','ずっと甘いにおいがするんだがな！！','怪しいって言ってんだ！！！！！！！！！！'], rankBtn:'ランキング', rankUp:'↑{n}', rankJoin:'ランキングに参加', rankTitle:'コウガチャレンジ ランキング', rankNick:'ニックネーム（12文字まで）', rankXid:'XのID（@なし）', rankXidNote:'XのIDは運営しか見られません。順位の確認と連絡に使います。', rankSave:'参加してスタート', rankSkip:'参加せずにスタート', rankSaveOnly:'保存', rankCancel:'キャンセル', rankNeed:'ニックネームとXのIDを入力してください', rankPeriod:'{a} ～ {b}', rankLeft:'残り {t}', rankSoon:'開始まで {t}', rankOver:'終了・最終順位', rankMe:'あなたの順位', rankMeNone:'まだ記録がありません', rankAsk:'ランキング開催中！\nニックネームとXのIDを登録してプレイすると、スコアが記録されます！', rankAskJoin:'ニックネームを登録する', rankAskPlay:'そのままプレイする', rankJoinShort:'ニックネーム登録', rankKeep:'このスコア、ランキングにのせる？', rankKeepBtn:'記録する', rankSaveRec:'登録して記録する', rankUnit:'位', rankNow:'イベントランキング', rankBestS:'ベスト {s}点', rankNew:'記録更新！', w_rankto:'位まで', w_rankup:'位 達成！', rk_lead:'1位 独走中！', rk_top10:'TOP10入り！', rk_first:'1位 達成！', rankHeld:'記録は確認後に反映されます', rankFail:'ランキングに登録できませんでした', rankView:'ランキングを見る', rankEmpty:'まだ記録がありません', rankLoading:'読み込み中…', rankDay:'{n}日', rankHour:'{n}時間', rankMin:'{n}分', coTap:'タップでつづける', x5:'×5', timeHard:'経過時間', mood:'あやしさ', patrol_fake:'…気のせいか？', pizza_hint:'ピザ？！どかしちゃえ！', pizza_away:'ポイッ！', yell_pizza:['このピザのにおいはなんなんだ？！ピザ野郎？！','ピザ？！いや、ピノも食ってるじゃねぇか！？','ピザ野郎とグルか？！？！','ピザ野郎の差し金か？！','ピザ…なんだ！このピノの箱の山は？！？！'], pizzaTitle:'ピザのにおいでバレた…！', rage_on:'コウガが怒った！', shout_rage:['俺様のピノがなくなってるじゃねぇか!?!\n誰だ!!!','ピノが減ってるじゃねぇか?!\nどこのどいつだ!!!','ピノの箱が空っぽ?!\nどいつの仕業だ!!!'], nm_on:'コウガが暴走した！', shout_nm:['ピノ返せ!!!!!!!!!!','ピノよこせ!!!!!!!!!!!','捕まえたらただじゃおかねぇ!!!!!','グオオオオオ!!!!\nピノ!!!!!','俺様の手に\n捕まったら覚悟しろ!!!!!'], dbgNm:'ナイトメア', dbgMax:'最高難易度', autoOn:'オートプレイ：オン', autoOff:'オートプレイ：オフ', legal:'本ゲームは非公式\u2060・\u2060非営利のファンゲームであり、森永乳業\u2060・\u2060ロッテおよび関係各社とは関係ありません。\n「ピノ」は森永乳業、「雪見だいふく」はロッテの商標であり、その他の商標\u2060・\u2060キャラクター\u2060・\u2060画像の権利は各権利者に帰属します。', crGame:'ゲーム制作 コウガ', crArt:'イラスト A', recheck:'…ん？！', quit:'やめる',
     patrol_warn:'コウガが来る！', patrol_watch:'しーっ…', hint_cover:'↓ スワイプでフタを閉める！', hideBtn:'かくす！', unhideBtn:'とりだす', patrol_caught:'バレた！', hardTag:'ハード',
     yell:['てめぇ！！！！！','犯人みっけ！！！！！！！！！！！！','やっぱりてめぇだったか！！！！！！！！！！','てめぇ…！！！！ピノを吐き出せ！！！！！','ただじゃおかねぇ！！！！！！'], fx_heart:'ハート', fx_star:'ほし',
     fx_combo:'COMBO', fx_fever:'FEVER TIME!', fx_feverWord:'FEVER',
@@ -2851,9 +2861,10 @@ function tossBox(){
   const lid=cur.lidPivot, a0=lid.rotation.x, pk=cur.pick;
   slimForPile(g);
   const tdir=Math.sign(target.x-p0.x)||1; camWhip(-tdir*0.55);
-  let lastQ=null;
+  let lastQ=null, nextIn=false;
   tween(0.8,k=>{
     const e=1-Math.pow(1-k,2);
+    if(!nextIn&&k>=0.3){ nextIn=true; nextBox(); }   // overlap: the next box starts its arrival while this one flies to the pile
     if(k<0.65){ const q=toScreen(g.position.clone().setY(g.position.y+0.3));
       if(lastQ&&Math.hypot(q.x-lastQ.x,q.y-lastQ.y)>6) fx.burst(q.x,q.y,{n:2,dir:Math.atan2(lastQ.y-q.y,lastQ.x-q.x),spread:0.35,speed:120,gravity:0,drag:7,size:4,life:0.26,colors:['#FFFFFF','#FFF3D6']});
       lastQ=q; }
@@ -2866,7 +2877,7 @@ function tossBox(){
     if(keep){ scene.remove(g); const pr=pileProxy(); pr.position.copy(slot.pos); pr.rotation.copy(slot.rot); pile.add(pr); sfx.thud();
       const q=toScreen(g.getWorldPosition(new V3())); fx.burst(q.x,q.y,{n:3,even:true,dir:-Math.PI,speed:60,gravity:-20,drag:4,size:6,life:0.35,shape:'puff',colors:['#fff']}); }
     else scene.remove(g);
-    boxesThrown++; nextBox();
+    boxesThrown++; if(!nextIn) nextBox();
   });
 }
 let hum=null;
@@ -2953,6 +2964,7 @@ function flickPostit(dx,dy){
   const done=flickWait; if(!done) return; flickWait=null; $('pops').querySelectorAll('.flickhint').forEach(e=>e.remove());
   flyPostit(Math.atan2(dy,dx)); later(done,560); }
 function startGame(keep){
+  unlockHide();
   $('pracSkip').hidden=HARD||!!TUT;
   audio(); if(HARD) bgm.stop(0.2); if(SUPER){ decodeCBGM(['rage']); loadSet(bgmSet,['rage','nightmare']); } document.body.classList.remove('resultFx','paused'); decoyAway(true); fx.clear(); shownScore=0; hitStop=0; kick=0;
   const keepBox=keep===true&&cur&&state==='idle'?cur:null; if(!keepBox) disposeCur();
@@ -3105,10 +3117,12 @@ const iris=(()=>{
            from(r,to,x,y,dur,done){ run(r,to,dur,x,y,q=>q*q,done); } };
 })();
 let readyT=0, lastCount=0;
+let quickReady=false;   // set by 「한 판 더」/restart: the player already knows the drill
 function readyGo(){
-  readyT=1.15;
+  const q=quickReady; quickReady=false;
+  readyT=q?0.5:1.15;
   popCenter(say('ready'),'big'); woodblock(79,{vol:0.18}); woodblock(79,{vol:0.1,delay:0.12});
-  later(()=>{ if(state==='over'||state==='idle') return; popCenter(say('go_'),'fever'); bgm.play(SUPER?'rage':HARD?'hard':'normal'); thump(70,0.3); [84,88,91].forEach(n=>kalimba(n,{vol:0.09})); bell(96,{vol:0.06,delay:0.05}); impact(0,0.03); },650);
+  later(()=>{ if(state==='over'||state==='idle') return; popCenter(say('go_'),'fever'); bgm.play(SUPER?'rage':HARD?'hard':'normal'); thump(70,0.3); [84,88,91].forEach(n=>kalimba(n,{vol:0.09})); bell(96,{vol:0.06,delay:0.05}); impact(0,0.03); },q?280:650);
 }
 window.voice=voice;
 function typeText(el,text,ms,voice){
@@ -3725,9 +3739,9 @@ const RANK_LOCAL=(()=>{ const K='kouga-rank-local', toks={};
     return Object.values(b).sort((a,c)=>c.score-a.score||a.at-c.at).map((r,i)=>({rank:i+1,xid:r.xid,nick:d.players[r.xid]||'?',score:r.score,mode:r.mode,nm:!!r.nightmare})); };
   return function(path,body){ const d=load();
     if(path==='/api/event') return ev(d);
-    if(path==='/api/start'){ if(!ev(d).open) return {error:'closed'}; const xid=String(body.xid||'').replace(/^@/,'').toLowerCase(); d.players[xid]=body.nick; save(d);
+    if(path==='/api/start'){ if(!ev(d).open) return {error:'closed'}; const xid=String(body.xid||'').replace(/^@/,'').toLowerCase(); if(xid){ d.players[xid]=body.nick; save(d); }
       const t=Math.random().toString(16).slice(2)+Date.now().toString(16); toks[t]={xid,mode:body.mode}; return {token:t}; }
-    if(path==='/api/submit'){ const tk=toks[body.token]; if(!tk) return {error:'unknown token'}; delete toks[body.token];
+    if(path==='/api/submit'){ const tk=toks[body.token]; if(!tk) return {error:'unknown token'}; if(!tk.xid){ const x=String(body.xid||'').replace(/^@/,'').toLowerCase(); if(!x||!body.nick) return {error:'nickname and X handle needed'}; tk.xid=x; d.players[x]=body.nick; } delete toks[body.token];
       d.scores.push({xid:tk.xid,mode:tk.mode,score:body.score|0,nightmare:body.summary&&body.summary.nightmare?1:0,at:Date.now()}); save(d);
       const all=best(d), me=all.find(r=>r.xid===tk.xid); return {status:'ok',rank:me?me.rank:null,best:me?me.score:null}; }
     if(path.startsWith('/api/board')){ const xid=(path.split('xid=')[1]||'').toLowerCase(), all=best(d), me=all.find(r=>r.xid===decodeURIComponent(xid))||null;
@@ -3753,9 +3767,9 @@ function evCard(){ const c=$('evCard'), L=eventLines(); c.hidden=$('evTop').hidd
 function rankFetchEvent(){ if(!RANK_API) return Promise.resolve();
   return rankApi('/api/event').then(e=>{ e.at=Date.now(); RANK.event=e; evCard(); }).catch(()=>{}); }
 let joinThen=null;
-function joinDialog(then){ joinThen=then||null; $('rankErr').textContent='';
+function joinDialog(then,saveKey){ joinThen=then||null; $('rankErr').textContent='';
   $('rankNick').value=RANK.who?RANK.who.nick:''; $('rankXid').value=RANK.who?RANK.who.xid:''; $('rankNick').placeholder=TX('rankNick');
-  $('rankSave').textContent=TX(then?'rankSave':'rankSaveOnly'); $('rankSkip').textContent=TX('rankCancel');
+  $('rankSave').textContent=TX(saveKey||(then?'rankSave':'rankSaveOnly')); $('rankSkip').textContent=TX('rankCancel');
   $('rankOv').hidden=false; setTimeout(()=>$('rankNick').focus(),60); }
 function joinSave(){ const nick=$('rankNick').value.trim(), xid=$('rankXid').value.trim().replace(/^@/,'');
   if(!nick||!/^[A-Za-z0-9_]{1,15}$/.test(xid)){ $('rankErr').textContent=TX('rankNeed'); return; }
@@ -3765,16 +3779,19 @@ function joinSkip(){ $('rankOv').hidden=true; joinThen=null; }
 function askShow(go){ askGo=go; artInto($('askTitle'),'rank_live',TX('rankBtn')); $('askOv').hidden=false; }
 let askGo=null;
 function rankStart(){ const run=RANK.run=(RANK.run||0)+1; RANK.prev=undefined; RANK.token=null; RANK.tokP=null; RANK.sent=false; RANK.auto=AUTO.on; RANK.mode=MODE; runT=0; chaseInit();
-  if(!rankOpen()||!RANK.who||TUT) return;
-  const mode=MODE; RANK.tokP=rankApi('/api/start',{mode,xid:RANK.who.xid,nick:RANK.who.nick}).then(d=>{ if(d&&d.token&&RANK.run===run) RANK.token=d.token; return RANK.run===run?RANK.token:null; }).catch(()=>null); }
+  if(!rankOpen()||TUT) return;
+  const mode=MODE, who=RANK.who; RANK.tokP=rankApi('/api/start',who?{mode,xid:who.xid,nick:who.nick}:{mode}).then(d=>{ if(d&&d.token&&RANK.run===run) RANK.token=d.token; return RANK.run===run?RANK.token:null; }).catch(()=>null); }
 function rankResult(){
   const row=$('rankRow'); row.hidden=!(RANK_API&&RANK.event); const msg=$('rankMsg'); msg.textContent=''; msg.className=''; $('rankBest').textContent=''; $('rkStamp').hidden=true;
+  $('rankKeep').hidden=true; $('rankOpen').hidden=false;
   if(RANK.sent||(RANK.auto&&RANK_API!=='local')) return;
+  if(!RANK.who){ if(!rankOpen()||!(RANK.token||RANK.tokP)) return;   // the run can still be kept: ask here, after the result, not before play
+    msg.textContent=TX('rankKeep'); $('rankKeep').hidden=false; $('rankOpen').hidden=true; return; }
   if(!RANK.token){ if(RANK.tokP){ const p=RANK.tokP; RANK.tokP=null; const run=RANK.run; p.then(t=>{ if(t&&RANK.run===run) rankResult(); }); } return; }
   RANK.sent=true; RANK.tokP=null; $('rankMsg').textContent=TX('rankLoading');
   const summary={elapsed:+runT.toFixed(2),eaten:totalEaten,boxes:boxesDone,combo:maxCombo,lucky:luckyCount,patrols:patrol.count||0,rage:!!rageReached,nightmare:!!nightmareReached};
   const prev=RANK.prev;
-  rankApi('/api/submit',{token:RANK.token,score,summary}).then(d=>{ const msg=$('rankMsg');
+  rankApi('/api/submit',{token:RANK.token,score,summary,xid:RANK.who.xid,nick:RANK.who.nick}).then(d=>{ const msg=$('rankMsg');
     if(!(d.status==='ok'&&d.rank)){ msg.textContent=d.status?TX('rankHeld'):TX('rankFail'); msg.className=d.status?'':'bad'; return; }
     const st=$('rkStamp'), best=d.best||score; $('rkNo').textContent=d.rank; st.className='rkstamp'+(d.rank<=3?' r'+d.rank:''); st.hidden=false; void st.offsetWidth; st.classList.add('go');
     msg.textContent=TX('rankNow');
@@ -3783,6 +3800,7 @@ function rankResult(){
     if(prev&&prev.rank>d.rank){ const u=document.createElement('span'); u.className='up'; u.textContent=TX('rankUp').replace('{n}',prev.rank-d.rank); msg.appendChild(u); }
     setTimeout(()=>sfx.thud(),260); })
     .catch(()=>{ const m=$('rankMsg'); m.textContent=TX('rankFail'); m.className='bad'; }); }
+function rankKeep(){ const run=RANK.run; joinDialog(()=>{ if(RANK.run===run&&state==='over') rankResult(); },'rankSaveRec'); }
 let boardTimer=0;
 function boardRow(el,r,mine){ el.innerHTML=''; const k=document.createElement('span'), n=document.createElement('span'), m=document.createElement('span'), c=document.createElement('span');
   k.className='rk'; if(r.rank<=3){ const b=document.createElement('b'); b.className='r'+r.rank; b.textContent=r.rank; k.appendChild(b); } else k.textContent=r.rank;
@@ -3853,7 +3871,10 @@ const pickLine=k=>{ const v=TX(k); return Array.isArray(v)?v[Math.floor(rnd()*v.
 const eatenStr=()=>TX('eatenVal').replace('{b}',boxesDone).replace('{n}',totalEaten), luckyStr=()=>TX('luckyVal').replace('{h}',heartCount).replace('{s}',starCount);
 let hardJust=false;
 let superJust=false, superDefault=false;
-function unlockShow(kind){ const h=kind==='hard'; artInto($('unlockTitle'),h?'hardUnlock':'superUnlock',TX(h?'hardUnlock':'superUnlock')); $('unlockBody').textContent=TX(h?'unlockTxtHard':'unlockTxt'); $('unlockOv').hidden=false; woodblock(84,{vol:0.12}); sfx.lucky(); }
+function unlockShow(kind){ const h=kind==='hard'; artInto($('unlockTitle'),h?'hardUnlock':'superUnlock',TX(h?'hardUnlock':'superUnlock')); $('unlockBody').textContent=TX(h?'unlockTxtHard':'unlockTxt'); const ov=$('unlockOv'); ov.classList.remove('out'); ov.hidden=false; woodblock(84,{vol:0.12}); sfx.lucky();
+  clearTimeout(unlockTo); unlockTo=setTimeout(unlockHide,5200); }
+let unlockTo=0;
+function unlockHide(){ const ov=$('unlockOv'); clearTimeout(unlockTo); if(ov.hidden) return; ov.classList.add('out'); unlockTo=setTimeout(()=>{ ov.hidden=true; ov.classList.remove('out'); },300); }
 let caughtAt=0;
 function caughtFx(on){ const c=renderer.domElement; c.style.transition=on?'filter .25s ease-out':''; c.style.filter=on&&!reduceMotion?'saturate(.3) contrast(1.12) brightness(.92)':''; }
 let endCause=null;
@@ -3923,7 +3944,7 @@ function endGame(){
   $('rCombo').textContent=maxCombo;
   $('rBest').textContent=isNew?TX('newBest'):TX('best').replace('{n}',best.toLocaleString(LOCALE()));
   { const m=reachedMode(); $('rMode').dataset.m=m; $('rMode').textContent=TX('mc_'+m); nmChip($('rNm'),nightmareReached); }
-  $('result').classList.toggle('practice',!HARD); $('rTitle').textContent=endTitle(); chaseHide(); rankResult(); if(hardJust){ hardJust=false; setTimeout(()=>unlockShow('hard'),2400); } else if(superJust){ superJust=false; superDefault=true; setTimeout(()=>unlockShow('super'),2400); } { const c=$('rCause'); c.hidden=!endCause; c.textContent=endCause?TX('cause_'+endCause):''; }
+  $('result').classList.toggle('practice',!HARD); $('rTitle').textContent=endTitle(); chaseHide(); rankResult(); if(hardJust){ hardJust=false; setTimeout(()=>unlockShow('hard'),1500); } else if(superJust){ superJust=false; superDefault=true; setTimeout(()=>unlockShow('super'),1500); } { const c=$('rCause'); c.hidden=!endCause; c.textContent=endCause?TX('cause_'+endCause):''; }
   const gr=gradeOf(score), ge=$('rGrade'); $('sayText').textContent=''; setTimeout(()=>typeText($('sayText'),TX('say_'+gr[0]),34,360),1300); setArt($('rGradeImg'),'g'+gr[0],42,'g'+gr[0],gr[0]);
   ge.classList.remove('go');
   $('shareMsg').textContent='';
@@ -3966,7 +3987,6 @@ $('tutGo').addEventListener('click',()=>{ $('tutDone').hidden=true; paused=false
 function beginRun(tut){ irisBusy=true;
   iris.close(innerWidth/2,innerHeight/2,380,()=>{ tut?startTutorial():startGame(); setTimeout(()=>iris.open(innerWidth/2,innerHeight*0.55,480,()=>{ irisBusy=false; }),80); }); }
 $('go').addEventListener('click',()=>{ if(irisBusy||introOpen||flickWait) return; audio();
-  if(rankOpen()&&!RANK.who){ askShow(goRun); return; }
   goRun(); });
 function goRun(){
   if(!HARD){ awaitFlick(()=>beginRun(true)); return; }
@@ -4009,7 +4029,7 @@ document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',
 }));
 document.querySelectorAll('.slot input').forEach(inp=>markSlot(inp.dataset.slot,false));
 eatenEl.textContent=TX('eaten')(0);
-$('again').addEventListener('click',startGame);
+$('again').addEventListener('click',()=>{ quickReady=true; startGame(); });
 function pauseGame(){ if(paused||state==='idle'||state==='over') return; paused=true; $('autoBtn').textContent=TX(AUTO.on?'autoOn':'autoOff'); document.body.classList.add('paused'); bgmLabel(); if(ac) ac.suspend(); down=null; $('pauseOv').hidden=false; $('resumeBtn').focus({preventScroll:true}); }
 function resumeGame(){ if(!paused||introOpen||!$('tutDone').hidden) return; paused=false; document.body.classList.remove('paused'); if(audioWasHidden) reviveAudio(); else audio(); $('pauseOv').hidden=true; }
 $('pauseBtn').addEventListener('click',pauseGame);
@@ -4033,10 +4053,11 @@ $('modeCyc').addEventListener('click',()=>{ const bs=[...document.querySelectorA
 new MutationObserver(modeCycSync).observe(document.querySelector('#tui .mode'),{subtree:true,attributes:true,attributeFilter:['aria-pressed','hidden'],childList:true,characterData:true});
 setTimeout(modeCycSync,0);
 $('rankOpen').addEventListener('click',()=>{ audio(); boardShow(); });
+$('rankKeep').addEventListener('click',()=>{ audio(); rankKeep(); });
 $('evJoin').addEventListener('click',()=>{ audio(); joinDialog(null); });
 $('boardClose').addEventListener('click',()=>{ $('boardOv').hidden=true; clearInterval(boardTimer); });
 $('rankSave').addEventListener('click',joinSave); $('rankSkip').addEventListener('click',joinSkip);
-$('unlockOk').addEventListener('click',()=>{ $('unlockOv').hidden=true; });
+$('unlockOk').addEventListener('click',unlockHide); $('unlockOv').querySelector('.card').addEventListener('click',unlockHide);
 $('askJoin').addEventListener('click',()=>{ $('askOv').hidden=true; const g=askGo; askGo=null; joinDialog(g); });
 $('askPlay').addEventListener('click',()=>{ $('askOv').hidden=true; const g=askGo; askGo=null; if(g) g(); });
 ['rankNick','rankXid'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter') joinSave(); }));
@@ -4055,7 +4076,7 @@ $('hideBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropa
   else if(patrol.phase==='warn'&&exposed()){ if(boxShowing()) coverBox(); else preHide(); } });
 function bgmLabel(){ $('bgmBtn').textContent=TX(bgm.on?'bgmOn':'bgmOff'); }
 $('bgmBtn').addEventListener('click',()=>{ audio(); bgm.toggle(); bgmLabel(); });
-$('restartBtn').addEventListener('click',()=>{ tutEnd(); paused=false; document.body.classList.remove('paused'); $('pauseOv').hidden=true; startGame(); });
+$('restartBtn').addEventListener('click',()=>{ tutEnd(); paused=false; document.body.classList.remove('paused'); $('pauseOv').hidden=true; quickReady=true; startGame(); });
 $('quitBtn').addEventListener('click',()=>{ tutEnd(); quitEnd=true; paused=false; document.body.classList.remove('paused'); $('pauseOv').hidden=true; audio(); patrolSet('none'); endGame(); });
 function hush(){ pauseGame(); if(ac&&ac.state==='running') ac.suspend().catch(()=>{}); }
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) hush(); }); addEventListener('pagehide',hush);
@@ -4205,8 +4226,10 @@ document.querySelectorAll('.slot input').forEach(inp=>inp.addEventListener('chan
 
 /* input */
 let down=null;
-const tearNeed=()=>Math.max(280,Math.min(520,innerHeight*0.55));
-const filmNeed=()=>Math.max(240,Math.min(460,innerHeight*0.5));
+// the film/lid swipe gets shorter while the combo holds, so a hot streak isn't slowed by the same long ritual every box
+const SWIPE_K={1:1,1.5:0.85,2:0.72,3:0.62,4:0.55}, swipeK=()=>SWIPE_K[tier()]||1;
+const tearNeed=()=>Math.max(280,Math.min(520,innerHeight*0.55))*swipeK();
+const filmNeed=()=>Math.max(240,Math.min(460,innerHeight*0.5))*swipeK();
 canvas.addEventListener('pointerdown',e=>{
   if(state==='idle'&&document.body.classList.contains('title')&&postit&&postit.parent){ const q=toScreen(postit.getWorldPosition(new V3())), r=Math.min(innerWidth,innerHeight)*0.3;
     if(Math.hypot(e.clientX-q.x,e.clientY-q.y)>=r){ titleTap={x:e.clientX,y:e.clientY}; return; }

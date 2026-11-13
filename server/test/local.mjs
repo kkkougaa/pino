@@ -54,8 +54,14 @@ if (process.argv[2] === 'serve') {
   r = await call('POST', '/api/submit', { token: st.body.token, score: 100, summary: sum({}) }); Date.now = realNow;
   ok(r.status === 409, 'the same token cannot be used twice');
 
+  const an = await call('POST', '/api/start', { mode: 'normal' }); ok(an.status === 200 && an.body.token, 'a run can start without joining');
+  travel(65); r = await call('POST', '/api/submit', { token: an.body.token, score: 500, summary: sum({}) });
+  ok(r.status === 400, 'an anonymous run needs a nickname and X handle to be recorded');
+  r = await call('POST', '/api/submit', { token: an.body.token, score: 500, summary: sum({}), xid: 'late_joiner', nick: '늦깎이' }); Date.now = realNow;
+  ok(r.body.status === 'ok' && r.body.rank === 3, 'joining after the result records that run');
+
   let b = await call('GET', '/api/board?xid=pino_lover');
-  ok(b.body.players === 2 && b.body.top.length === 2, 'the board counts each player once');
+  ok(b.body.players === 3 && b.body.top.length === 3, 'the board counts each player once');
   ok(b.body.top[0].nick === 'コウガ推し' && b.body.top[0].mode === 'hard' && !('xid' in b.body.top[0]), 'board rows show nickname and mode, never the X handle');
   ok(b.body.me && b.body.me.rank === 2 && b.body.me.score === 15000, 'my rank comes back');
   ok(b.body.event.open === true && b.body.event.start && b.body.event.end, 'the event window comes back');

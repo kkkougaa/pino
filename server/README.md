@@ -37,7 +37,7 @@ Cloudflare에 올리기 전에 동작을 확인할 수 있어요.
 node --no-warnings test/local.mjs
 ```
 
-`PASS`가 20줄 나오면 정상이에요. 샘플 랭킹이 들어간 가짜 서버를 띄워 볼 수도 있어요.
+`PASS`가 23줄 나오면 정상이에요. 샘플 랭킹이 들어간 가짜 서버를 띄워 볼 수도 있어요.
 
 ```bash
 node --no-warnings test/local.mjs serve demo
